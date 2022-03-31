@@ -22,7 +22,7 @@
         update(){
             this.scene.start("sceneJeu", {
                 pointDeVie:8,
-                sabreInterface:false,
+                sabreInterface:true,
                 dialogue:false,
                 trancherActif:false,
                 pouvoirAttaquer:false,
@@ -30,6 +30,7 @@
                 quitterVheicule:false,
                 invulnérable:false,
                 tempsAvantRespawn:false,
+                porteOuverte:false,
             })
         }
 
@@ -50,6 +51,7 @@
             this.quitterVheicule = data.quitterVheicule,
             this.invulnérable = data.invulnérable,
             this.tempsAvantRespawn = data.tempsAvantRespawn
+            this.porteOuverte = data.porteOuverte
         }
 
         preload(){
@@ -97,6 +99,10 @@
             this.load.image("2HP", "assets/interface/vie/coeurInterface2HP.png");
             this.load.image("1HP", "assets/interface/vie/coeurInterface1HP.png");
             this.load.image("0HP", "assets/interface/vie/coeurInterface0HP.png");
+
+            // textes PNJ
+            this.load.image("TexteIntro1", "assets/interface/texte/TexteIntro 1.png");
+            this.load.image("TexteIntro2", "assets/interface/texte/TexteIntro 2.png");
         }
 
         
@@ -109,11 +115,6 @@
             const tileset = carte.addTilesetImage(
                     "tuilesJeu",
                     "Phaser_tuilesdejeu"
-                    );  
-
-            const tilesetMaisonHerbe = carte.addTilesetImage(
-                    "interieur maison zone herbe",
-                    "Phaser_tuilesMaisonHerbe"
                     );  
 
             const ground = carte.createLayer(
@@ -130,7 +131,7 @@
                     "collisionInvisible",
                     tileset
                     );
-
+   
             const decor = carte.createLayer(
                     "decor",
                     tileset
@@ -139,11 +140,13 @@
             this.entreeGrotte = this.physics.add.image(430, 100, 'changementScene');
             this.entreeGrotte.body.setSize(150,80,true)
 
-            this.entreeMaisonBlanche = this.physics.add.image(530,100, 'changementScene');
+            this.entreeMaisonBlanche = this.physics.add.image(530,200, 'changementScene');
             this.entreeMaisonBlanche.body.setSize(90,40,true)
             this.entreeMaisonBlanche.setOffset(-31,100)
 
-            this.pnj1 = this.add.image(20, 300, 'pnj1');
+            ///////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////
 
             carte.getObjectLayer('spawnJoueur').objects.forEach((spawnJoueur) => {
             this.player = this.physics.add.sprite(spawnJoueur.x, spawnJoueur.y, 'perso').setOrigin(0);
@@ -152,22 +155,23 @@
             this.player.body.setSize(24,6,true)
             this.player.setOffset(4, 26)
 
-            this.player.setDepth(10)
+            this.player.setDepth(7)
 
             this.vehicule = this.physics.add.sprite(200,500,'vehiculeRightLeft') 
             this.vehicule.body.setSize(200,120,true)
 
-            this.vehicule.setDepth(11)
+            this.vehicule.setDepth(8)
 
             const persoDerriere = carte.createLayer(
                     "persoDerriere",
                     tileset
                     );
-            persoDerriere.setDepth(11)
+            persoDerriere.setDepth(9)
 
             this.compteurAttaqueTemps = 60
             this.compteurInvunlerable = 150
             this.compteurTempsAvantRespawn = 300
+            this.entrerActif = true
 
             this.physics.add.collider(this.player, build);
             this.physics.add.collider(this.vehicule, build);
@@ -335,25 +339,68 @@
             this.physics.add.overlap( this.player, this.coeur,  this.prendreHp, null,this);
 
             // porte fermée à l'entrée de la grotte
-            this.porteGrotte = this.physics.add.image(176, 256,'porteEntreeGrotteFermée')
-            this.porteGrotte.body.setSize(96,32,true)
-            this.porteGrotte.setOffset(2,32,true)
-            this.porteGrotte.setInteractive()
+            if (this.porteOuverte == false){
+                this.porteGrotte = this.physics.add.image(176, 256,'porteEntreeGrotteFermée')
+                this.porteGrotte.body.setSize(96,32,true)
+                this.porteGrotte.setOffset(2,32,true)
+            }
 
-            this.porteGrotte.setDepth(1)
+            if (this.porteOuverte == true){
+                this.porteGrotte = this.physics.add.image(176, 256,'porteEntreeGrotteOuvert')
+                this.porteGrotte.body.setSize(48,32,true)
+                this.porteGrotte.setOffset(2,32,true)
+            }
 
-            this.physics.add.collider(this.player,this.porteGrotte)
+                this.porteGrotte.setInteractive()
+
+                this.porteGrotte.setDepth(1)
+                this.porteGrotte.setPushable(false)
+                this.physics.add.collider(this.player,this.porteGrotte)
+
+                // interaction avec la porte afin de l'ouvrir
+                this.porteGrotteOverlap = this.physics.add.image(180,270, 'changementScene');
+                this.porteGrotteOverlap.body.setSize(40,34,true)
+                this.porteGrotteOverlap.setOffset(-31,20)
+
+                this.physics.add.overlap( this.player, this.porteGrotteOverlap,  this.ouvrirPorteGrotte, null,this);
+
+                // apparition des ennemis
+                this.enemis = this.physics.add.group({
+                });
+                        
+                carte.getObjectLayer('spawnEnnemi').objects.forEach((enemis) => {
+                this.enemi = this.enemis.create(enemis.x, enemis.y, 'ennemi').setOrigin(0);
+                this.enemi.setBounce(1);
+                });
+
+                this.enemis.setVelocityY(-50)
+                this.ennemiDirection = 1
+
+                this.physics.add.overlap( this.player, this.enemis,  this.toucherEnnemi, null,this);
+
+                this.physics.add.collider(this.enemis,build,);
+                
 
             ///////////////////////////////////////////////////////////////
             /////////////////////////INTERFACE/////////////////////////////
             ///////////////////////////////////////////////////////////////
 
             //vie interface
-            this.coeurEcran = this.add.image(306, 161,'8HP').setScale(0.74)
+            this.coeurEcran = this.add.image(306, 161,'8HP').setScale(0.7)
             this.coeurEcran.setInteractive()
             this.coeurEcran.setScrollFactor(0);  
 
-            this.coeurEcran.setDepth(1000)
+            this.coeurEcran.setDepth(10)
+
+            ///////////////////////////////////////////////////////////////
+            //////////////////////////////PNJ//////////////////////////////
+            ///////////////////////////////////////////////////////////////
+
+            this.pnj1 = this.physics.add.image(240, 380, 'pnj1');
+            this.pnj1.setPushable(false)
+            this.pnj1.body.setSize(48,64)
+            this.pnj1.setOffset(-8,0)
+            this.physics.add.overlap(this.player,this.pnj1,this.parlerPNJ1,null,this);
 
             ///////////////////////////////////////////////////////////////
             /////////////////////////TOUCHES///////////////////////////////
@@ -527,6 +574,7 @@
             }
 
             if (this.quitterVheicule == true){
+                this.entrerActif = false
                 this.cameras.main.startFollow(this.player); 
                 this.cameras.main.zoom = 3
                 this.vehicule.setVelocityX(0)
@@ -555,10 +603,10 @@
 
             //sabre interface
             if (this.sabreInterface == true){
-                this.sabreEcran = this.add.image(368, 162,'sabreInterface').setScale(0.44)
+                this.sabreEcran = this.add.image(368, 162,'sabreInterface').setScale(0.4)
                 this.sabreEcran.setInteractive()
                 this.sabreEcran.setScrollFactor(0);  
-                this.coeur.setDepth(10)
+                this.sabreEcran.setDepth(10)
             }
 
             this.barreDeVie()
@@ -578,20 +626,22 @@
         }  
 
         entrerVehicule(player,vehicule){
-            if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
-                this.animVehicule = true
-            }
-            
-            if (this.animVehicule == true){
-                this.cameras.main.startFollow(vehicule); 
-                this.cameras.main.zoom = 2
-                this.player.x = this.vehicule.x
-                this.player.y = this.vehicule.y
-            }
-            if (vehicule.x > 500){
-                this.player.x = this.vehicule.x + 160
-                this.player.y = this.vehicule.y + 5
-                this.quitterVheicule = true
+            if (this.entrerActif == true){
+                if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
+                    this.animVehicule = true
+                }
+                
+                if (this.animVehicule == true){
+                    this.cameras.main.startFollow(vehicule); 
+                    this.cameras.main.zoom = 2
+                    this.player.x = this.vehicule.x
+                    this.player.y = this.vehicule.y
+                }
+                if (vehicule.x > 500){
+                    this.player.x = this.vehicule.x + 160
+                    this.player.y = this.vehicule.y + 5
+                    this.quitterVheicule = true
+                }
             }
         }
 
@@ -608,6 +658,42 @@
             this.pointDeVie += 2
             if (this.pointDeVie > 8){
                 this.pointDeVie = 8
+            }
+        }
+
+        ouvrirPorteGrotte(player,porteGrotteOverlap){
+            if (this.porteOuverte == false){
+                if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
+                    this.porteGrotte.setTexture('porteEntreeGrotteOuvert')
+                    this.porteGrotte.body.setSize(48,32,true)
+                    this.porteGrotte.setOffset(2,32,true)
+                    this.porteOuverte = true
+                }
+            }
+
+            if (this.porteOuverte == true){
+                if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
+                    this.porteGrotte.setTexture('porteEntreeGrotteFermée')
+                    this.porteGrotte.body.setSize(96,32,true)
+                    this.porteGrotte.setOffset(2,32,true)
+                    this.porteOuverte = false
+                }
+            }
+        }
+
+        toucherEnnemi (player, enemis) {
+            if (this.trancherActif == true){
+                this.imageMort = this.add.image(enemis.x + 15, enemis.y + 12, 'ennemiMort');
+                this.imageMort.setDepth(1)
+                enemis.destroy(); 
+            }
+        }  
+
+        perdPvEnnemi(player,ennemis){
+            if (this.invulnérable === false){
+                this.invulnérable = true;
+                this.pointDeVie -= 1;
+                player.setTint(0xff0000);
             }
         }
 
@@ -644,6 +730,34 @@
             }
         }
 
+        /////////////////////////////////////////
+        ////////DISCUSSIONS AVEC LES PNJ/////////
+        /////////////////////////////////////////
+        parlerPNJ1(player,pnj1){
+            if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
+                this.dialogue = true
+                this.textintro = this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"TexteIntro1").setScale(0.35)
+                this.textintro.setDepth(11)
+                this.textintro.setScrollFactor(0)
+                this.textintro.setInteractive()
+                this.deuxiemeDialogue = true
+            }
+
+            if (this.deuxiemeDialogue == true){
+                if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
+                    this.textintro.setTexture('TexteIntro2') 
+                    this.dernierDialogue = true
+                    this.deuxiemeDialogue = false                
+                }
+            }
+            if (this.dernierDialogue == true){
+                if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
+                    this.textintro.destroy()
+                    this.dialogue = false
+                }
+            }
+        }
+
         goInsideGrotto(player,entreeGrotte){
             if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
                 this.scene.start("sceneGrotte", {
@@ -656,6 +770,7 @@
                     quitterVheicule:this.quitterVheicule,
                     invulnérable:this.invulnérable,
                     tempsAvantRespawn:this.tempsAvantRespawn,
+                    porteOuverte:this.porteOuverte,
                 })
             }
         }
@@ -672,6 +787,7 @@
                     quitterVheicule:this.quitterVheicule,
                     invulnérable:this.invulnérable,
                     tempsAvantRespawn:this.tempsAvantRespawn,
+                    porteOuverte:this.porteOuverte,
                 })
             }
         }
@@ -716,6 +832,7 @@
             this.quitterVheicule = data.quitterVheicule,
             this.invulnérable = data.invulnérable,
             this.tempsAvantRespawn = data.tempsAvantRespawn
+            this.porteOuverte = data.porteOuverte
         }
 
         preload(){
@@ -949,16 +1066,18 @@
 
             this.physics.add.overlap( this.player,this.coeur,this.prendreHp, null,this);
 
+            this.coeur.setDepth(9)
+
             ///////////////////////////////////////////////////////////////
             /////////////////////////INTERFACE/////////////////////////////
             ///////////////////////////////////////////////////////////////
 
             //vie interface
-            this.coeurEcran = this.add.image(306, 161,'8HP').setScale(0.74)
+            this.coeurEcran = this.add.image(306, 161,'8HP').setScale(0.7)
             this.coeurEcran.setInteractive()
             this.coeurEcran.setScrollFactor(0);  
 
-            this.coeur.setDepth(10)
+            this.coeurEcran.setDepth(10)
 
             ///////////////////////////////////////////////////////////////
             /////////////////////////TOUCHES///////////////////////////////
@@ -1108,10 +1227,10 @@
 
             //sabre interface
             if (this.sabreInterface == true){
-                this.sabreEcran = this.add.image(368, 162,'sabreInterface').setScale(0.44)
+                this.sabreEcran = this.add.image(368, 162,'sabreInterface').setScale(0.4)
                 this.sabreEcran.setInteractive()
                 this.sabreEcran.setScrollFactor(0);  
-                this.coeur.setDepth(10)
+                this.sabreEcran.setDepth(10)
             }
 
             this.barreDeVie()
@@ -1126,7 +1245,7 @@
         toucherEnnemi (player, enemis) {
             if (this.trancherActif == true){
                 this.imageMort = this.add.image(enemis.x + 15, enemis.y + 12, 'ennemiMort');
-                this.imageMort.setDepth(0)
+                this.imageMort.setDepth(1)
                 enemis.destroy(); 
             }
         }  
@@ -1180,16 +1299,6 @@
             }
         }
 
-        /*enemisChangeDirection(ennemi,build){
-            if (this.ennemiDirection == 1){
-                ennemi.setVelocityY(50)
-            }
-
-            if (this.ennemiDirection == 2){
-                ennemi.setVelocityY(-50)
-            }
-        }*/
-
         goOutGrotto(player,sortieGrotte){
             if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
                 this.scene.start("sceneJeu", {
@@ -1202,6 +1311,7 @@
                     quitterVheicule:this.quitterVheicule,
                     invulnérable:this.invulnérable,
                     tempsAvantRespawn:this.tempsAvantRespawn,
+                    porteOuverte:this.porteOuverte,
                 })
             }
         }
@@ -1247,6 +1357,7 @@
             this.quitterVheicule = data.quitterVheicule,
             this.invulnérable = data.invulnérable,
             this.tempsAvantRespawn = data.tempsAvantRespawn
+            this.porteOuverte = data.porteOuverte
         }
 
         preload(){
@@ -1352,7 +1463,7 @@
             });
 
             //vie interface
-            this.coeurEcran = this.add.image(306, 161,'8HP').setScale(0.74)
+            this.coeurEcran = this.add.image(306, 161,'8HP').setScale(0.7)
             this.coeurEcran.setInteractive()
             this.coeurEcran.setScrollFactor(0);  
 
@@ -1421,7 +1532,7 @@
 
              //sabre interface
             if (this.sabreInterface == true){
-                this.sabreEcran = this.add.image(368, 162,'sabreInterface').setScale(0.44)
+                this.sabreEcran = this.add.image(368, 162,'sabreInterface').setScale(0.4)
                 this.sabreEcran.setInteractive()
                 this.sabreEcran.setScrollFactor(0);  
             }
@@ -1471,6 +1582,7 @@
                     quitterVheicule:this.quitterVheicule,
                     invulnérable:this.invulnérable,
                     tempsAvantRespawn:this.tempsAvantRespawn,
+                    porteOuverte:this.porteOuverte,
                 })
             }
         }

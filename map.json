@@ -112,16 +112,27 @@
                  "visible":true,
                  "width":0,
                  "x":176,
-                 "y":295.333333333333
+                 "y":367
                 }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":22,
+         "name":"spawnEnnemi",
+         "objects":[],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":22,
- "nextobjectid":106,
+ "nextlayerid":23,
+ "nextobjectid":109,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",
