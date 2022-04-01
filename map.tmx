@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="200" height="200" tilewidth="32" tileheight="32" infinite="0" nextlayerid="25" nextobjectid="116">
+<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="200" height="200" tilewidth="32" tileheight="32" infinite="0" nextlayerid="28" nextobjectid="155">
  <editorsettings>
   <export target="map.json" format="json"/>
  </editorsettings>
@@ -6010,4 +6010,13 @@
  <objectgroup id="24" name="reacteurs2">
   <object id="115" gid="745" x="352" y="352" width="32" height="32"/>
  </objectgroup>
+ <objectgroup id="25" name="coffreHp">
+  <object id="116" gid="776" x="640" y="448" width="32" height="32"/>
+  <object id="117" gid="776" x="736" y="480" width="32" height="32"/>
+ </objectgroup>
+ <objectgroup id="27" name="ouvrirCoffreHp">
+  <object id="133" gid="686" x="736" y="480" width="32" height="32"/>
+  <object id="154" gid="686" x="640" y="448" width="32" height="32"/>
+ </objectgroup>
+ <objectgroup id="26" name="coffreMonnaie"/>
 </map>

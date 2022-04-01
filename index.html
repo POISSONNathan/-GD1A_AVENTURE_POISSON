@@ -106,8 +106,14 @@
 
             this.load.image("coeur", "assets/objets/coeur.png");
 
+            // coffre essence
             this.load.image('coffre', 'assets/objets/coffre.png');
             this.load.spritesheet('coffreAnim1','assets/objets/coffreAnim.png',
+            { frameWidth: 48, frameHeight: 32 });
+
+            // coffre HP
+            this.load.image('coffreHp', 'assets/objets/coffreHp.png');
+            this.load.spritesheet('coffreHpAnim1','assets/objets/coffreHpAnim.png',
             { frameWidth: 48, frameHeight: 32 });
 
             // emplacement Changement De Scene
@@ -115,6 +121,9 @@
 
             //emplacement invisible pour ouvrir le coffre ou autre
             this.load.image("ouvrirCoffre", "assets/objets/emplacementChangementDeScene/changementScene.png");
+            //emplacement invisible pour ouvrir le coffre HP ou autre
+            this.load.image("ouvrirCoffreHp", "assets/objets/emplacementChangementDeScene/changementScene.png");
+
 
             this.load.image("monnaie", "assets/objets/monnaie.png");
             this.load.image("monnaieInterface", "assets/interface/monnaieInterface.png");
@@ -137,6 +146,10 @@
             this.load.image("réacteur1", "assets/objets/réacteur1.png");
             this.load.image("réacteur2", "assets/objets/réacteur2.png");
             this.load.image("reacteursInterfaces", "assets/interface/reacteursInterfaces.png");
+
+            // drop du coffre
+            this.load.image("bidonEssence", "assets/objets/bidonEssence.png");
+            this.load.image("bidonEssenceInterface", "assets/interface/bidonEssenceInterface.png");
         }
 
         
@@ -219,9 +232,12 @@
             this.compteurInvunlerable = 150
             this.compteurTempsAvantRespawn = 300
             this.compteurAnimCoffre = 30
+            this.compteurDropCoffre = 150;
             this.entrerActif = true
             this.entreeBatiment = false
             this.coffreAnimStop = false
+            this.dropCoffreActif = false
+            this.dropCoffreInterface = false
 
             this.physics.add.collider(this.player, build);
             this.physics.add.collider(this.vehicule, build);
@@ -451,9 +467,11 @@
 
                 this.physics.add.collider(this.enemis,build,);
 
-            // placement du coffre
+            ////////////////////////////////////////////////////////////
+            // placement du coffre Essence
+            ////////////////////////////////////////////////////////////
             this.coffre = this.physics.add.image(500, 500,'coffre')
-            //placer collision coffre
+            //placer collision coffre Essence
             this.ouvrirCoffre1 = this.physics.add.image(this.coffre.x, this.coffre.y,'ouvrirCoffre')
             this.ouvrirCoffre1.setPushable(false)
             this.physics.add.collider(this.player,this.ouvrirCoffre1)
@@ -461,6 +479,47 @@
             this.coffre.body.setSize(60,60)
 
             this.physics.add.overlap( this.player, this.coffre, this.ouvrirCoffre, null,this);
+
+
+
+
+
+
+
+            ////////////////////////////////////////////////////////////
+            // placement du coffre Hp
+            ////////////////////////////////////////////////////////////
+
+            this.coffreHp = this.physics.add.group({
+            });
+                    
+            carte.getObjectLayer('coffreHp').objects.forEach((coffreHp) => {
+            this.coffreHp.create(coffreHp.x, coffreHp.y, 'coffreHp').setOrigin(0);
+            });
+
+            this.ouvrirCoffreHp = this.physics.add.group({
+            });
+                    
+            carte.getObjectLayer('ouvrirCoffreHp').objects.forEach((ouvrirCoffreHp) => {
+            this.ouvrirCoffreHp.create(ouvrirCoffreHp.x, ouvrirCoffreHp.y, 'ouvrirCoffreHp').setOrigin(0);
+            });
+
+
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             // réacteurs 2 à récupérer        
             carte.getObjectLayer('reacteurs2').objects.forEach((reacteurs2) => {
@@ -750,6 +809,23 @@
                 this.reacteur1Ecran.setDepth(10)
             }
 
+            // timer pour prendre le drop du coffre
+            if(this.dropCoffreActif == true){
+                this.compteurDropCoffre -=1 ;
+                if(this.compteurDropCoffre == 0){
+                    this.compteurDropCoffre = 150;
+                    this.physics.add.overlap(this.playerCollision2,this.dropCoffre,this.prendreDropCoffre,null,this)
+                    this.dropCoffreActif = false ;
+                }
+            }
+
+            // drop du coffre interface
+            if (this.dropCoffreInterface == true){
+                this.bidonEssenceInterface = this.add.image(412, 162,'bidonEssenceInterface').setScale(0.4)
+                this.bidonEssenceInterface.setScrollFactor(0);  
+                this.bidonEssenceInterface.setDepth(10)
+            }
+
             this.barreDeVie()
         }
 
@@ -759,7 +835,15 @@
                 this.coffreOuvert = this.physics.add.sprite(coffre.x,coffre.y,'coffreAnim1')
                 this.coffreOuvert.anims.play("coffreAnim", true);
                 this.coffreAnimStop = true
+
+                this.dropCoffre = this.physics.add.image(this.coffreOuvert.x - 16, this.coffreOuvert.y - 35 , 'bidonEssence').setScale(0.9).setOrigin(0);
+                this.dropCoffreActif = true
             }
+        }
+
+        prendreDropCoffre(player,dropCoffre){
+            dropCoffre.destroy()
+            this.dropCoffreInterface = true
         }
 
         collectSabre(player,sabre){
@@ -771,7 +855,7 @@
             if (this.trancherActif == true){
                 this.imageMort = this.add.image(enemis.x + 15, enemis.y + 12, 'ennemiMort');
                 this.imageMort.setDepth(0)
-                enemis.destroy(); 
+                enemis.destroy();
             }
         }  
 
@@ -893,13 +977,11 @@
                 this.textintro.setInteractive()
                 this.deuxiemeDialogue = true
             }
-
             if (this.deuxiemeDialogue == true){
                 if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
                     this.textintro.setTexture('TexteIntro2') 
                     this.dernierDialogue = true
-                    this.deuxiemeDialogue = false  
-                                  
+                    this.deuxiemeDialogue = false              
                 }
             }
             if (this.dernierDialogue == true){
@@ -1335,7 +1417,7 @@
                 this.moveDown = ( this.cursors.down.isDown || this.keys.s.isDown ) 
                 
 
-                const speed = 400
+                const speed = 100
 
                     if (this.moveLeft) {
                         this.player.setVelocityX(-speed)
@@ -1427,13 +1509,13 @@
         
             if (this.test > 0){
                 if (this.monnaieTest.x > this.player.x)
-                {this.monnaieTest.setVelocityX(-50)}
+                {this.monnaieTest.setVelocityX(-120)}
                 if (this.monnaieTest.x < this.player.x)
-                {this.monnaieTest.setVelocityX(50)}
+                {this.monnaieTest.setVelocityX(120)}
                 if (this.monnaieTest.y < this.player.y)
-                {this.monnaieTest.setVelocityY(50)}
+                {this.monnaieTest.setVelocityY(120)}
                 if (this.monnaieTest.y > this.player.y)
-                {this.monnaieTest.setVelocityY(-50)}
+                {this.monnaieTest.setVelocityY(-120)}
             } 
 
             if ( this.tempsAttaque == false) {   
