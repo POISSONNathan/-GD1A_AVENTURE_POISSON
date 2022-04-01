@@ -20,7 +20,7 @@
         preload(){}
         create(){}
         update(){
-            this.scene.start("sceneJeu", {
+            this.scene.start("sceneGrotte", {
                 pointDeVie:4,
                 sabreInterface:false,
                 dialogue:false,
@@ -116,13 +116,22 @@
             this.load.spritesheet('coffreHpAnim1','assets/objets/coffreHpAnim.png',
             { frameWidth: 48, frameHeight: 32 });
 
+            // coffre HP
+            this.load.image('coffreMonnaie', 'assets/objets/coffreMonnaie.png');
+            this.load.spritesheet('coffreMonnaieAnim1','assets/objets/coffreMonnaieAnim.png',
+            { frameWidth: 48, frameHeight: 32 });
+
             // emplacement Changement De Scene
             this.load.image("changementScene", "assets/objets/emplacementChangementDeScene/changementScene.png");
+
+            // même si je sais que load la mm images avec un nom différent ne change rien je trouve ca plus clair dans le code
 
             //emplacement invisible pour ouvrir le coffre ou autre
             this.load.image("ouvrirCoffre", "assets/objets/emplacementChangementDeScene/changementScene.png");
             //emplacement invisible pour ouvrir le coffre HP ou autre
             this.load.image("ouvrirCoffreHp", "assets/objets/emplacementChangementDeScene/changementScene.png");
+            //emplacement invisible pour ouvrir le coffre Monnaie ou autre
+            this.load.image("ouvrirCoffreMonnaie", "assets/objets/emplacementChangementDeScene/changementScene.png");
  
 
             this.load.image("monnaie", "assets/objets/monnaie.png");
@@ -231,6 +240,7 @@
             this.compteurAnimCoffre = 40
             this.compteurDropCoffre = 150;
             this.compteurDropCoffreHp = 150;
+            this.compteurDropCoffreMonnaie = 150;
             this.entrerActif = true
             this.entreeBatiment = false
             this.coffreAnimStop = false
@@ -408,6 +418,14 @@
                 repeat: -1
             });
 
+            // animation d'ouverture du coffre Monnaie
+            this.anims.create({
+                key: 'coffreMonnaieAnim',
+                frames: this.anims.generateFrameNumbers('coffreMonnaieAnim1', {start:0,end:1}),
+                frameRate: 5,
+                repeat: -1
+            });
+
             // apparition de la fonction qui permet au joueur de rentrer dans le véhicule
             this.physics.add.overlap(this.player, this.vehicule, this.entrerVehicule, null,this);
 
@@ -476,6 +494,7 @@
             ////////////////////////////////////////////////////////////
             // placement du coffre Essence
             ////////////////////////////////////////////////////////////
+
             this.coffre = this.physics.add.image(500, 500,'coffre')
             //placer collision coffre Essence
             this.ouvrirCoffre1 = this.physics.add.image(this.coffre.x, this.coffre.y,'ouvrirCoffre')
@@ -499,14 +518,41 @@
             carte.getObjectLayer('coffreHp').objects.forEach((coffreHp) => {
             this.coffreHpOverlap = this.coffreHp.create(coffreHp.x, coffreHp.y, 'coffreHp').setOrigin(0);
 
-            this.ouvrirCoffreHp1.create(coffreHp.x, coffreHp.y, 'ouvrirCoffreHp').setOrigin(0);
+            this.coffreHpHitbox = this.ouvrirCoffreHp1.create(coffreHp.x, coffreHp.y, 'ouvrirCoffreHp').setOrigin(0);
+            this.coffreHpHitbox.body.setSize(32,28)
+            this.coffreHpHitbox.setOffset(0,4)
             this.coffreHpOverlap.body.setSize(60, 60);
             });
 
             this.physics.add.collider(this.player,this.ouvrirCoffreHp1);
             this.physics.add.overlap( this.player, this.coffreHp, this.ouvrirCoffreHp, null,this)
 
-            // réacteurs 2 à récupérer        
+            ////////////////////////////////////////////////////////////
+            // placement du coffre Monnaie
+            ////////////////////////////////////////////////////////////
+
+            this.coffreMonnaie = this.physics.add.group({
+            });      
+            this.ouvrircoffreMonnaie1 = this.physics.add.group({
+                immovable: true
+            });
+
+            carte.getObjectLayer('coffreMonnaie').objects.forEach((coffreMonnaie) => {
+            this.coffreMonnaieOverlap = this.coffreMonnaie.create(coffreMonnaie.x, coffreMonnaie.y, 'coffreMonnaie').setOrigin(0);
+
+            this.coffreMonnaieHitbox = this.ouvrircoffreMonnaie1.create(coffreMonnaie.x, coffreMonnaie.y, 'ouvrirCoffreMonnaie').setOrigin(0);
+            this.coffreMonnaieHitbox.body.setSize(32,28)
+            this.coffreMonnaieHitbox.setOffset(0,4)
+            this.coffreMonnaieOverlap.body.setSize(60, 60);
+            });
+
+            this.physics.add.collider(this.player,this.ouvrircoffreMonnaie1);
+            this.physics.add.overlap( this.player, this.coffreMonnaie, this.ouvrircoffreMonnaie, null,this)
+
+            ////////////////////////////////////////////////////////////        
+            // réacteurs 2 à récupérer
+            ////////////////////////////////////////////////////////////  
+
             carte.getObjectLayer('reacteurs2').objects.forEach((reacteurs2) => {
             this.reacteurs2 = this.physics.add.image(reacteurs2.x, reacteurs2.y, 'réacteur2').setScale(0.6).setOrigin(0);
             });
@@ -812,6 +858,19 @@
                 }
             }
 
+            // timer pour prendre le drop du coffre Monnaie
+            if(this.dropCoffreMonnaieActif == true){
+                this.compteurDropCoffreMonnaie -=1 ;
+                if(this.compteurDropCoffreMonnaie == 120){
+                    this.dropCoffreMonnaie = this.physics.add.image(this.coffreOuverMonnaie.x - 8, this.coffreOuverMonnaie.y - 35 , 'monnaie').setScale(0.6).setOrigin(0);
+                }
+                if(this.compteurDropCoffreMonnaie == 0){
+                    this.compteurDropCoffreMonnaie = 150;
+                    this.physics.add.overlap(this.playerCollision2,this.dropCoffreMonnaie,this.prendreMonnaie,null,this)
+                    this.dropCoffreMonnaieActif = false ;
+                }
+            }
+
             // stop animation des coffres
             if(this.coffreAnimStop == true){
                 this.compteurAnimCoffre -=1 ;
@@ -828,6 +887,15 @@
                     this.coffreOuvertHp.anims.stop("coffreHpAnim", false)
                     this.compteurAnimCoffre = 40
                     this.coffreAnimStopHp = false
+                }
+            }
+
+            if(this.coffreAnimStopMonnaie == true){
+                this.compteurAnimCoffre -=1 ;
+                if(this.compteurAnimCoffre == 0){
+                    this.coffreOuverMonnaie.anims.stop("coffreMonnaieAnim", false)
+                    this.compteurAnimCoffre = 40
+                    this.coffreAnimStopMonnaie = false
                 }
             }
 
@@ -855,9 +923,22 @@
             if (Phaser.Input.Keyboard.JustDown(this.toucheF)) {
                 coffreHp.destroy()
                 this.coffreOuvertHp = this.physics.add.sprite(coffreHp.x + 15,coffreHp.y + 16,'coffreHpAnim1')
+                this.coffreOuvertHp.body.setSize(32,28)
+                this.coffreOuvertHp.setOffset(9,4)
                 this.coffreOuvertHp.anims.play("coffreHpAnim", true);
                 this.coffreAnimStopHp = true
                 this.dropCoffreHpActif = true
+            }
+        }
+        ouvrircoffreMonnaie(player,coffreMonnaie){
+            if (Phaser.Input.Keyboard.JustDown(this.toucheF)) {
+                coffreMonnaie.destroy()
+                this.coffreOuverMonnaie = this.physics.add.sprite(coffreMonnaie.x + 15,coffreMonnaie.y + 16,'coffreMonnaieAnim1')
+                this.coffreOuverMonnaie.body.setSize(32,28)
+                this.coffreOuverMonnaie.setOffset(9,4)
+                this.coffreOuverMonnaie.anims.play("coffreMonnaieAnim", true);
+                this.coffreAnimStopMonnaie = true
+                this.dropCoffreMonnaieActif = true
             }
         }
 
@@ -1437,7 +1518,7 @@
                 this.moveDown = ( this.cursors.down.isDown || this.keys.s.isDown ) 
                 
 
-                const speed = 100
+                const speed = 200
 
                     if (this.moveLeft) {
                         this.player.setVelocityX(-speed)
@@ -1527,16 +1608,27 @@
         
 
         
-            if (this.test > 0){
+                if (this.test > 0){
                 if (this.monnaieTest.x > this.player.x)
-                {this.monnaieTest.setVelocityX(-120)}
+                {this.monnaieTest.setVelocityX(-80)}
                 if (this.monnaieTest.x < this.player.x)
-                {this.monnaieTest.setVelocityX(120)}
+                {this.monnaieTest.setVelocityX(80)}
                 if (this.monnaieTest.y < this.player.y)
-                {this.monnaieTest.setVelocityY(120)}
+                {this.monnaieTest.setVelocityY(80)}
                 if (this.monnaieTest.y > this.player.y)
-                {this.monnaieTest.setVelocityY(-120)}
-            } 
+                {this.monnaieTest.setVelocityY(-80)}
+                }
+
+                if (this.enemis.x > this.player.x)
+                {this.enemis.setVelocityX(-80)}
+                if (this.enemis.x < this.player.x)
+                {this.enemis.setVelocityX(80)}
+                if (this.enemis.y < this.player.y)
+                {this.enemis.setVelocityY(80)}
+                if (this.enemis.y > this.player.y)
+                {this.enemis.setVelocityY(-80)}
+        
+            
 
             if ( this.tempsAttaque == false) {   
                 this.trancherActif = false

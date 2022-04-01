@@ -111,8 +111,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":540.5,
-                 "y":432.5
+                 "x":717,
+                 "y":376.5
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -238,68 +238,33 @@
         }, 
         {
          "draworder":"topdown",
-         "id":27,
-         "name":"ouvrirCoffreHp",
-         "objects":[
-                {
-                 "gid":686,
-                 "height":32,
-                 "id":133,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":736,
-                 "y":480
-                }, 
-                {
-                 "gid":686,
-                 "height":32,
-                 "id":154,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":640,
-                 "y":448
-                }, 
-                {
-                 "gid":572,
-                 "height":32,
-                 "id":155,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":640,
-                 "y":448
-                }, 
-                {
-                 "gid":572,
-                 "height":32,
-                 "id":156,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":736,
-                 "y":480
-                }],
-         "opacity":1,
-         "type":"objectgroup",
-         "visible":true,
-         "x":0,
-         "y":0
-        }, 
-        {
-         "draworder":"topdown",
          "id":26,
          "name":"coffreMonnaie",
-         "objects":[],
+         "objects":[
+                {
+                 "gid":807,
+                 "height":32,
+                 "id":158,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":640,
+                 "y":352
+                }, 
+                {
+                 "gid":807,
+                 "height":32,
+                 "id":159,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":768,
+                 "y":352
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -307,7 +272,7 @@
          "y":0
         }],
  "nextlayerid":28,
- "nextobjectid":158,
+ "nextobjectid":160,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",
