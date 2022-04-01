@@ -20,9 +20,9 @@
         preload(){}
         create(){}
         update(){
-            this.scene.start("sceneJeu", {
-                pointDeVie:8,
-                sabreInterface:true,
+            this.scene.start("sceneGrotte", {
+                pointDeVie:4,
+                sabreInterface:false,
                 dialogue:false,
                 trancherActif:false,
                 pouvoirAttaquer:false,
@@ -31,6 +31,12 @@
                 invulnérable:false,
                 tempsAvantRespawn:false,
                 porteOuverte:false,
+                entreeBatiment:false,
+                carteMagnetiqueInterface: false,
+                solde:0,
+                reacteur1Pris:false,
+                reacteur2Pris:false,
+                reacteursBackgroundInterface:false
             })
         }
 
@@ -50,8 +56,16 @@
             this.animVehicule = data.animVehicule,
             this.quitterVheicule = data.quitterVheicule,
             this.invulnérable = data.invulnérable,
-            this.tempsAvantRespawn = data.tempsAvantRespawn
-            this.porteOuverte = data.porteOuverte
+            this.tempsAvantRespawn = data.tempsAvantRespawn,
+            this.porteOuverte = data.porteOuverte,
+            this.entreeBatiment = data.entreeBatiment,
+            this.spawnXSortieScene = data.spawnXSortieScene,
+            this.spawnYSortieScene = data.spawnYSortieScene,
+            this.carteMagnetiqueInterface = data.carteMagnetiqueInterface,
+            this.solde = data.solde,
+            this.reacteur1Pris = data.reacteur1Pris,
+            this.reacteur2Pris = data.reacteur2Pris,
+            this.reacteursBackgroundInterface = data.reacteursBackgroundInterface
         }
 
         preload(){
@@ -78,31 +92,51 @@
             this.load.image("pnj1", "assets/PNJ1.png");
             this.load.image("sabre", "assets/objets/sabre.png");
 
+            //sabre interface
             this.load.image("sabreInterface", "assets/interface/sabreInterface.png");
+
+            // carte magnétique interface
+            this.load.image("carteMagnetiqueInterface", "assets/interface/carteMagnetiqueInterface.png");
+
+            // hitbox perso différente de celle avec laquelle il est en collision avec les builds
+            this.load.image("hitbox", "assets/objets/emplacementChangementDeScene/changementScene.png");
 
             this.load.image("porteEntreeGrotteFermée", "assets/objets/porteEntreeGrotteFermée.png");
             this.load.image("porteEntreeGrotteOuvert", "assets/objets/porteEntreeGrotteOuvert.png");
 
             this.load.image("coeur", "assets/objets/coeur.png");
+
             this.load.image('coffre', 'assets/objets/coffre.png');
-            this.load.image('coffreOuvert', 'assets/objets/coffreOuvert.png');
+            this.load.spritesheet('coffreAnim1','assets/objets/coffreAnim.png',
+            { frameWidth: 48, frameHeight: 32 });
+
             // emplacement Changement De Scene
             this.load.image("changementScene", "assets/objets/emplacementChangementDeScene/changementScene.png");
 
-            // fram barre de vie
-            this.load.image("8HP", "assets/interface/vie/coeurInterface8HP.png");
-            this.load.image("7HP", "assets/interface/vie/coeurInterface7HP.png");
-            this.load.image("6HP", "assets/interface/vie/coeurInterface6HP.png");
-            this.load.image("5HP", "assets/interface/vie/coeurInterface5HP.png");
+            //emplacement invisible pour ouvrir le coffre ou autre
+            this.load.image("ouvrirCoffre", "assets/objets/emplacementChangementDeScene/changementScene.png");
+
+            this.load.image("monnaie", "assets/objets/monnaie.png");
+            this.load.image("monnaieInterface", "assets/interface/monnaieInterface.png");
+
+            // frame barre de vie
             this.load.image("4HP", "assets/interface/vie/coeurInterface4HP.png");
             this.load.image("3HP", "assets/interface/vie/coeurInterface3HP.png");
             this.load.image("2HP", "assets/interface/vie/coeurInterface2HP.png");
             this.load.image("1HP", "assets/interface/vie/coeurInterface1HP.png");
             this.load.image("0HP", "assets/interface/vie/coeurInterface0HP.png");
 
+            // reacteurs
+            this.load.image("0HP", "assets/interface/vie/coeurInterface0HP.png");
+
             // textes PNJ
             this.load.image("TexteIntro1", "assets/interface/texte/TexteIntro 1.png");
             this.load.image("TexteIntro2", "assets/interface/texte/TexteIntro 2.png");
+
+            // reacteurs
+            this.load.image("réacteur1", "assets/objets/réacteur1.png");
+            this.load.image("réacteur2", "assets/objets/réacteur2.png");
+            this.load.image("reacteursInterfaces", "assets/interface/reacteursInterfaces.png");
         }
 
         
@@ -144,13 +178,26 @@
             this.entreeMaisonBlanche.body.setSize(90,40,true)
             this.entreeMaisonBlanche.setOffset(-31,100)
 
+            this.entreeMaison1 = this.physics.add.image(540,415, 'changementScene');
+            this.entreeMaison1.body.setSize(90,40,true)
+
             ///////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////
 
-            carte.getObjectLayer('spawnJoueur').objects.forEach((spawnJoueur) => {
-            this.player = this.physics.add.sprite(spawnJoueur.x, spawnJoueur.y, 'perso').setOrigin(0);
+            if (this.entreeBatiment == true){
+                this.player = this.physics.add.sprite(this.spawnXSortieScene, this.spawnYSortieScene, 'perso').setOrigin(0);
+            }
+
+            else{
+                carte.getObjectLayer('spawnJoueur').objects.forEach((spawnJoueur) => {
+                this.player = this.physics.add.sprite(spawnJoueur.x, spawnJoueur.y, 'perso').setOrigin(0);
             });
+            }
+
+            this.playerCollision2 = this.physics.add.image(50,50,"hitbox")
+            this.playerCollision2.body.setSize(32,22)
+            this.playerCollision2.setOffset(16,26)
             
             this.player.body.setSize(24,6,true)
             this.player.setOffset(4, 26)
@@ -171,7 +218,10 @@
             this.compteurAttaqueTemps = 60
             this.compteurInvunlerable = 150
             this.compteurTempsAvantRespawn = 300
+            this.compteurAnimCoffre = 30
             this.entrerActif = true
+            this.entreeBatiment = false
+            this.coffreAnimStop = false
 
             this.physics.add.collider(this.player, build);
             this.physics.add.collider(this.vehicule, build);
@@ -185,6 +235,9 @@
 
             // fonction pour entre la maison blanche
             this.physics.add.overlap(this.player, this.entreeMaisonBlanche, this.goInsideWhiteHouse, null, this)
+
+            // fonction pour entre la 1e maison
+            this.physics.add.overlap(this.player, this.entreeMaison1, this.goInside1stHouse, null, this)
 
             this.physics.add.collider(this.player, decor);
             decor.setCollisionByProperty({ estSolide: true });
@@ -270,7 +323,7 @@
                 frameRate: 12,
                 repeat: -1
             });
-
+            
             // animation vehicule
             this.anims.create({
                 key: 'animVehiculeBack',
@@ -325,6 +378,14 @@
                 repeat: -1
             });
 
+            // animation d'ouverture du coffre
+            this.anims.create({
+                key: 'coffreAnim',
+                frames: this.anims.generateFrameNumbers('coffreAnim1', {start:0,end:1}),
+                frameRate: 5,
+                repeat: -1
+            });
+
             // apparition de la fonction qui permet au joueur de rentrer dans le véhicule
             this.physics.add.overlap(this.player, this.vehicule, this.entrerVehicule, null,this);
 
@@ -336,7 +397,17 @@
             this.coeur.create(coeur.x, coeur.y, 'coeur').setOrigin(0);
             });
 
-            this.physics.add.overlap( this.player, this.coeur,  this.prendreHp, null,this);
+            this.physics.add.overlap( this.playerCollision2, this.coeur,  this.prendreHp, null,this);
+
+            // monnaie à récupérer
+            this.monnaie = this.physics.add.group({
+            });
+                    
+            carte.getObjectLayer('monnaie').objects.forEach((monnaie) => {
+            this.monnaie.create(monnaie.x, monnaie.y, 'monnaie').setScale(0.6).setOrigin(0);
+            });
+
+            this.physics.add.overlap( this.playerCollision2, this.monnaie,  this.prendreMonnaie, null,this);
 
             // porte fermée à l'entrée de la grotte
             if (this.porteOuverte == false){
@@ -379,6 +450,25 @@
                 this.physics.add.overlap( this.player, this.enemis,  this.toucherEnnemi, null,this);
 
                 this.physics.add.collider(this.enemis,build,);
+
+            // placement du coffre
+            this.coffre = this.physics.add.image(500, 500,'coffre')
+            //placer collision coffre
+            this.ouvrirCoffre1 = this.physics.add.image(this.coffre.x, this.coffre.y,'ouvrirCoffre')
+            this.ouvrirCoffre1.setPushable(false)
+            this.physics.add.collider(this.player,this.ouvrirCoffre1)
+
+            this.coffre.body.setSize(60,60)
+
+            this.physics.add.overlap( this.player, this.coffre, this.ouvrirCoffre, null,this);
+
+            // réacteurs 2 à récupérer        
+            carte.getObjectLayer('reacteurs2').objects.forEach((reacteurs2) => {
+            this.reacteurs2 = this.physics.add.image(reacteurs2.x, reacteurs2.y, 'réacteur2').setScale(0.6).setOrigin(0);
+            });
+
+            this.physics.add.overlap( this.playerCollision2, this.reacteurs2, this.prendreReacteur2, null,this);
+
                 
 
             ///////////////////////////////////////////////////////////////
@@ -386,11 +476,23 @@
             ///////////////////////////////////////////////////////////////
 
             //vie interface
-            this.coeurEcran = this.add.image(306, 161,'8HP').setScale(0.7)
+            this.coeurEcran = this.add.image(306, 161,'4HP').setScale(0.7)
             this.coeurEcran.setInteractive()
             this.coeurEcran.setScrollFactor(0);  
 
             this.coeurEcran.setDepth(10)
+
+            // monnaie interface
+            this.monnaieEcran = this.add.image(275, 185,'monnaieInterface').setScale(0.5);
+            this.monnaieEcran.setDepth(100)
+            this.monnaieEcran.setScrollFactor(0);  
+            this.monnaieTexte = this.add.text(288, 174,this.solde, {
+                font: '30px Poppins semibold',
+                fill: "#0022BD" 
+            });
+            this.monnaieTexte.setDepth(100)
+            this.monnaieTexte.setScale(0.7);
+            this.monnaieTexte.setScrollFactor(0);
 
             ///////////////////////////////////////////////////////////////
             //////////////////////////////PNJ//////////////////////////////
@@ -420,6 +522,9 @@
         }
 
         update(){
+            this.playerCollision2.x = this.player.x
+            this.playerCollision2.y = this.player.y
+
             if (this.dialogue ==false){
 
                 this.moveUp = ( this.cursors.up.isDown || this.keys.z.isDown )  
@@ -428,7 +533,7 @@
                 this.moveDown = ( this.cursors.down.isDown || this.keys.s.isDown ) 
                 
 
-                const speed = 100
+                const speed = 400
 
                     if (this.moveLeft) {
                         this.player.setVelocityX(-speed)
@@ -578,6 +683,7 @@
                 this.cameras.main.startFollow(this.player); 
                 this.cameras.main.zoom = 3
                 this.vehicule.setVelocityX(0)
+                this.vehicule.setVelocityY(0)
                 this.animVehicule = false
                 this.physics.add.collider(this.player, this.vehicule);
                 this.vehicule.setPushable(false)
@@ -603,13 +709,57 @@
 
             //sabre interface
             if (this.sabreInterface == true){
-                this.sabreEcran = this.add.image(368, 162,'sabreInterface').setScale(0.4)
+                this.sabreEcran = this.add.image(390, 162,'sabreInterface').setScale(0.4)
                 this.sabreEcran.setInteractive()
                 this.sabreEcran.setScrollFactor(0);  
                 this.sabreEcran.setDepth(10)
             }
+            
+            //carte magnétique interface
+            if (this.carteMagnetiqueInterface == true){
+                this.carteMagnetiqueEcran = this.add.image(368, 162,'carteMagnetiqueInterface').setScale(0.4)
+                this.carteMagnetiqueEcran.setScrollFactor(0);  
+                this.carteMagnetiqueEcran.setDepth(10)
+            }
+
+            // stop animation du coffre
+            if(this.coffreAnimStop == true){
+                this.compteurAnimCoffre -=1 ;
+                if(this.compteurAnimCoffre == 0){
+                    this.coffreOuvert.anims.stop("coffreAnim", false)
+                }
+            }
+
+            // affichage background réacteurs sur l'interface
+            if (this.reacteursBackgroundInterface == true){
+                this.reacteursEcranBackground = this.add.image(476, 170,'reacteursInterfaces').setScale(0.5)
+                this.reacteursEcranBackground.setScrollFactor(0);  
+                this.reacteursEcranBackground.setDepth(10)
+            }
+            // réacteur 1 interface
+            if (this.reacteur1Pris == true){
+                this.reacteur1Ecran = this.add.image(464, 174,'réacteur1').setScale(0.4)
+                this.reacteur1Ecran.setInteractive()
+                this.reacteur1Ecran.setScrollFactor(0);  
+                this.reacteur1Ecran.setDepth(10)
+            }
+            // réacteur 2 interface
+            if (this.reacteur2Pris == true){
+                this.reacteur1Ecran = this.add.image(488, 174,'réacteur2').setScale(0.4)
+                this.reacteur1Ecran.setScrollFactor(0);  
+                this.reacteur1Ecran.setDepth(10)
+            }
 
             this.barreDeVie()
+        }
+
+        ouvrirCoffre(player,coffre){
+            if (Phaser.Input.Keyboard.JustDown(this.toucheF)) {
+                coffre.destroy()
+                this.coffreOuvert = this.physics.add.sprite(coffre.x,coffre.y,'coffreAnim1')
+                this.coffreOuvert.anims.play("coffreAnim", true);
+                this.coffreAnimStop = true
+            }
         }
 
         collectSabre(player,sabre){
@@ -655,28 +805,36 @@
 
         prendreHp (player,coeur){
             coeur.destroy(); 
-            this.pointDeVie += 2
-            if (this.pointDeVie > 8){
-                this.pointDeVie = 8
+            this.pointDeVie += 1
+            if (this.pointDeVie > 4){
+                this.pointDeVie = 4
             }
         }
 
-        ouvrirPorteGrotte(player,porteGrotteOverlap){
-            if (this.porteOuverte == false){
-                if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
-                    this.porteGrotte.setTexture('porteEntreeGrotteOuvert')
-                    this.porteGrotte.body.setSize(48,32,true)
-                    this.porteGrotte.setOffset(2,32,true)
-                    this.porteOuverte = true
-                }
-            }
+        prendreMonnaie(player,monnaie){
+            monnaie.destroy(); 
+            this.solde += 1
+            this.monnaieTexte.setText(this.solde)
+        }
 
-            if (this.porteOuverte == true){
-                if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
-                    this.porteGrotte.setTexture('porteEntreeGrotteFermée')
-                    this.porteGrotte.body.setSize(96,32,true)
-                    this.porteGrotte.setOffset(2,32,true)
-                    this.porteOuverte = false
+        ouvrirPorteGrotte(player,porteGrotteOverlap){
+            if (this.carteMagnetiqueInterface == true){
+                if (this.porteOuverte == false){
+                    if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
+                        this.porteGrotte.setTexture('porteEntreeGrotteOuvert')
+                        this.porteGrotte.body.setSize(48,32,true)
+                        this.porteGrotte.setOffset(2,32,true)
+                        this.porteOuverte = true
+                    }
+                }
+
+                if (this.porteOuverte == true){
+                    if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
+                        this.porteGrotte.setTexture('porteEntreeGrotteFermée')
+                        this.porteGrotte.body.setSize(96,32,true)
+                        this.porteGrotte.setOffset(2,32,true)
+                        this.porteOuverte = false
+                    }
                 }
             }
         }
@@ -697,19 +855,12 @@
             }
         }
 
+        prendreReacteur2(player,reacteur2){
+            reacteur2.destroy()
+            this.reacteur2Pris = true
+        }
+
         barreDeVie (){
-            if (this.pointDeVie == 8){
-                this.coeurEcran.setTexture('8HP')
-            }
-            if (this.pointDeVie == 7){
-                this.coeurEcran.setTexture('7HP')
-            }
-            if (this.pointDeVie == 6){
-                this.coeurEcran.setTexture('6HP')
-            }
-            if (this.pointDeVie == 5){
-                this.coeurEcran.setTexture('5HP')
-            }
             if (this.pointDeVie == 4){
                 this.coeurEcran.setTexture('4HP')
             }
@@ -747,7 +898,8 @@
                 if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
                     this.textintro.setTexture('TexteIntro2') 
                     this.dernierDialogue = true
-                    this.deuxiemeDialogue = false                
+                    this.deuxiemeDialogue = false  
+                                  
                 }
             }
             if (this.dernierDialogue == true){
@@ -771,6 +923,12 @@
                     invulnérable:this.invulnérable,
                     tempsAvantRespawn:this.tempsAvantRespawn,
                     porteOuverte:this.porteOuverte,
+                    entreeBatiment: this.entreeBatiment,
+                    carteMagnetiqueInterface: this.carteMagnetiqueInterface,
+                    solde: this.solde,
+                    reacteur1Pris: this.reacteur1Pris,
+                    reacteur2Pris:this.reacteur2Pris,
+                    reacteursBackgroundInterface: this.reacteursBackgroundInterface
                 })
             }
         }
@@ -788,6 +946,35 @@
                     invulnérable:this.invulnérable,
                     tempsAvantRespawn:this.tempsAvantRespawn,
                     porteOuverte:this.porteOuverte,
+                    entreeBatiment: this.entreeBatiment,
+                    carteMagnetiqueInterface: this.carteMagnetiqueInterface,
+                    solde: this.solde,
+                    reacteur1Pris: this.reacteur1Pris,
+                    reacteur2Pris:this.reacteur2Pris,
+                    reacteursBackgroundInterface: this.reacteursBackgroundInterface
+                })
+            }
+        }
+
+        goInside1stHouse(player,entreeMaison1){
+            if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
+                this.scene.start("sceneMaison1", {
+                    pointDeVie:this.pointDeVie,
+                    sabreInterface:this.sabreInterface,
+                    dialogue:this.dialogue,
+                    trancherActif:this.trancherActif,
+                    pouvoirAttaquer:this.pouvoirAttaquer,
+                    animVehicule:this.animVehicule,
+                    quitterVheicule:this.quitterVheicule,
+                    invulnérable:this.invulnérable,
+                    tempsAvantRespawn:this.tempsAvantRespawn,
+                    porteOuverte:this.porteOuverte,
+                    entreeBatiment: this.entreeBatiment,
+                    carteMagnetiqueInterface: this.carteMagnetiqueInterface,
+                    solde: this.solde,
+                    reacteur1Pris: this.reacteur1Pris,
+                    reacteur2Pris:this.reacteur2Pris,
+                    reacteursBackgroundInterface: this.reacteursBackgroundInterface
                 })
             }
         }
@@ -831,8 +1018,14 @@
             this.animVehicule = data.animVehicule,
             this.quitterVheicule = data.quitterVheicule,
             this.invulnérable = data.invulnérable,
-            this.tempsAvantRespawn = data.tempsAvantRespawn
-            this.porteOuverte = data.porteOuverte
+            this.tempsAvantRespawn = data.tempsAvantRespawn,
+            this.porteOuverte = data.porteOuverte,
+            this.entreeBatiment = data.entreeBatiment,
+            this.carteMagnetiqueInterface = data.carteMagnetiqueInterface,
+            this.solde = data.solde,
+            this.reacteur1Pris = data.reacteur1Pris,
+            this.reacteur2Pris = data.reacteur2Pris,
+            this.reacteursBackgroundInterface = data.reacteursBackgroundInterface
         }
 
         preload(){
@@ -859,24 +1052,35 @@
             this.load.image("sabre", "assets/objets/sabre.png");
             this.load.image("sabreInterface", "assets/interface/sabreInterface.png");
 
+            // carte magnétique interface
+            this.load.image("carteMagnetiqueInterface", "assets/interface/carteMagnetiqueInterface.png");
+
+            // hitbox perso différente de celle avec laquelle il est en collision avec les builds
+            this.load.image("hitbox", "assets/objets/emplacementChangementDeScene/changementScene.png");
+
             this.load.image("ennemiMort", "assets/ennemiMort.png");
             
             // emplacement Changement De Scene
             this.load.image("changementScene", "assets/objets/emplacementChangementDeScene/changementScene.png");
 
-            // fram barre de vie
-            this.load.image("8HP", "assets/interface/vie/coeurInterface8HP.png");
-            this.load.image("7HP", "assets/interface/vie/coeurInterface7HP.png");
-            this.load.image("6HP", "assets/interface/vie/coeurInterface6HP.png");
-            this.load.image("5HP", "assets/interface/vie/coeurInterface5HP.png");
+            this.load.image("monnaie", "assets/objets/monnaie.png");
+            this.load.image("monnaieInterface", "assets/interface/monnaieInterface.png");
+
+            // frame barre de vie
             this.load.image("4HP", "assets/interface/vie/coeurInterface4HP.png");
             this.load.image("3HP", "assets/interface/vie/coeurInterface3HP.png");
             this.load.image("2HP", "assets/interface/vie/coeurInterface2HP.png");
             this.load.image("1HP", "assets/interface/vie/coeurInterface1HP.png");
             this.load.image("0HP", "assets/interface/vie/coeurInterface0HP.png");
+
+            // reacteurs
+            this.load.image("réacteur1", "assets/objets/réacteur1.png");
+            this.load.image("réacteur2", "assets/objets/réacteur2.png");
+            this.load.image("reacteursInterfaces", "assets/interface/reacteursInterfaces.png");
+            this.load.image("texteRecupReacteur1", "assets/interface/texte/TexteRecupReacteur1.png");
         }
 
-        
+         
 
 
         create(){
@@ -914,6 +1118,10 @@
 
             this.player.setDepth(2)
 
+            this.playerCollision2 = this.physics.add.image(50,50,"hitbox")
+            this.playerCollision2.body.setSize(32,22)
+            this.playerCollision2.setOffset(0,10)
+
             const persoDerriereGrotte = carte2.createLayer(
                     "persoDerriereGrotte",
                     tileset
@@ -923,6 +1131,8 @@
             this.compteurAttaqueTemps = 60
             this.compteurInvunlerable = 150
             this.compteurTempsAvantRespawn = 300
+            this.test = 0
+            this.reacteurObtenu = false
 
             this.physics.add.collider(this.player, buildGrotte);
             buildGrotte.setCollisionByProperty({ estSolide: true });
@@ -1025,11 +1235,6 @@
                 repeat: -1
             });
 
-            // apparition du sabre à récupérer sur la map
-            this.sabre = this.physics.add.staticGroup();
-            this.sabre.create(70,220, 'sabre');
-            this.physics.add.overlap(this.player, this.sabre, this.collectSabre, null, this)
-
             // apparition des ennemis
             this.enemis = this.physics.add.group({
             });
@@ -1039,12 +1244,11 @@
             this.enemi.setBounce(1);
             });
 
-            this.enemis.setVelocityY(-50)
-            this.ennemiDirection = 1
-
+            this.enemis.setVelocityY(-100)
+            
             this.physics.add.overlap( this.player, this.enemis,  this.toucherEnnemi, null,this);
 
-            this.physics.add.collider(this.enemis,buildGrotte,);
+            this.physics.add.collider(this.enemis,buildGrotte,this.changeDirection, null,this);
 
             // apparition du sabre à récupérer sur la map
             this.sabre = this.physics.add.group({
@@ -1064,20 +1268,40 @@
             this.coeur.create(coeur.x, coeur.y, 'coeur').setOrigin(0);
             });
 
-            this.physics.add.overlap( this.player,this.coeur,this.prendreHp, null,this);
+            this.physics.add.overlap( this.playerCollision2,this.coeur,this.prendreHp, null,this);
 
-            this.coeur.setDepth(9)
+            this.coeur.setDepth(9)            
+
+            // réacteurs à récupérer        
+            carte2.getObjectLayer('reacteurs').objects.forEach((reacteurs) => {
+            this.reacteur1 = this.physics.add.image(reacteurs.x, reacteurs.y, 'réacteur1').setScale(0.6).setOrigin(0);
+            });
+
+            this.physics.add.overlap( this.playerCollision2, this.reacteur1,  this.prendreReacteur1, null,this);
+
 
             ///////////////////////////////////////////////////////////////
             /////////////////////////INTERFACE/////////////////////////////
             ///////////////////////////////////////////////////////////////
 
             //vie interface
-            this.coeurEcran = this.add.image(306, 161,'8HP').setScale(0.7)
+            this.coeurEcran = this.add.image(306, 161,'8HP').setScale(0.7 )
             this.coeurEcran.setInteractive()
             this.coeurEcran.setScrollFactor(0);  
 
             this.coeurEcran.setDepth(10)
+
+            // monnaie interface
+            this.monnaieEcran = this.add.image(275, 185,'monnaieInterface').setScale(0.5);
+            this.monnaieEcran.setDepth(100)
+            this.monnaieEcran.setScrollFactor(0);  
+            this.monnaieTexte = this.add.text(288, 174,this.solde, {
+                font: '30px Poppins semibold',
+                fill: "#0022BD" 
+            });
+            this.monnaieTexte.setDepth(100)
+            this.monnaieTexte.setScale(0.7);
+            this.monnaieTexte.setScrollFactor(0);
 
             ///////////////////////////////////////////////////////////////
             /////////////////////////TOUCHES///////////////////////////////
@@ -1097,6 +1321,11 @@
         }
 
         update(){
+            this.playerCollision2.x = this.player.x
+            this.playerCollision2.y = this.player.y
+
+            this.enemis.playAnimation("frontEnnemis",[0])
+
             if (this.dialogue ==false){
 
                 this.moveUp = ( this.cursors.up.isDown || this.keys.z.isDown )  
@@ -1105,7 +1334,7 @@
                 this.moveDown = ( this.cursors.down.isDown || this.keys.s.isDown ) 
                 
 
-                const speed = 100
+                const speed = 400
 
                     if (this.moveLeft) {
                         this.player.setVelocityX(-speed)
@@ -1143,7 +1372,7 @@
                         this.player.setVelocityX(0)
                         this.player.setVelocityY(0)
                     }
-                    this.physics.add.overlap(this.player, this.enemis, this.perdPvEnnemi, null,this);
+                    this.physics.add.overlap(this.playerCollision2, this.enemis, this.perdPvEnnemi, null,this);
                 }
                 if (this.trancherActif == true){
                     if (this.moveUp) {
@@ -1192,6 +1421,21 @@
                     }
                 }
             }
+        
+
+        
+                if (this.test > 0){
+                if (this.monnaieTest.x > this.player.x)
+                {this.monnaieTest.setVelocityX(-20)}
+                if (this.monnaieTest.x < this.player.x)
+                {this.monnaieTest.setVelocityX(20)}
+                if (this.monnaieTest.y < this.player.y)
+                {this.monnaieTest.setVelocityY(20)}
+                if (this.monnaieTest.y > this.player.y)
+                {this.monnaieTest.setVelocityY(-20)}
+        } 
+
+                
 
             if ( this.tempsAttaque == false) {   
                 this.trancherActif = false
@@ -1227,11 +1471,46 @@
 
             //sabre interface
             if (this.sabreInterface == true){
-                this.sabreEcran = this.add.image(368, 162,'sabreInterface').setScale(0.4)
+                this.sabreEcran = this.add.image(390, 162,'sabreInterface').setScale(0.4)
                 this.sabreEcran.setInteractive()
                 this.sabreEcran.setScrollFactor(0);  
                 this.sabreEcran.setDepth(10)
             }
+
+            //carte magnétique interface
+            if (this.carteMagnetiqueInterface == true){
+                this.carteMagnetiqueEcran = this.add.image(368, 162,'carteMagnetiqueInterface').setScale(0.4)
+                this.carteMagnetiqueEcran.setInteractive()
+                this.carteMagnetiqueEcran.setScrollFactor(0);  
+                this.carteMagnetiqueEcran.setDepth(10)
+            }
+
+            // affichage background réacteurs sur l'interface
+            if (this.reacteursBackgroundInterface == true){
+                this.reacteursEcranBackground = this.add.image(476, 170,'reacteursInterfaces').setScale(0.5)
+                this.reacteursEcranBackground.setScrollFactor(0);  
+                this.reacteursEcranBackground.setDepth(10)
+            }
+            // réacteur 1 interface
+            if (this.reacteur1Pris == true){
+                this.reacteur1Ecran = this.add.image(464, 174,'réacteur1').setScale(0.4)
+                this.reacteur1Ecran.setScrollFactor(0);  
+                this.reacteur1Ecran.setDepth(10)
+            }
+            // réacteur 2 interface
+            if (this.reacteur2Pris == true){
+                this.reacteur1Ecran = this.add.image(488, 174,'réacteur2').setScale(0.4)
+                this.reacteur1Ecran.setScrollFactor(0);  
+                this.reacteur1Ecran.setDepth(10)
+            }
+
+            if (this.reacteurObtenu == true){
+                if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
+                    this.texteReacteurObtenu.destroy()
+                    this.dialogue = false
+                    this.reacteur1Pris = true
+                }
+            }  
 
             this.barreDeVie()
         }
@@ -1246,39 +1525,52 @@
             if (this.trancherActif == true){
                 this.imageMort = this.add.image(enemis.x + 15, enemis.y + 12, 'ennemiMort');
                 this.imageMort.setDepth(1)
+                this.monnaieTest = this.physics.add.image(enemis.x - 30, enemis.y, 'monnaie').setScale(0.6).setOrigin(0);
+                this.physics.add.overlap( this.playerCollision2, this.monnaieTest,  this.prendreMonnaie, null,this);
+                this.test++
+                this.monnaieTest.setDepth(2)
                 enemis.destroy(); 
             }
         }  
 
-        perdPvEnnemi(player,ennemis){
+        perdPvEnnemi(playerCollision2,ennemis){
             if (this.invulnérable === false){
                 this.invulnérable = true;
                 this.pointDeVie -= 1;
-                player.setTint(0xff0000);
+                this.player.setTint(0xff0000);
             }
         }
 
         prendreHp (player,coeur){
             coeur.destroy(); 
-            this.pointDeVie += 2
-            if (this.pointDeVie > 8){
-                this.pointDeVie = 8
+            this.pointDeVie += 1
+            if (this.pointDeVie > 4){
+                this.pointDeVie = 4
+            }
+        }
+
+        prendreMonnaie(player,monnaie){
+            if  (this.test > 0){
+                monnaie.destroy(); 
+                this.solde += 1
+                this.monnaieTexte.setText(this.solde)
+                this.test --
+            }
+            
+        }
+
+        prendreReacteur1(player,reacteur1){
+            reacteur1.destroy()
+            if (this.reacteurObtenu == false){
+                this.dialogue = true
+                this.texteReacteurObtenu = this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"texteRecupReacteur1").setScale(0.35)
+                this.texteReacteurObtenu.setDepth(11)
+                this.texteReacteurObtenu.setScrollFactor(0)
+                this.reacteurObtenu = true
             }
         }
 
         barreDeVie (){
-            if (this.pointDeVie == 8){
-                this.coeurEcran.setTexture('8HP')
-            }
-            if (this.pointDeVie == 7){
-                this.coeurEcran.setTexture('7HP')
-            }
-            if (this.pointDeVie == 6){
-                this.coeurEcran.setTexture('6HP')
-            }
-            if (this.pointDeVie == 5){
-                this.coeurEcran.setTexture('5HP')
-            }
             if (this.pointDeVie == 4){
                 this.coeurEcran.setTexture('4HP')
             }
@@ -1312,6 +1604,14 @@
                     invulnérable:this.invulnérable,
                     tempsAvantRespawn:this.tempsAvantRespawn,
                     porteOuverte:this.porteOuverte,
+                    entreeBatiment: true,
+                    spawnXSortieScene:410, 
+                    spawnYSortieScene:80,
+                    carteMagnetiqueInterface: this.carteMagnetiqueInterface,
+                    solde: this.solde,
+                    reacteur1Pris: this.reacteur1Pris,
+                    reacteur2Pris:this.reacteur2Pris,
+                    reacteursBackgroundInterface: this.reacteursBackgroundInterface
                 })
             }
         }
@@ -1342,6 +1642,401 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
 
+    class sceneMaison1 extends Phaser.Scene{
+            constructor(){
+            super("sceneMaison1");
+        }
+
+        init(data){
+            this.pointDeVie = data.pointDeVie,
+            this.sabreInterface = data.sabreInterface,
+            this.dialogue = data.dialogue,
+            this.trancherActif = data.trancherActif,
+            this.pouvoirAttaquer = data.pouvoirAttaquer,
+            this.animVehicule = data.animVehicule,
+            this.quitterVheicule = data.quitterVheicule,
+            this.invulnérable = data.invulnérable,
+            this.tempsAvantRespawn = data.tempsAvantRespawn
+            this.porteOuverte = data.porteOuverte,
+            this.entreeBatiment = data.entreeBatiment,
+            this.carteMagnetiqueInterface = data.carteMagnetiqueInterface,
+            this.solde = data.solde,
+            this.reacteur1Pris = data.reacteur1Pris,
+            this.reacteur2Pris = data.reacteur2Pris,
+            this.reacteursBackgroundInterface = data.reacteursBackgroundInterface
+        }
+
+        preload(){
+            this.load.image("Phaser_tuilesMaisonLunaire", "assets/interieur maison zone lunaire.png");
+
+            this.load.tilemapTiledJSON("carte2", "mapAutreScenes.json");  
+
+            this.load.spritesheet('perso','assets/perso.png',
+            { frameWidth: 32, frameHeight: 32 });
+
+            this.load.image("sabreInterface", "assets/interface/sabreInterface.png");
+
+            // emplacement Changement De Scene
+            this.load.image("changementScene", "assets/objets/emplacementChangementDeScene/changementScene.png");
+
+            // frame barre de vie
+            this.load.image("4HP", "assets/interface/vie/coeurInterface4HP.png");
+            this.load.image("3HP", "assets/interface/vie/coeurInterface3HP.png");
+            this.load.image("2HP", "assets/interface/vie/coeurInterface2HP.png");
+            this.load.image("1HP", "assets/interface/vie/coeurInterface1HP.png");
+            this.load.image("0HP", "assets/interface/vie/coeurInterface0HP.png");
+
+            this.load.image("monnaie", "assets/objets/monnaie.png");
+            this.load.image("monnaieInterface", "assets/interface/monnaieInterface.png");
+
+            // textes PNJ
+            this.load.image("TexteAvantGrotte1", "assets/interface/texte/TexteAvantGrotte 1.png");
+            this.load.image("TexteAvantGrotte2", "assets/interface/texte/TexteAvantGrotte 2.png");
+            this.load.image("TexteAprèstGrotte", "assets/interface/texte/TexteAprèstGrotte.png");
+
+            // reacteurs
+            this.load.image("réacteur1", "assets/objets/réacteur1.png");
+            this.load.image("réacteur2", "assets/objets/réacteur2.png");
+            this.load.image("reacteursInterfaces", "assets/interface/reacteursInterfaces.png");
+        }
+
+        create(){
+            const carte2 = this.make.tilemap({ key: 'carte2' });
+
+            // importer les TileSet 
+            const tilesetMaisonHerbe = carte2.addTilesetImage(
+                    "interieur maison zone lunaire",
+                    "Phaser_tuilesMaisonLunaire"
+                    );
+
+            const groundMaisonLunaire = carte2.createLayer(
+                    "groundMaisonLunaire",
+                    tilesetMaisonHerbe
+                    );
+
+            const buildMaisonLunaire = carte2.createLayer(
+                    "buildMaisonLunaire",
+                    tilesetMaisonHerbe
+                    );
+
+            this.sortieMaisonLunaire = this.physics.add.image(2000,1390, 'changementScene');
+            this.sortieMaisonLunaire.body.setSize(128,50,true)
+            
+            this.player = this.physics.add.sprite(2000,1380,'perso');
+            this.player.body.setSize(24,6,true)
+            this.player.setOffset(4, 26)
+
+            this.player.setDepth(9)
+
+            const persoDerriereMaisonLunaire = carte2.createLayer(
+                    "persoDerriereMaisonLunaire",
+                    tilesetMaisonHerbe
+                    );
+
+            persoDerriereMaisonLunaire.setDepth(10)
+
+            this.physics.add.collider(this.player, buildMaisonLunaire);
+            buildMaisonLunaire.setCollisionByProperty({ estSolide: true });
+
+            // collision avec l'entrée de la grotte
+            this.physics.add.overlap(this.player, this.sortieMaisonLunaire, this.goOut1stHouse, null, this)
+
+            this.player.setCollideWorldBounds(true);
+
+            this.cameras.main.zoom = 3
+            this.cameras.main.startFollow(this.player); 
+            this.physics.world.setBounds(0, 0, 6400, 1600);
+            this.cameras.main.setBounds(0, 0, 6400, 1600);
+
+            this.anims.create({
+                key: 'left',
+                frames: this.anims.generateFrameNumbers('perso', {start:18,end:23}),
+                frameRate: 8,
+                repeat: -1
+            });
+            this.anims.create({
+                key: 'right',
+                frames: this.anims.generateFrameNumbers('perso', {start:12,end:17}),
+                frameRate: 8,
+                repeat: -1
+            });
+            this.anims.create({
+                key: 'front',
+                frames: this.anims.generateFrameNumbers('perso', {start:0,end:5}),
+                frameRate: 8,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'back',
+                frames: this.anims.generateFrameNumbers('perso', {start:6,end:11}),
+                frameRate: 8,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'noMove',
+                frames: this.anims.generateFrameNumbers('perso', {start:24,end:31}),
+                frameRate: 8,
+                repeat: -1
+            });
+
+             // monnaie à récupérer
+             this.monnaie = this.physics.add.group({
+            });
+                    
+            carte2.getObjectLayer('monnaie').objects.forEach((monnaie) => {
+            this.monnaie.create(monnaie.x, monnaie.y, 'monnaie').setScale(0.7).setOrigin(0);
+            });
+
+            this.physics.add.overlap( this.player, this.monnaie,  this.prendreMonnaie, null,this);
+
+
+            //vie interface
+            this.coeurEcran = this.add.image(306, 161,'8HP').setScale(0.7)
+            this.coeurEcran.setInteractive()
+            this.coeurEcran.setScrollFactor(0);  
+
+            this.coeurEcran.setDepth(9)
+
+            // monnaie interface
+            this.monnaieEcran = this.add.image(275, 185,'monnaieInterface').setScale(0.5);
+            this.monnaieEcran.setDepth(100)
+            this.monnaieEcran.setScrollFactor(0);  
+            this.monnaieTexte = this.add.text(288, 174,this.solde, {
+                font: '30px Poppins semibold',
+                fill: "#0022BD" 
+            });
+            this.monnaieTexte.setDepth(100)
+            this.monnaieTexte.setScale(0.7);
+            this.monnaieTexte.setScrollFactor(0);
+
+            ///////////////////////////////////////////////////////////////
+            //////////////////////////////PNJ//////////////////////////////
+            ///////////////////////////////////////////////////////////////
+
+            this.pnj = this.physics.add.image(2000,1275, 'pnj1');
+            this.pnj.setPushable(false)
+            this.pnj.body.setSize(48,70)
+            this.pnj.setOffset(-8,0)
+            this.pnj.setDepth(8)
+            this.physics.add.overlap(this.player,this.pnj,this.parlerPNJ,null,this);
+
+            ///////////////////////////////////////////////////////////////
+            /////////////////////////TOUCHES///////////////////////////////
+            ///////////////////////////////////////////////////////////////
+
+            this.cursors = this.input.keyboard.createCursorKeys();
+            this.keys = this.input.keyboard.addKeys({
+                q:  this.input.keyboard.addKey('Q'),
+                d:  this.input.keyboard.addKey('D'),
+                z:  this.input.keyboard.addKey('Z'),
+                s:  this.input.keyboard.addKey('S'),
+            });
+
+            this.toucheF = this.input.keyboard.addKey('F');
+            this.toucheG = this.input.keyboard.addKey('G');
+            this.trancher = this.input.keyboard.addKey('A');
+        }
+
+        update(){
+            if (this.dialogue == false){
+                this.moveUp = ( this.cursors.up.isDown || this.keys.z.isDown )  
+                this.moveLeft = ( this.cursors.left.isDown || this.keys.q.isDown )  
+                this.moveRight = ( this.cursors.right.isDown || this.keys.d.isDown ) 
+                this.moveDown = ( this.cursors.down.isDown || this.keys.s.isDown ) 
+                
+
+                const speed = 100
+
+                    if (this.moveLeft) {
+                        this.player.setVelocityX(-speed)
+                        this.player.direction = 'left';
+                    } else if (this.moveRight) {
+                        this.player.setVelocityX(speed)
+                        this.player.direction = 'right';
+                    }
+
+                    if (this.moveUp) {
+                        this.player.setVelocityY(-speed)
+                        this.player.direction = 'up';
+                    } else if (this.moveDown) {
+                        this.player.setVelocityY(speed)
+                        this.player.direction = 'down';
+                    }
+
+                    this.player.body.velocity.normalize().scale(speed)
+
+                    if (this.moveUp) {
+                        this.player.anims.play('back', true)
+                    } else if (this.moveDown) {
+                        this.player.anims.play('front', true)
+                    } else
+                    if (this.moveLeft) {
+                        this.player.anims.play('left', true)
+                    } else if (this.moveRight) {
+                        this.player.anims.play('right', true)
+                    }   
+
+                    if (this.cursors.up.isUp && this.cursors.down.isUp && this.cursors.left.isUp && this.cursors.right.isUp){
+                        this.player.anims.play('noMove', true);
+                        this.player.setVelocityX(0)
+                        this.player.setVelocityY(0)
+                    }
+            }
+
+             //sabre interface
+            if (this.sabreInterface == true){
+                this.sabreEcran = this.add.image(390, 162,'sabreInterface').setScale(0.4)
+                this.sabreEcran.setInteractive()
+                this.sabreEcran.setScrollFactor(0);  
+                this.sabreEcran.setDepth(8)
+            }
+
+            //carte magnétique interface
+            if (this.carteMagnetiqueInterface == true){
+                this.carteMagnetiqueEcran = this.add.image(368, 162,'carteMagnetiqueInterface').setScale(0.4)
+                this.carteMagnetiqueEcran.setInteractive()
+                this.carteMagnetiqueEcran.setScrollFactor(0);  
+                this.carteMagnetiqueEcran.setDepth(8)
+            }
+
+            // affichage background réacteurs sur l'interface
+            if (this.reacteursBackgroundInterface == true){
+                this.reacteursEcranBackground = this.add.image(476, 170,'reacteursInterfaces').setScale(0.5)
+                this.reacteursEcranBackground.setScrollFactor(0);  
+                this.reacteursEcranBackground.setDepth(10)
+            }
+            // réacteur 1 interface
+            if (this.reacteur1Pris == true){
+                this.reacteur1Ecran = this.add.image(464, 174,'réacteur1').setScale(0.4)
+                this.reacteur1Ecran.setScrollFactor(0);  
+                this.reacteur1Ecran.setDepth(10)
+            }
+            // réacteur 2 interface
+            if (this.reacteur2Pris == true){
+                this.reacteur1Ecran = this.add.image(488, 174,'réacteur2').setScale(0.4)
+                this.reacteur1Ecran.setScrollFactor(0);  
+                this.reacteur1Ecran.setDepth(10)
+            }
+
+                this.barreDeVie()
+            }
+
+            parlerPNJ(player,pnj){
+            if (this.reacteur1Pris == false){
+                if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
+                    this.dialogue = true
+                    this.texteAvantGrotte = this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"TexteAvantGrotte1").setScale(0.35)
+                    this.texteAvantGrotte.setDepth(10)
+                    this.texteAvantGrotte.setScrollFactor(0)
+                    this.texteAvantGrotte.setInteractive()
+                    this.deuxiemeDialogue = true
+                }
+
+                if (this.deuxiemeDialogue == true){
+                    if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
+                        this.texteAvantGrotte.setTexture('TexteAvantGrotte2') 
+                        this.dernierDialogue = true
+                        this.deuxiemeDialogue = false                
+                    }
+                }
+                if (this.dernierDialogue == true){
+                    if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
+                        this.carteMagnetiqueInterface = true
+                        this.texteAvantGrotte.destroy()
+                        this.reacteursBackgroundInterface = true
+                        this.dialogue = false
+                    }
+                }
+            }
+            else {
+                if (Phaser.Input.Keyboard.JustDown(this.toucheF)) {
+                    this.texteApresGrotte = this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"TexteAprèstGrotte").setScale(0.35)
+                    this.texteApresGrotte.setDepth(10)
+                    this.texteApresGrotte.setScrollFactor(0)
+                    this.texteApresGrotte.setInteractive()
+                    this.dialogue = true
+                }
+                if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
+                    this.texteApresGrotte.destroy()
+                    this.dialogue = false
+                }
+            }
+            
+        }
+            
+            barreDeVie (){
+            if (this.pointDeVie == 4){
+                this.coeurEcran.setTexture('4HP')
+            }
+            if (this.pointDeVie == 3){
+                this.coeurEcran.setTexture('3HP')
+            }
+            if (this.pointDeVie == 2){
+                this.coeurEcran.setTexture('2HP')
+            }
+            if (this.pointDeVie == 1){
+                this.coeurEcran.setTexture('1HP')
+            }
+        }
+
+        prendreMonnaie(player,monnaie){
+            monnaie.destroy(); 
+            this.solde += 1
+            this.monnaieTexte.setText(this.solde)
+        }
+
+        goOut1stHouse(player,sortieMaisonLunaire){
+            if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
+                this.scene.start("sceneJeu", {
+                    pointDeVie:this.pointDeVie,
+                    sabreInterface:this.sabreInterface,
+                    dialogue:this.dialogue,
+                    trancherActif:this.trancherActif,
+                    pouvoirAttaquer:this.pouvoirAttaquer,
+                    animVehicule:this.animVehicule,
+                    quitterVheicule:this.quitterVheicule,
+                    invulnérable:this.invulnérable,
+                    tempsAvantRespawn:this.tempsAvantRespawn,
+                    porteOuverte:this.porteOuverte,
+                    entreeBatiment: true,
+                    spawnXSortieScene:530, 
+                    spawnYSortieScene:400,
+                    carteMagnetiqueInterface: this.carteMagnetiqueInterface,
+                    solde: this.solde,
+                    reacteur1Pris: this.reacteur1Pris,
+                    reacteur2Pris:this.reacteur2Pris,
+                    reacteursBackgroundInterface: this.reacteursBackgroundInterface
+                })
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////AUTRE SCENE///////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     class sceneMaisonBlanche extends Phaser.Scene{
             constructor(){
             super("sceneMaisonBlanche");
@@ -1357,7 +2052,13 @@
             this.quitterVheicule = data.quitterVheicule,
             this.invulnérable = data.invulnérable,
             this.tempsAvantRespawn = data.tempsAvantRespawn
-            this.porteOuverte = data.porteOuverte
+            this.porteOuverte = data.porteOuverte,
+            this.entreeBatiment = data.entreeBatiment,
+            this.carteMagnetiqueInterface = data.carteMagnetiqueInterface,
+            this.solde = data.solde,
+            this.reacteur1Pris = data.reacteur1Pris,
+            this.reacteur2Pris = data.reacteur2Pris,
+            this.reacteursBackgroundInterface = data.reacteursBackgroundInterface
         }
 
         preload(){
@@ -1373,16 +2074,20 @@
             // emplacement Changement De Scene
             this.load.image("changementScene", "assets/objets/emplacementChangementDeScene/changementScene.png");
 
-            // fram barre de vie
-            this.load.image("8HP", "assets/interface/vie/coeurInterface8HP.png");
-            this.load.image("7HP", "assets/interface/vie/coeurInterface7HP.png");
-            this.load.image("6HP", "assets/interface/vie/coeurInterface6HP.png");
-            this.load.image("5HP", "assets/interface/vie/coeurInterface5HP.png");
+            this.load.image("monnaie", "assets/objets/monnaie.png");
+            this.load.image("monnaieInterface", "assets/interface/monnaieInterface.png");
+
+            // frame barre de vie
             this.load.image("4HP", "assets/interface/vie/coeurInterface4HP.png");
             this.load.image("3HP", "assets/interface/vie/coeurInterface3HP.png");
             this.load.image("2HP", "assets/interface/vie/coeurInterface2HP.png");
             this.load.image("1HP", "assets/interface/vie/coeurInterface1HP.png");
             this.load.image("0HP", "assets/interface/vie/coeurInterface0HP.png");
+
+            // reacteurs
+            this.load.image("réacteur1", "assets/objets/réacteur1.png");
+            this.load.image("réacteur2", "assets/objets/réacteur2.png");
+            this.load.image("reacteursInterfaces", "assets/interface/reacteursInterfaces.png");
         }
 
         create(){
@@ -1462,12 +2167,35 @@
                 repeat: -1
             });
 
+             // monnaie à récupérer
+             this.monnaie = this.physics.add.group({
+            });
+                    
+            carte2.getObjectLayer('monnaie').objects.forEach((monnaie) => {
+            this.monnaie.create(monnaie.x, monnaie.y, 'monnaie').setScale(0.7).setOrigin(0);
+            });
+
+            this.physics.add.overlap( this.player, this.monnaie,  this.prendreMonnaie, null,this);
+
+
             //vie interface
             this.coeurEcran = this.add.image(306, 161,'8HP').setScale(0.7)
             this.coeurEcran.setInteractive()
             this.coeurEcran.setScrollFactor(0);  
 
             this.coeurEcran.setDepth(1000)
+
+            // monnaie interface
+            this.monnaieEcran = this.add.image(275, 185,'monnaieInterface').setScale(0.5);
+            this.monnaieEcran.setDepth(100)
+            this.monnaieEcran.setScrollFactor(0);  
+            this.monnaieTexte = this.add.text(288, 174,this.solde, {
+                font: '30px Poppins semibold',
+                fill: "#0022BD" 
+            });
+            this.monnaieTexte.setDepth(100)
+            this.monnaieTexte.setScale(0.7);
+            this.monnaieTexte.setScrollFactor(0);
 
             ///////////////////////////////////////////////////////////////
             /////////////////////////TOUCHES///////////////////////////////
@@ -1532,27 +2260,42 @@
 
              //sabre interface
             if (this.sabreInterface == true){
-                this.sabreEcran = this.add.image(368, 162,'sabreInterface').setScale(0.4)
+                this.sabreEcran = this.add.image(390, 162,'sabreInterface').setScale(0.4)
                 this.sabreEcran.setInteractive()
                 this.sabreEcran.setScrollFactor(0);  
+            }
+
+            //carte magnétique interface
+            if (this.carteMagnetiqueInterface == true){
+                this.carteMagnetiqueEcran = this.add.image(368, 162,'carteMagnetiqueInterface').setScale(0.4)
+                this.carteMagnetiqueEcran.setInteractive()
+                this.carteMagnetiqueEcran.setScrollFactor(0);  
+                this.carteMagnetiqueEcran.setDepth(10)
+            }
+
+            // affichage background réacteurs sur l'interface
+            if (this.reacteursBackgroundInterface == true){
+                this.reacteursEcranBackground = this.add.image(476, 170,'reacteursInterfaces').setScale(0.5)
+                this.reacteursEcranBackground.setScrollFactor(0);  
+                this.reacteursEcranBackground.setDepth(10)
+            }
+            // réacteur 1 interface
+            if (this.reacteur1Pris == true){
+                this.reacteur1Ecran = this.add.image(464, 174,'réacteur1').setScale(0.4)
+                this.reacteur1Ecran.setScrollFactor(0);  
+                this.reacteur1Ecran.setDepth(10)
+            }
+            // réacteur 2 interface
+            if (this.reacteur2Pris == true){
+                this.reacteur1Ecran = this.add.image(488, 174,'réacteur2').setScale(0.4)
+                this.reacteur1Ecran.setScrollFactor(0);  
+                this.reacteur1Ecran.setDepth(10)
             }
 
                 this.barreDeVie()
             }
             
             barreDeVie (){
-            if (this.pointDeVie == 8){
-                this.coeurEcran.setTexture('8HP')
-            }
-            if (this.pointDeVie == 7){
-                this.coeurEcran.setTexture('7HP')
-            }
-            if (this.pointDeVie == 6){
-                this.coeurEcran.setTexture('6HP')
-            }
-            if (this.pointDeVie == 5){
-                this.coeurEcran.setTexture('5HP')
-            }
             if (this.pointDeVie == 4){
                 this.coeurEcran.setTexture('4HP')
             }
@@ -1565,9 +2308,12 @@
             if (this.pointDeVie == 1){
                 this.coeurEcran.setTexture('1HP')
             }
-            if (this.pointDeVie == 0){
-                this.coeurEcran.setTexture('0HP')
-            }
+        }
+
+        prendreMonnaie(player,monnaie){
+            monnaie.destroy(); 
+            this.solde += 1
+            this.monnaieTexte.setText(this.solde)
         }
 
         goOutWhiteHouse(player,sortieMaisonBlanche){
@@ -1583,6 +2329,14 @@
                     invulnérable:this.invulnérable,
                     tempsAvantRespawn:this.tempsAvantRespawn,
                     porteOuverte:this.porteOuverte,
+                    entreeBatiment: true,
+                    spawnXSortieScene:500, 
+                    spawnYSortieScene:200,
+                    carteMagnetiqueInterface: this.carteMagnetiqueInterface,
+                    solde: this.solde,
+                    reacteur1Pris: this.reacteur1Pris,
+                    reacteur2Pris:this.reacteur2Pris,
+                    reacteursBackgroundInterface: this.reacteursBackgroundInterface
                 })
             }
         }
@@ -1598,7 +2352,7 @@
             debug: true
             }},
             pixelArt:true,
-            scene: [accueil,sceneJeu,sceneGrotte,sceneMaisonBlanche],
+            scene: [accueil,sceneJeu,sceneGrotte,sceneMaison1,sceneMaisonBlanche],
             input : {gamepad:true},
             };
 
