@@ -123,7 +123,7 @@
             this.load.image("ouvrirCoffre", "assets/objets/emplacementChangementDeScene/changementScene.png");
             //emplacement invisible pour ouvrir le coffre HP ou autre
             this.load.image("ouvrirCoffreHp", "assets/objets/emplacementChangementDeScene/changementScene.png");
-
+ 
 
             this.load.image("monnaie", "assets/objets/monnaie.png");
             this.load.image("monnaieInterface", "assets/interface/monnaieInterface.png");
@@ -133,9 +133,6 @@
             this.load.image("3HP", "assets/interface/vie/coeurInterface3HP.png");
             this.load.image("2HP", "assets/interface/vie/coeurInterface2HP.png");
             this.load.image("1HP", "assets/interface/vie/coeurInterface1HP.png");
-            this.load.image("0HP", "assets/interface/vie/coeurInterface0HP.png");
-
-            // reacteurs
             this.load.image("0HP", "assets/interface/vie/coeurInterface0HP.png");
 
             // textes PNJ
@@ -233,6 +230,7 @@
             this.compteurTempsAvantRespawn = 300
             this.compteurAnimCoffre = 30
             this.compteurDropCoffre = 150;
+            this.compteurDropCoffreHp = 150;
             this.entrerActif = true
             this.entreeBatiment = false
             this.coffreAnimStop = false
@@ -394,10 +392,18 @@
                 repeat: -1
             });
 
-            // animation d'ouverture du coffre
+            // animation d'ouverture du coffre d'essence
             this.anims.create({
                 key: 'coffreAnim',
                 frames: this.anims.generateFrameNumbers('coffreAnim1', {start:0,end:1}),
+                frameRate: 5,
+                repeat: -1
+            });
+
+            // animation d'ouverture du coffre HP
+            this.anims.create({
+                key: 'coffreHpAnim',
+                frames: this.anims.generateFrameNumbers('coffreHpAnim1', {start:0,end:1}),
                 frameRate: 5,
                 repeat: -1
             });
@@ -480,46 +486,25 @@
 
             this.physics.add.overlap( this.player, this.coffre, this.ouvrirCoffre, null,this);
 
-
-
-
-
-
-
             ////////////////////////////////////////////////////////////
             // placement du coffre Hp
             ////////////////////////////////////////////////////////////
 
             this.coffreHp = this.physics.add.group({
+                immovable: true
+            });      
+            this.ouvrirCoffreHp1 = this.physics.add.group({
             });
-                    
+
             carte.getObjectLayer('coffreHp').objects.forEach((coffreHp) => {
-            this.coffreHp.create(coffreHp.x, coffreHp.y, 'coffreHp').setOrigin(0);
+            this.test = this.coffreHp.create(coffreHp.x, coffreHp.y, 'coffreHp').setOrigin(0);
+
+            this.coffreOverlap = this.ouvrirCoffreHp1.create(coffreHp.x, coffreHp.y, 'ouvrirCoffreHp').setOrigin(0);
+            this.coffreOverlap.body.setSize(60, 60);
             });
 
-            this.ouvrirCoffreHp = this.physics.add.group({
-            });
-                    
-            carte.getObjectLayer('ouvrirCoffreHp').objects.forEach((ouvrirCoffreHp) => {
-            this.ouvrirCoffreHp.create(ouvrirCoffreHp.x, ouvrirCoffreHp.y, 'ouvrirCoffreHp').setOrigin(0);
-            });
-
-
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            this.physics.add.collider(this.player,this.coffreHp);
+            this.physics.add.overlap( this.player, this.ouvrirCoffreHp1, this.ouvrirCoffreHp, null,this)
 
             // réacteurs 2 à récupérer        
             carte.getObjectLayer('reacteurs2').objects.forEach((reacteurs2) => {
@@ -789,6 +774,12 @@
                 }
             }
 
+            if(this.coffreAnimStopHp == true){
+                this.compteurAnimCoffre -=1 ;
+                if(this.compteurAnimCoffre == 0){
+                    this.coffreOuvertHp.anims.stop("coffreHpAnim", false)
+                }
+            }
             // affichage background réacteurs sur l'interface
             if (this.reacteursBackgroundInterface == true){
                 this.reacteursEcranBackground = this.add.image(476, 170,'reacteursInterfaces').setScale(0.5)
@@ -819,7 +810,17 @@
                 }
             }
 
-            // drop du coffre interface
+            // timer pour prendre le drop du coffre Hp
+            if(this.dropCoffreHpActif == true){
+                this.compteurDropCoffreHp -=1 ;
+                if(this.compteurDropCoffreHp == 0){
+                    this.compteurDropCoffreHp = 150;
+                    this.physics.add.overlap(this.playerCollision2,this.dropCoffreHp,this.prendreDropCoffreHp,null,this)
+                    this.dropCoffreHpActif = false ;
+                }
+            }
+
+            // drop du coffre essence interface
             if (this.dropCoffreInterface == true){
                 this.bidonEssenceInterface = this.add.image(412, 162,'bidonEssenceInterface').setScale(0.4)
                 this.bidonEssenceInterface.setScrollFactor(0);  
@@ -835,15 +836,29 @@
                 this.coffreOuvert = this.physics.add.sprite(coffre.x,coffre.y,'coffreAnim1')
                 this.coffreOuvert.anims.play("coffreAnim", true);
                 this.coffreAnimStop = true
-
                 this.dropCoffre = this.physics.add.image(this.coffreOuvert.x - 16, this.coffreOuvert.y - 35 , 'bidonEssence').setScale(0.9).setOrigin(0);
                 this.dropCoffreActif = true
+            }
+        }
+
+        ouvrirCoffreHp(player,coffreHp){
+            if (Phaser.Input.Keyboard.JustDown(this.toucheF)) {
+                coffreHp.destroy()
+                this.coffreOuvertHp = this.physics.add.sprite(coffreHp.x,coffreHp.y,'coffreHpAnim1')
+                this.coffreOuvertHp.anims.play("coffreHpAnim", true);
+                this.coffreAnimStopHp = true
+                this.dropCoffreHp = this.physics.add.image(this.coffreOuvertHp.x - 16, this.coffreOuvertHp.y - 35 , 'coeur').setScale(0.9).setOrigin(0);
+                this.dropCoffreHpActif = true
             }
         }
 
         prendreDropCoffre(player,dropCoffre){
             dropCoffre.destroy()
             this.dropCoffreInterface = true
+        }
+
+        prendreDropCoffreHp(player,dropCoffreHp){
+            dropCoffreHp.destroy()
         }
 
         collectSabre(player,sabre){

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="200" height="200" tilewidth="32" tileheight="32" infinite="0" nextlayerid="28" nextobjectid="155">
+<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="200" height="200" tilewidth="32" tileheight="32" infinite="0" nextlayerid="28" nextobjectid="158">
  <editorsettings>
   <export target="map.json" format="json"/>
  </editorsettings>
@@ -6017,6 +6017,8 @@
  <objectgroup id="27" name="ouvrirCoffreHp">
   <object id="133" gid="686" x="736" y="480" width="32" height="32"/>
   <object id="154" gid="686" x="640" y="448" width="32" height="32"/>
+  <object id="155" gid="572" x="640" y="448" width="32" height="32"/>
+  <object id="156" gid="572" x="736" y="480" width="32" height="32"/>
  </objectgroup>
  <objectgroup id="26" name="coffreMonnaie"/>
 </map>
