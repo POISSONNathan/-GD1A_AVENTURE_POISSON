@@ -20,7 +20,7 @@
         preload(){}
         create(){}
         update(){
-            this.scene.start("sceneGrotte", {
+            this.scene.start("sceneJeu", {
                 pointDeVie:4,
                 sabreInterface:false,
                 dialogue:false,
@@ -1126,6 +1126,7 @@
                     "persoDerriereGrotte",
                     tileset
                     );
+                    
             persoDerriereGrotte.setDepth(3)
 
             this.compteurAttaqueTemps = 60
@@ -1424,18 +1425,16 @@
         
 
         
-                if (this.test > 0){
+            if (this.test > 0){
                 if (this.monnaieTest.x > this.player.x)
-                {this.monnaieTest.setVelocityX(-20)}
+                {this.monnaieTest.setVelocityX(-50)}
                 if (this.monnaieTest.x < this.player.x)
-                {this.monnaieTest.setVelocityX(20)}
+                {this.monnaieTest.setVelocityX(50)}
                 if (this.monnaieTest.y < this.player.y)
-                {this.monnaieTest.setVelocityY(20)}
+                {this.monnaieTest.setVelocityY(50)}
                 if (this.monnaieTest.y > this.player.y)
-                {this.monnaieTest.setVelocityY(-20)}
-        } 
-
-                
+                {this.monnaieTest.setVelocityY(-50)}
+            } 
 
             if ( this.tempsAttaque == false) {   
                 this.trancherActif = false
@@ -1525,7 +1524,7 @@
             if (this.trancherActif == true){
                 this.imageMort = this.add.image(enemis.x + 15, enemis.y + 12, 'ennemiMort');
                 this.imageMort.setDepth(1)
-                this.monnaieTest = this.physics.add.image(enemis.x - 30, enemis.y, 'monnaie').setScale(0.6).setOrigin(0);
+                this.monnaieTest = this.physics.add.image(enemis.x, enemis.y - 70, 'monnaie').setScale(0.6).setOrigin(0);
                 this.physics.add.overlap( this.playerCollision2, this.monnaieTest,  this.prendreMonnaie, null,this);
                 this.test++
                 this.monnaieTest.setDepth(2)
