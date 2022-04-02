@@ -1,12 +1,22 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" /><title>Jeu AAA nathan</title>
+    <meta charset="UTF-8" />
+    <title>Jeu AAA nathan</title>
+    
+    <link rel="preload" as="font" href="assets/space age.ttf" type="font/ttf" crossorigin/>
+
     <script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
     </script>
     <style type="text/css"> body 
         { margin: 0; 
         }
+
+        @font-face {
+            font-family: CustomFont;
+            src: url('assets/space age.ttf');
+        }
+
     </style>
 </head>
 <body>
@@ -20,7 +30,7 @@
         preload(){}
         create(){}
         update(){
-            this.scene.start("sceneGrotte", {
+            this.scene.start("sceneJeu", {
                 pointDeVie:4,
                 sabreInterface:false,
                 dialogue:false,
@@ -36,7 +46,10 @@
                 solde:0,
                 reacteur1Pris:false,
                 reacteur2Pris:false,
-                reacteursBackgroundInterface:false
+                reacteursBackgroundInterface:false,
+                quetePlanteInterface:false,
+                plantePrise: 0,
+                premierDialogueActif : false
             })
         }
 
@@ -66,6 +79,9 @@
             this.reacteur1Pris = data.reacteur1Pris,
             this.reacteur2Pris = data.reacteur2Pris,
             this.reacteursBackgroundInterface = data.reacteursBackgroundInterface
+            this.quetePlanteInterface = data.quetePlanteInterface
+            this.plantePrise = data.plantePrise
+            this.premierDialogueActif = data.premierDialogueActif 
         }
 
         preload(){
@@ -89,7 +105,6 @@
             this.load.spritesheet('vehiculeRightLeft','assets/vehiculeRightLeft.png',
             { frameWidth: 160, frameHeight: 96 });
 
-            this.load.image("pnj1", "assets/PNJ1.png");
             this.load.image("sabre", "assets/objets/sabre.png");
 
             //sabre interface
@@ -148,6 +163,9 @@
             this.load.image("TexteIntro1", "assets/interface/texte/TexteIntro 1.png");
             this.load.image("TexteIntro2", "assets/interface/texte/TexteIntro 2.png");
 
+            this.load.image("TextePNJVehicule1", "assets/interface/texte/TextePNJVehicule1.png");
+            this.load.image("TextePNJVehicule2", "assets/interface/texte/TextePNJVehicule2.png");
+
             // reacteurs
             this.load.image("réacteur1", "assets/objets/réacteur1.png");
             this.load.image("réacteur2", "assets/objets/réacteur2.png");
@@ -156,6 +174,27 @@
             // drop du coffre
             this.load.image("bidonEssence", "assets/objets/bidonEssence.png");
             this.load.image("bidonEssenceInterface", "assets/interface/bidonEssenceInterface.png");
+
+            // quete de l'arosoir images
+            this.load.image("arosoirInterface", "assets/interface/arosoirInterface.png");
+            this.load.image("planteArosoireInterface", "assets/interface/planteArosoireInterface.png");
+
+            this.load.image("planteArosee", "assets/objets/planteArosee.png");
+            this.load.image("planteAroseeAvant", "assets/objets/planteAroseeAvant.png");
+
+            //emplacement invisible pour aroser la plante
+            this.load.image("arosserPlanteOverlap", "assets/objets/emplacementChangementDeScene/changementScene.png");
+
+            // PNJ intro jeu
+            this.load.image("pnj1", "assets/PNJ1.png");
+            // collide pnj intro jeu
+            this.load.image("PNJintroCollide", "assets/objets/emplacementChangementDeScene/changementScene.png");
+ 
+            // PNJ avant d'obtenir le véhicule
+            this.load.image("PNJvehicule", "assets/PNJvehicule.png");
+            // collide pnj vehicule
+            this.load.image("PNJvehiculeCollide", "assets/objets/emplacementChangementDeScene/changementScene.png");
+
         }
 
         
@@ -223,7 +262,7 @@
 
             this.player.setDepth(7)
 
-            this.vehicule = this.physics.add.sprite(200,500,'vehiculeRightLeft') 
+            this.vehicule = this.physics.add.sprite(850,150,'vehiculeRightLeft') 
             this.vehicule.body.setSize(200,120,true)
 
             this.vehicule.setDepth(8)
@@ -424,7 +463,7 @@
                 frames: this.anims.generateFrameNumbers('coffreMonnaieAnim1', {start:0,end:1}),
                 frameRate: 5,
                 repeat: -1
-            });
+            }); 
 
             // apparition de la fonction qui permet au joueur de rentrer dans le véhicule
             this.physics.add.overlap(this.player, this.vehicule, this.entrerVehicule, null,this);
@@ -490,6 +529,29 @@
                 this.physics.add.overlap( this.player, this.enemis,  this.toucherEnnemi, null,this);
 
                 this.physics.add.collider(this.enemis,build,);
+
+            // placement des plantes à aroser
+
+
+            this.plante = this.physics.add.group({
+            });      
+            this.aroserLaPlante = this.physics.add.group({
+                immovable: true
+            });
+
+            carte.getObjectLayer('plante').objects.forEach((plante) => {
+            this.planteOverlap = this.plante.create(plante.x, plante.y, 'planteAroseeAvant').setOrigin(0);
+
+            this.planteHitbox = this.aroserLaPlante.create(plante.x, plante.y, 'arosserPlanteOverlap').setOrigin(0);
+            this.planteHitbox.body.setSize(22,14)
+            this.planteHitbox.setOffset(5,16)
+            this.planteOverlap.body.setSize(60, 60);
+            this.planteOverlap.setOffset(-14,-6)
+            });
+
+            this.physics.add.collider(this.player,this.planteHitbox);
+
+
 
             ////////////////////////////////////////////////////////////
             // placement du coffre Essence
@@ -573,26 +635,44 @@
             this.coeurEcran.setDepth(10)
 
             // monnaie interface
-            this.monnaieEcran = this.add.image(275, 185,'monnaieInterface').setScale(0.5);
+            this.monnaieEcran = this.add.image(275, 182,'monnaieInterface').setScale(0.4);
             this.monnaieEcran.setDepth(100)
             this.monnaieEcran.setScrollFactor(0);  
-            this.monnaieTexte = this.add.text(288, 174,this.solde, {
-                font: '30px Poppins semibold',
-                fill: "#0022BD" 
-            });
+
+            this.monnaieTexte = this.add.text(286, 174, this.solde, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
             this.monnaieTexte.setDepth(100)
             this.monnaieTexte.setScale(0.7);
             this.monnaieTexte.setScrollFactor(0);
+
+            // plante interface
+                            this.plantePriseTexte = this.add.text(286, 190, this.plantePrise, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
+
 
             ///////////////////////////////////////////////////////////////
             //////////////////////////////PNJ//////////////////////////////
             ///////////////////////////////////////////////////////////////
 
+            // pnj intro
             this.pnj1 = this.physics.add.image(240, 380, 'pnj1');
-            this.pnj1.setPushable(false)
-            this.pnj1.body.setSize(48,64)
+            this.PNJintroCollide = this.physics.add.image(this.pnj1.x, this.pnj1.y, 'PNJintroCollide');
+            this.PNJintroCollide.body.setSize(32,32)
+            this.PNJintroCollide.setPushable(false)
+            this.physics.add.collider(this.player,this.PNJintroCollide)
+
+            this.pnj1.body.setSize(48,70)
             this.pnj1.setOffset(-8,0)
             this.physics.add.overlap(this.player,this.pnj1,this.parlerPNJ1,null,this);
+
+            //pnj vehicule
+            this.PNJvehicule = this.physics.add.image(700, 150, 'PNJvehicule');
+            this.PNJvehiculeCollide = this.physics.add.image(this.PNJvehicule.x, this.PNJvehicule.y, 'PNJvehiculeCollide');
+            this.PNJvehiculeCollide.body.setSize(64,32)
+            this.PNJvehiculeCollide.setPushable(false)
+            this.physics.add.collider(this.player,this.PNJvehiculeCollide)
+
+            this.PNJvehicule.body.setSize(64,70)
+            this.PNJvehicule.setOffset(0,0)
+            this.physics.add.overlap(this.player,this.PNJvehicule,this.parlerPNJvehicule,null,this);
 
             ///////////////////////////////////////////////////////////////
             /////////////////////////TOUCHES///////////////////////////////
@@ -764,7 +844,7 @@
                 
             }
 
-            if (this.vehicule.x > 500){
+            if (this.vehicule.x > 1200){
                 this.vehicule.anims.play('animVehiculeStop', true)
             }
 
@@ -906,7 +986,34 @@
                 this.bidonEssenceInterface.setDepth(10)
             }
 
+            // quete de l'arosoire interface
+            if (this.quetePlanteInterface == true){
+                this.bidonEssenceInterface = this.add.image(434, 162,'arosoirInterface').setScale(0.4)
+                this.bidonEssenceInterface.setScrollFactor(0);  
+                this.bidonEssenceInterface.setDepth(10)
+
+                // plante interface
+                this.plantePriseEcran = this.add.image(275, 198,'planteArosoireInterface').setScale(0.4);
+                this.plantePriseEcran.setDepth(100)
+                this.plantePriseEcran.setScrollFactor(0);  
+
+                this.plantePriseTexte.setDepth(100)
+                this.plantePriseTexte.setScale(0.7);
+                this.plantePriseTexte.setScrollFactor(0);
+
+                this.physics.add.overlap( this.player, this.plante, this.aroserPlante, null,this)
+            }
+
             this.barreDeVie()
+        }
+
+        aroserPlante(player,plante){
+            if (Phaser.Input.Keyboard.JustDown(this.toucheF)) {
+                plante.destroy()
+                this.planteArosee = this.physics.add.sprite(plante.x + 16 ,plante.y + 14,'planteArosee')
+                this.plantePrise+= 1
+                this.plantePriseTexte.setText(this.plantePrise)
+            }
         }
 
         ouvrirCoffre(player,coffre){
@@ -964,15 +1071,15 @@
             if (this.entrerActif == true){
                 if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
                     this.animVehicule = true
+
                 }
-                
                 if (this.animVehicule == true){
                     this.cameras.main.startFollow(vehicule); 
                     this.cameras.main.zoom = 2
                     this.player.x = this.vehicule.x
                     this.player.y = this.vehicule.y
                 }
-                if (vehicule.x > 500){
+                if (vehicule.x > 1200){
                     this.player.x = this.vehicule.x + 160
                     this.player.y = this.vehicule.y + 5
                     this.quitterVheicule = true
@@ -1070,13 +1177,16 @@
         ////////DISCUSSIONS AVEC LES PNJ/////////
         /////////////////////////////////////////
         parlerPNJ1(player,pnj1){
-            if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
-                this.dialogue = true
-                this.textintro = this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"TexteIntro1").setScale(0.35)
-                this.textintro.setDepth(11)
-                this.textintro.setScrollFactor(0)
-                this.textintro.setInteractive()
-                this.deuxiemeDialogue = true
+            if (this.premierDialogueActif == false){
+                if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
+                    this.dialogue = true
+                    this.textintro = this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"TexteIntro1").setScale(0.35)
+                    this.textintro.setDepth(11)
+                    this.textintro.setScrollFactor(0)
+                    this.textintro.setInteractive()
+                    this.deuxiemeDialogue = true
+                    this.premierDialogueActif = true
+                }
             }
             if (this.deuxiemeDialogue == true){
                 if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
@@ -1089,9 +1199,42 @@
                 if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
                     this.textintro.destroy()
                     this.dialogue = false
+                    this.premierDialogueActif = false
                 }
             }
         }
+        
+        parlerPNJvehicule(player,PNJvehicule){
+            if (this.premierDialogueActif == false){
+                if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
+                    this.dialogue = true
+                    this.TextePNJVehicule = this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"TextePNJVehicule1").setScale(0.35)
+                    this.TextePNJVehicule.setDepth(11)
+                    this.TextePNJVehicule.setScrollFactor(0)
+                    this.TextePNJVehicule.setInteractive()
+                    this.deuxiemeDialogue = true
+                    this.premierDialogueActif = true
+                }
+            }
+            if (this.deuxiemeDialogue == true){
+                if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
+                    this.TextePNJVehicule.setTexture('TextePNJVehicule2') 
+                    this.dernierDialogue = true
+                    this.deuxiemeDialogue = false              
+                }
+            }
+            if (this.dernierDialogue == true){
+                if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
+                    this.TextePNJVehicule.destroy()
+                    this.dialogue = false
+                    this.premierDialogueActif = false
+                }
+            }
+        }
+        
+        /////////////////////////////////////////
+        //////////changements de scènes//////////
+        /////////////////////////////////////////
 
         goInsideGrotto(player,entreeGrotte){
             if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
@@ -1134,7 +1277,9 @@
                     solde: this.solde,
                     reacteur1Pris: this.reacteur1Pris,
                     reacteur2Pris:this.reacteur2Pris,
-                    reacteursBackgroundInterface: this.reacteursBackgroundInterface
+                    reacteursBackgroundInterface: this.reacteursBackgroundInterface,
+                    quetePlanteInterface:this.quetePlanteInterface,
+                    plantePrise: this.plantePrise
                 })
             }
         }
@@ -1157,7 +1302,8 @@
                     solde: this.solde,
                     reacteur1Pris: this.reacteur1Pris,
                     reacteur2Pris:this.reacteur2Pris,
-                    reacteursBackgroundInterface: this.reacteursBackgroundInterface
+                    reacteursBackgroundInterface: this.reacteursBackgroundInterface,
+                    premierDialogueActif: this.premierDialogueActif 
                 })
             }
         }
@@ -1369,6 +1515,7 @@
                 key: 'persoMort',
                 frames: this.anims.generateFrameNumbers('persoMort', {start:0,end:3}),
                 frameRate: 5,
+                repeat: 0
             });
             
             // animations lorsque le joueur à le sabre en main
@@ -1476,13 +1623,11 @@
             this.coeurEcran.setDepth(10)
 
             // monnaie interface
-            this.monnaieEcran = this.add.image(275, 185,'monnaieInterface').setScale(0.5);
+            this.monnaieEcran = this.add.image(275, 182,'monnaieInterface').setScale(0.4);
             this.monnaieEcran.setDepth(100)
             this.monnaieEcran.setScrollFactor(0);  
-            this.monnaieTexte = this.add.text(288, 174,this.solde, {
-                font: '30px Poppins semibold',
-                fill: "#0022BD" 
-            });
+
+            this.monnaieTexte = this.add.text(286, 174, this.solde, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
             this.monnaieTexte.setDepth(100)
             this.monnaieTexte.setScale(0.7);
             this.monnaieTexte.setScrollFactor(0);
@@ -1508,7 +1653,24 @@
             this.playerCollision2.x = this.player.x
             this.playerCollision2.y = this.player.y
 
-            this.enemis.playAnimation("frontEnnemis",[0])
+
+                
+            
+
+
+            this.enemis.getChildren().forEach(function(enemi) {
+
+            if( enemi.velocityY > 0){
+                enemi.anims.play('frontEnnemis', true)
+            }
+
+            });
+
+            
+                
+            
+
+        
 
             if (this.dialogue ==false){
 
@@ -1605,8 +1767,6 @@
                     }
                 }
             }
-        
-
         
                 if (this.test > 0){
                 if (this.monnaieTest.x > this.player.x)
@@ -1749,7 +1909,6 @@
                 this.monnaieTexte.setText(this.solde)
                 this.test --
             }
-            
         }
 
         prendreReacteur1(player,reacteur1){
@@ -1779,7 +1938,6 @@
             if (this.pointDeVie == 0){
                 this.coeurEcran.setTexture('0HP')
                 this.dialogue = true
-                this.player.anims.play('persoMort', false); 
                 this.tempsAvantRespawn = true
             }
         }
@@ -1857,6 +2015,7 @@
             this.reacteur1Pris = data.reacteur1Pris,
             this.reacteur2Pris = data.reacteur2Pris,
             this.reacteursBackgroundInterface = data.reacteursBackgroundInterface
+            this.premierDialogueActif = data.premierDialogueActif 
         }
 
         preload(){
@@ -1866,6 +2025,9 @@
 
             this.load.spritesheet('perso','assets/perso.png',
             { frameWidth: 32, frameHeight: 32 });
+
+            // pnj 
+            this.load.image("pnjMaisonLunnaire", "assets/PNJ2.png");
 
             this.load.image("sabreInterface", "assets/interface/sabreInterface.png");
 
@@ -1993,13 +2155,11 @@
             this.coeurEcran.setDepth(9)
 
             // monnaie interface
-            this.monnaieEcran = this.add.image(275, 185,'monnaieInterface').setScale(0.5);
+            this.monnaieEcran = this.add.image(275, 182,'monnaieInterface').setScale(0.4);
             this.monnaieEcran.setDepth(100)
             this.monnaieEcran.setScrollFactor(0);  
-            this.monnaieTexte = this.add.text(288, 174,this.solde, {
-                font: '30px Poppins semibold',
-                fill: "#0022BD" 
-            });
+
+            this.monnaieTexte = this.add.text(286, 174, this.solde, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
             this.monnaieTexte.setDepth(100)
             this.monnaieTexte.setScale(0.7);
             this.monnaieTexte.setScrollFactor(0);
@@ -2008,7 +2168,7 @@
             //////////////////////////////PNJ//////////////////////////////
             ///////////////////////////////////////////////////////////////
 
-            this.pnj = this.physics.add.image(2000,1275, 'pnj1');
+            this.pnj = this.physics.add.image(2000,1275, 'pnjMaisonLunnaire');
             this.pnj.setPushable(false)
             this.pnj.body.setSize(48,70)
             this.pnj.setOffset(-8,0)
@@ -2038,7 +2198,7 @@
                 this.moveLeft = ( this.cursors.left.isDown || this.keys.q.isDown )  
                 this.moveRight = ( this.cursors.right.isDown || this.keys.d.isDown ) 
                 this.moveDown = ( this.cursors.down.isDown || this.keys.s.isDown ) 
-                
+                console.log(this.premierDialogueActif)
 
                 const speed = 100
 
@@ -2118,13 +2278,16 @@
 
             parlerPNJ(player,pnj){
             if (this.reacteur1Pris == false){
-                if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
-                    this.dialogue = true
-                    this.texteAvantGrotte = this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"TexteAvantGrotte1").setScale(0.35)
-                    this.texteAvantGrotte.setDepth(10)
-                    this.texteAvantGrotte.setScrollFactor(0)
-                    this.texteAvantGrotte.setInteractive()
-                    this.deuxiemeDialogue = true
+                if (this.premierDialogueActif == false){
+                    if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
+                        this.dialogue = true
+                        this.texteAvantGrotte = this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"TexteAvantGrotte1").setScale(0.35)
+                        this.texteAvantGrotte.setDepth(10)
+                        this.texteAvantGrotte.setScrollFactor(0)
+                        this.texteAvantGrotte.setInteractive()
+                        this.premierDialogueActif = true
+                        this.deuxiemeDialogue = true
+                    }
                 }
 
                 if (this.deuxiemeDialogue == true){
@@ -2140,20 +2303,25 @@
                         this.texteAvantGrotte.destroy()
                         this.reacteursBackgroundInterface = true
                         this.dialogue = false
+                        this.premierDialogueActif = false
                     }
                 }
             }
             else {
-                if (Phaser.Input.Keyboard.JustDown(this.toucheF)) {
-                    this.texteApresGrotte = this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"TexteAprèstGrotte").setScale(0.35)
-                    this.texteApresGrotte.setDepth(10)
-                    this.texteApresGrotte.setScrollFactor(0)
-                    this.texteApresGrotte.setInteractive()
-                    this.dialogue = true
+                if (this.premierDialogueActif == false){
+                    if (Phaser.Input.Keyboard.JustDown(this.toucheF)) {
+                        this.texteApresGrotte = this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"TexteAprèstGrotte").setScale(0.35)
+                        this.texteApresGrotte.setDepth(10)
+                        this.texteApresGrotte.setScrollFactor(0)
+                        this.texteApresGrotte.setInteractive()
+                        this.dialogue = true
+                        this.premierDialogueActif = true
+                    }
                 }
                 if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
                     this.texteApresGrotte.destroy()
                     this.dialogue = false
+                    this.premierDialogueActif = false
                 }
             }
             
@@ -2252,6 +2420,8 @@
             this.reacteur1Pris = data.reacteur1Pris,
             this.reacteur2Pris = data.reacteur2Pris,
             this.reacteursBackgroundInterface = data.reacteursBackgroundInterface
+            this.quetePlanteInterface = data.quetePlanteInterface,
+            this.plantePrise = data.plantePrise
         }
 
         preload(){
@@ -2379,13 +2549,11 @@
             this.coeurEcran.setDepth(1000)
 
             // monnaie interface
-            this.monnaieEcran = this.add.image(275, 185,'monnaieInterface').setScale(0.5);
+            this.monnaieEcran = this.add.image(275, 182,'monnaieInterface').setScale(0.4);
             this.monnaieEcran.setDepth(100)
             this.monnaieEcran.setScrollFactor(0);  
-            this.monnaieTexte = this.add.text(288, 174,this.solde, {
-                font: '30px Poppins semibold',
-                fill: "#0022BD" 
-            });
+
+            this.monnaieTexte = this.add.text(286, 174, this.solde, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
             this.monnaieTexte.setDepth(100)
             this.monnaieTexte.setScale(0.7);
             this.monnaieTexte.setScrollFactor(0);
@@ -2408,6 +2576,10 @@
         }
 
         update(){
+            if (this.solde == 0){
+                this.monnaieTexte.setText(this.solde)
+            }
+
                 this.moveUp = ( this.cursors.up.isDown || this.keys.z.isDown )  
                 this.moveLeft = ( this.cursors.left.isDown || this.keys.q.isDown )  
                 this.moveRight = ( this.cursors.right.isDown || this.keys.d.isDown ) 
@@ -2529,7 +2701,8 @@
                     solde: this.solde,
                     reacteur1Pris: this.reacteur1Pris,
                     reacteur2Pris:this.reacteur2Pris,
-                    reacteursBackgroundInterface: this.reacteursBackgroundInterface
+                    reacteursBackgroundInterface: this.reacteursBackgroundInterface,
+                    plantePrise: this.plantePrise
                 })
             }
         }
