@@ -32,7 +32,7 @@
         update(){
             this.scene.start("sceneJeu", {
                 pointDeVie:4,
-                sabreInterface:false,
+                sabreInterface:true,
                 dialogue:false,
                 trancherActif:false,
                 pouvoirAttaquer:false,
@@ -42,12 +42,13 @@
                 tempsAvantRespawn:false,
                 porteOuverte:false,
                 entreeBatiment:false,
-                carteMagnetiqueInterface: false,
+                carteMagnetiqueInterface: true,
                 solde:0,
-                reacteur1Pris:false,
-                reacteur2Pris:false,
-                reacteursBackgroundInterface:false,
-                quetePlanteInterface:false,
+                reacteur1Pris:true,
+                reacteur2Pris:true,
+                reacteursBackgroundInterface:true,
+                quetePlanteInterface:true,
+                quetePlanteInterfaceArosoir:false,
                 plantePrise: 0,
                 premierDialogueActif : false
             })
@@ -80,6 +81,7 @@
             this.reacteur2Pris = data.reacteur2Pris,
             this.reacteursBackgroundInterface = data.reacteursBackgroundInterface
             this.quetePlanteInterface = data.quetePlanteInterface
+            this.quetePlanteInterfaceArosoir = data.quetePlanteInterfaceArosoir
             this.plantePrise = data.plantePrise
             this.premierDialogueActif = data.premierDialogueActif 
         }
@@ -284,7 +286,7 @@
             this.entreeBatiment = false
             this.coffreAnimStop = false
             this.dropCoffreActif = false
-            this.dropCoffreInterface = false
+            this.dropCoffreInterface = true
 
             this.physics.add.collider(this.player, build);
             this.physics.add.collider(this.vehicule, build);
@@ -535,23 +537,13 @@
 
             this.plante = this.physics.add.group({
             });      
-            this.aroserLaPlante = this.physics.add.group({
-                immovable: true
-            });
+
 
             carte.getObjectLayer('plante').objects.forEach((plante) => {
             this.planteOverlap = this.plante.create(plante.x, plante.y, 'planteAroseeAvant').setOrigin(0);
-
-            this.planteHitbox = this.aroserLaPlante.create(plante.x, plante.y, 'arosserPlanteOverlap').setOrigin(0);
-            this.planteHitbox.body.setSize(22,14)
-            this.planteHitbox.setOffset(5,16)
             this.planteOverlap.body.setSize(60, 60);
             this.planteOverlap.setOffset(-14,-6)
             });
-
-            this.physics.add.collider(this.player,this.planteHitbox);
-
-
 
             ////////////////////////////////////////////////////////////
             // placement du coffre Essence
@@ -627,6 +619,17 @@
             /////////////////////////INTERFACE/////////////////////////////
             ///////////////////////////////////////////////////////////////
 
+            // sabre à l'écran invisible
+            this.sabreEcran = this.add.image(0, 0,'sabreInterface').setScale(0.4)
+            // carte magnétique à l'écran invisible
+            this.carteMagnetiqueEcran = this.add.image(0, 0,'carteMagnetiqueInterface').setScale(0.4)
+            // background reacteur à l'écran invisible
+            this.reacteursEcranBackground = this.add.image(0, 0,'reacteursInterfaces').setScale(0.5)
+            // reacteur 1 à l'écran invisible
+            this.reacteur1Ecran = this.add.image(0, 0,'réacteur1').setScale(0.4)
+            // bidon d'essernce à l'écran invisible
+            this.bidonEssenceInterface = this.add.image(0, 0,'bidonEssenceInterface').setScale(0.4)
+
             //vie interface
             this.coeurEcran = this.add.image(306, 161,'4HP').setScale(0.7)
             this.coeurEcran.setInteractive()
@@ -645,8 +648,7 @@
             this.monnaieTexte.setScrollFactor(0);
 
             // plante interface
-                            this.plantePriseTexte = this.add.text(286, 190, this.plantePrise, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
-
+            this.plantePriseTexte = this.add.text(286, 190, this.plantePrise, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
 
             ///////////////////////////////////////////////////////////////
             //////////////////////////////PNJ//////////////////////////////
@@ -806,7 +808,7 @@
             }
 
             // deplacement vehicule
-            if (this.animVehicule == true){
+            if (this.animVehicule == true){     
                 if (this.moveLeft) {
                     this.vehicule.setSize(180,70,true)
                     this.vehicule.setOffset(0,20)
@@ -841,7 +843,6 @@
                     this.vehicule.setVelocityX(0)
                     this.vehicule.setVelocityY(0)
                 }
-                
             }
 
             if (this.vehicule.x > 1200){
@@ -849,6 +850,10 @@
             }
 
             if (this.quitterVheicule == true){
+                this.coeurEcran.setPosition(306, 161).setScale(0.7);
+                this.monnaieEcran.setPosition(275, 182).setScale(0.4);  
+                this.monnaieTexte.setPosition(286, 174).setScale(0.7)
+
                 this.entrerActif = false
                 this.cameras.main.startFollow(this.player); 
                 this.cameras.main.zoom = 3
@@ -879,37 +884,36 @@
 
             //sabre interface
             if (this.sabreInterface == true){
-                this.sabreEcran = this.add.image(390, 162,'sabreInterface').setScale(0.4)
-                this.sabreEcran.setInteractive()
+                this.sabreEcran.setPosition(412, 162).setScale(0.4);
                 this.sabreEcran.setScrollFactor(0);  
                 this.sabreEcran.setDepth(10)
             }
             
             //carte magnétique interface
             if (this.carteMagnetiqueInterface == true){
-                this.carteMagnetiqueEcran = this.add.image(368, 162,'carteMagnetiqueInterface').setScale(0.4)
+                this.carteMagnetiqueEcran.setPosition(434, 162).setScale(0.4);
                 this.carteMagnetiqueEcran.setScrollFactor(0);  
                 this.carteMagnetiqueEcran.setDepth(10)
             }
 
             // affichage background réacteurs sur l'interface
             if (this.reacteursBackgroundInterface == true){
-                this.reacteursEcranBackground = this.add.image(476, 170,'reacteursInterfaces').setScale(0.5)
+                this.reacteursEcranBackground.setPosition(476, 170).setScale(0.5);
                 this.reacteursEcranBackground.setScrollFactor(0);  
                 this.reacteursEcranBackground.setDepth(10)
             }
             // réacteur 1 interface
             if (this.reacteur1Pris == true){
-                this.reacteur1Ecran = this.add.image(464, 174,'réacteur1').setScale(0.4)
+                this.reacteur1Ecran.setPosition(464, 174).setScale(0.4);
                 this.reacteur1Ecran.setInteractive()
                 this.reacteur1Ecran.setScrollFactor(0);  
                 this.reacteur1Ecran.setDepth(10)
             }
             // réacteur 2 interface
             if (this.reacteur2Pris == true){
-                this.reacteur1Ecran = this.add.image(488, 174,'réacteur2').setScale(0.4)
-                this.reacteur1Ecran.setScrollFactor(0);  
-                this.reacteur1Ecran.setDepth(10)
+                this.reacteur2Ecran = this.add.image(488, 174,'réacteur2').setScale(0.4)
+                this.reacteur2Ecran.setScrollFactor(0);  
+                this.reacteur2Ecran.setDepth(10)
             }
 
             // timer pour prendre le drop du coffre
@@ -981,17 +985,13 @@
 
             // drop du coffre essence interface
             if (this.dropCoffreInterface == true){
-                this.bidonEssenceInterface = this.add.image(412, 162,'bidonEssenceInterface').setScale(0.4)
+                this.bidonEssenceInterface.setPosition(390,162)  
                 this.bidonEssenceInterface.setScrollFactor(0);  
                 this.bidonEssenceInterface.setDepth(10)
             }
 
             // quete de l'arosoire interface
             if (this.quetePlanteInterface == true){
-                this.bidonEssenceInterface = this.add.image(434, 162,'arosoirInterface').setScale(0.4)
-                this.bidonEssenceInterface.setScrollFactor(0);  
-                this.bidonEssenceInterface.setDepth(10)
-
                 // plante interface
                 this.plantePriseEcran = this.add.image(275, 198,'planteArosoireInterface').setScale(0.4);
                 this.plantePriseEcran.setDepth(100)
@@ -1002,6 +1002,27 @@
                 this.plantePriseTexte.setScrollFactor(0);
 
                 this.physics.add.overlap( this.player, this.plante, this.aroserPlante, null,this)
+            }
+
+            if (this.quetePlanteInterfaceArosoir == true){
+                this.arosoirInterface = this.add.image(390, 162,'arosoirInterface').setScale(0.4)
+                this.arosoirInterface.setScrollFactor(0);  
+                this.arosoirInterface.setDepth(10)
+            }
+
+            // changement de l'emplacement de l'interface lorsque l'on est dans le vehicule
+            if (this.animVehicule == true){
+                this.coeurEcran.setPosition(267, 134).setScale(1.05);
+                this.monnaieEcran.setPosition(220, 165).setScale(0.7);  
+                this.monnaieTexte.setPosition(238, 151).setScale(1.25)
+
+                this.carteMagnetiqueEcran.setPosition(394, 135).setScale(0.6);
+                this.sabreEcran.setPosition(428, 135).setScale(0.6);
+
+                this.reacteur1Ecran.setPosition(504, 152).setScale(0.6);
+                this.reacteursEcranBackground.setPosition(522, 146).setScale(0.74);
+                this.bidonEssenceInterface.setPosition(0,0)  
+
             }
 
             this.barreDeVie()
@@ -1037,6 +1058,7 @@
                 this.dropCoffreHpActif = true
             }
         }
+
         ouvrircoffreMonnaie(player,coffreMonnaie){
             if (Phaser.Input.Keyboard.JustDown(this.toucheF)) {
                 coffreMonnaie.destroy()
@@ -1052,6 +1074,7 @@
         prendreDropCoffre(player,dropCoffre){
             dropCoffre.destroy()
             this.dropCoffreInterface = true
+            this.entrerActif = true
         }
 
         collectSabre(player,sabre){
@@ -1071,7 +1094,6 @@
             if (this.entrerActif == true){
                 if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
                     this.animVehicule = true
-
                 }
                 if (this.animVehicule == true){
                     this.cameras.main.startFollow(vehicule); 
@@ -1176,6 +1198,7 @@
         /////////////////////////////////////////
         ////////DISCUSSIONS AVEC LES PNJ/////////
         /////////////////////////////////////////
+
         parlerPNJ1(player,pnj1){
             if (this.premierDialogueActif == false){
                 if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
@@ -1279,6 +1302,7 @@
                     reacteur2Pris:this.reacteur2Pris,
                     reacteursBackgroundInterface: this.reacteursBackgroundInterface,
                     quetePlanteInterface:this.quetePlanteInterface,
+                    quetePlanteInterfaceArosoir:this.quetePlanteInterfaceArosoir,
                     plantePrise: this.plantePrise
                 })
             }
@@ -2421,6 +2445,7 @@
             this.reacteur2Pris = data.reacteur2Pris,
             this.reacteursBackgroundInterface = data.reacteursBackgroundInterface
             this.quetePlanteInterface = data.quetePlanteInterface,
+            this.quetePlanteInterfaceArosoir = data.quetePlanteInterfaceArosoir,
             this.plantePrise = data.plantePrise
         }
 
