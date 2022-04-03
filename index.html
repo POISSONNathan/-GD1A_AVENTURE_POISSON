@@ -183,6 +183,8 @@
             this.load.image("TextePNJVehicule2", "assets/interface/texte/TextePNJVehicule2.png");
             this.load.image("TextePNJApresVehicule", "assets/interface/texte/TextePNJApresVehicule.png");
 
+            this.load.image("TexteMarchand", "assets/interface/texte/TexteMarchand.png");
+
             // reacteurs
             this.load.image("réacteur1", "assets/objets/réacteur1.png");
             this.load.image("réacteur2", "assets/objets/réacteur2.png");
@@ -229,9 +231,11 @@
             // overlap corffre
             this.load.image("ouvrirCoffreMarchand", "assets/objets/emplacementChangementDeScene/changementScene.png");
 
-
             // prix marchand
             this.load.image("prixMarchand", "assets/interface/prixMarchand.png");
+
+            // pnj marchand
+            this.load.image("marchand", "assets/marchand.png");
 
             // dash interface
             this.load.image("dashInterface", "assets/interface/dashInterface.png");
@@ -790,6 +794,19 @@
             this.PNJvehicule.body.setSize(64,70)
             this.PNJvehicule.setOffset(0,0)
             this.physics.add.overlap(this.player,this.PNJvehicule,this.parlerPNJvehicule,null,this);
+
+            // marchand
+            this.marchand = this.physics.add.image(this.prixMarchand.x + 66, this.prixMarchand.y + 112, 'marchand');
+            this.marchand.setPushable(false)
+            this.physics.add.collider(this.player,this.marchand)
+            this.marchand.body.setSize(26,30)
+            this.marchand.setOffset(3,2)
+
+            this.marchandOverlap = this.physics.add.image(this.marchand.x, this.marchand.y, 'PNJintroCollide');
+            this.marchandOverlap.body.setSize(48,70)
+            this.marchandOverlap.setOffset(-8,0)
+
+            this.physics.add.overlap(this.player,this.marchandOverlap,this.parlerMarchand,null,this);
 
             ///////////////////////////////////////////////////////////////
             /////////////////////////TOUCHES///////////////////////////////
@@ -1551,6 +1568,24 @@
             }   
         }
         
+        parlerMarchand(player,marchand){
+            if (this.premierDialogueActif == false){
+                    if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
+                        this.dialogue = true
+                        this.TextePNJVehiculeApres = this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"TexteMarchand").setScale(0.35)
+                        this.TextePNJVehiculeApres.setDepth(11)
+                        this.TextePNJVehiculeApres.setScrollFactor(0)
+                        this.TextePNJVehiculeApres.setInteractive()
+                        this.premierDialogueActif = true
+                    }
+                }
+
+                if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
+                    this.TextePNJVehiculeApres.destroy()
+                    this.dialogue = false
+                    this.premierDialogueActif = false
+                }
+        }
         /////////////////////////////////////////
         //////////changements de scènes//////////
         /////////////////////////////////////////
