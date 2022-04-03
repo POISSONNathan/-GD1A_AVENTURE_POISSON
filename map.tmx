@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="200" height="200" tilewidth="32" tileheight="32" infinite="0" nextlayerid="29" nextobjectid="182">
+<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="200" height="200" tilewidth="32" tileheight="32" infinite="0" nextlayerid="32" nextobjectid="185">
  <editorsettings>
   <export target="map.json" format="json"/>
  </editorsettings>
@@ -5993,7 +5993,7 @@
 </data>
  </layer>
  <objectgroup id="21" name="spawnJoueur">
-  <object id="105" name="Spawn Joueur" x="800.333" y="165.833">
+  <object id="105" name="Spawn Joueur" x="951" y="217.833">
    <point/>
   </object>
  </objectgroup>
@@ -6012,5 +6012,8 @@
  <objectgroup id="28" name="plante">
   <object id="174" gid="838" x="800" y="256" width="32" height="32"/>
   <object id="175" gid="838" x="672" y="256" width="32" height="32"/>
+ </objectgroup>
+ <objectgroup id="31" name="prixMarchand">
+  <object id="184" gid="900" x="1024" y="256" width="32" height="32"/>
  </objectgroup>
 </map>

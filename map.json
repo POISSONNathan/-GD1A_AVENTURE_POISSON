@@ -76,8 +76,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":800.333333333333,
-                 "y":165.833333333333
+                 "x":950.999666666667,
+                 "y":217.833
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -223,9 +223,32 @@
          "visible":true,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":31,
+         "name":"prixMarchand",
+         "objects":[
+                {
+                 "gid":900,
+                 "height":32,
+                 "id":184,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":1024,
+                 "y":256
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":29,
- "nextobjectid":182,
+ "nextlayerid":32,
+ "nextobjectid":185,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",
