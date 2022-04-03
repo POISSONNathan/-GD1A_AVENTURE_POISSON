@@ -5992,21 +5992,12 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="17" name="coeur">
-  <object id="57" gid="993" x="320" y="480" width="32" height="32"/>
-  <object id="58" gid="993" x="224" y="512" width="32" height="32"/>
- </objectgroup>
  <objectgroup id="21" name="spawnJoueur">
   <object id="105" name="Spawn Joueur" x="800.333" y="165.833">
    <point/>
   </object>
  </objectgroup>
  <objectgroup id="22" name="spawnEnnemi"/>
- <objectgroup id="23" name="monnaie">
-  <object id="112" gid="683" x="416" y="512" width="32" height="32"/>
-  <object id="113" gid="683" x="544" y="576" width="32" height="32"/>
-  <object id="114" gid="683" x="640" y="512" width="32" height="32"/>
- </objectgroup>
  <objectgroup id="24" name="reacteurs2">
   <object id="115" gid="745" x="352" y="352" width="32" height="32"/>
  </objectgroup>

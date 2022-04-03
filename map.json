@@ -64,41 +64,6 @@
         }, 
         {
          "draworder":"topdown",
-         "id":17,
-         "name":"coeur",
-         "objects":[
-                {
-                 "gid":993,
-                 "height":32,
-                 "id":57,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":320,
-                 "y":480
-                }, 
-                {
-                 "gid":993,
-                 "height":32,
-                 "id":58,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":224,
-                 "y":512
-                }],
-         "opacity":1,
-         "type":"objectgroup",
-         "visible":true,
-         "x":0,
-         "y":0
-        }, 
-        {
-         "draworder":"topdown",
          "id":21,
          "name":"spawnJoueur",
          "objects":[
@@ -125,53 +90,6 @@
          "id":22,
          "name":"spawnEnnemi",
          "objects":[],
-         "opacity":1,
-         "type":"objectgroup",
-         "visible":true,
-         "x":0,
-         "y":0
-        }, 
-        {
-         "draworder":"topdown",
-         "id":23,
-         "name":"monnaie",
-         "objects":[
-                {
-                 "gid":683,
-                 "height":32,
-                 "id":112,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":416,
-                 "y":512
-                }, 
-                {
-                 "gid":683,
-                 "height":32,
-                 "id":113,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":544,
-                 "y":576
-                }, 
-                {
-                 "gid":683,
-                 "height":32,
-                 "id":114,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":640,
-                 "y":512
-                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
