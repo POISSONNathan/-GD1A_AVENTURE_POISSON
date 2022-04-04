@@ -33,11 +33,20 @@
             this.load.image("accueil", "assets/accueil.png");
 
         }
-        create(){}
-        update(){
-            this.scene.start("sceneJeu", {
+
+        create(){
+            this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"accueil").setScale(0.53);
+
+
+        this.cursors = this.input.keyboard.createCursorKeys();
+
+        var startButton = this.add.image(500,380, 'bouttonPlay').setScale(0.53).setInteractive();
+
+            startButton.on('pointerdown', function (pointer) {
+
+                this.scene.scene.start("sceneJeu", {
                 pointDeVie:4,
-                sabreInterface:false,
+                sabreInterface:true,
                 dialogue:false,
                 trancherActif:false,
                 pouvoirAttaquer:false,
@@ -47,13 +56,13 @@
                 tempsAvantRespawn:false,
                 porteOuverte:false,
                 entreeBatiment:false,
-                carteMagnetiqueInterface: false,
+                carteMagnetiqueInterface: true,
                 solde:30,
-                reacteur1Pris:false,
-                reacteur2Pris:false,
-                reacteursBackgroundInterface:false,
-                quetePlanteInterface:false,
-                quetePlanteInterfaceArosoir:false,
+                reacteur1Pris:true,
+                reacteur2Pris:true,
+                reacteursBackgroundInterface:true,
+                quetePlanteInterface:true,
+                quetePlanteInterfaceArosoir:true,
                 plantePrise: 0,
                 premierDialogueActif : false,
                 compteurTempsAvantAtaque: 100 ,  
@@ -63,9 +72,12 @@
                 acheterDash: false,
                 dash: 0,
                 nbrDash: 0,
-                afficheInterfaceDash: false
-            })
+                afficheInterfaceDash: true
+        })
+        });
         }
+
+        update(){}
 
     }
 
@@ -750,35 +762,35 @@
             this.bidonEssenceInterface = this.add.image(0, 0,'bidonEssenceInterface').setScale(0.4)
 
             //vie interface
-            this.coeurEcran = this.add.image(306, 161,'4HP').setScale(0.7)
+            this.coeurEcran = this.add.image(400, 210,'4HP').setScale(0.8)
             this.coeurEcran.setInteractive()
             this.coeurEcran.setScrollFactor(0);  
 
             this.coeurEcran.setDepth(10)
 
             // monnaie interface
-            this.monnaieEcran = this.add.image(275, 182,'monnaieInterface').setScale(0.4);
+            this.monnaieEcran = this.add.image(370, 240,'monnaieInterface').setScale(0.6);
             this.monnaieEcran.setDepth(100)
             this.monnaieEcran.setScrollFactor(0);  
 
-            this.monnaieTexte = this.add.text(286, 174, this.solde, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
+            this.monnaieTexte = this.add.text(388, 232, this.solde, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
             this.monnaieTexte.setDepth(100)
             this.monnaieTexte.setScale(0.7);
             this.monnaieTexte.setScrollFactor(0);
 
-            this.dashEcran = this.add.image(0, 0,'dashInterface').setScale(0.5);
+            this.dashEcran = this.add.image(0, 0,'dashInterface').setScale(0.6);
             this.dashEcran.setDepth(100)
             this.dashEcran.setScrollFactor(0);  
 
-            this.dashTexte = this.add.text(0, 0, this.nbrDash, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
+            this.dashTexte = this.add.text(0, 0, this.nbrDash, { fontFamily: 'CustomFont',fontSize:28,color:"#465ed1" });
             this.dashTexte.setDepth(100)
             this.dashTexte.setScale(0.7);
             this.dashTexte.setScrollFactor(0);
 
             // plante interface
-            this.plantePriseEcran = this.add.image(0, 0,'planteArosoireInterface').setScale(0.4);
+            this.plantePriseEcran = this.add.image(0, 0,'planteArosoireInterface').setScale(0.6);
 
-            this.plantePriseTexte = this.add.text(286, 190, this.plantePrise, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
+            this.plantePriseTexte = this.add.text(286, 190, this.plantePrise, { fontFamily: 'CustomFont',fontSize:28,color:"#465ed1" });
 
             ///////////////////////////////////////////////////////////////
             //////////////////////////////PNJ//////////////////////////////
@@ -1019,37 +1031,37 @@
                     this.scene.restart()
                 }
             }
-
+            
             //sabre interface
             if (this.sabreInterface == true){
-                this.sabreEcran.setPosition(412, 162).setScale(0.4);
+                this.sabreEcran.setPosition(562, 220).setScale(0.5);
                 this.sabreEcran.setScrollFactor(0);  
                 this.sabreEcran.setDepth(10)
             }
             
             //carte magnétique interface
             if (this.carteMagnetiqueInterface == true){
-                this.carteMagnetiqueEcran.setPosition(434, 162).setScale(0.4);
+                this.carteMagnetiqueEcran.setPosition(590, 220).setScale(0.5);
                 this.carteMagnetiqueEcran.setScrollFactor(0);  
                 this.carteMagnetiqueEcran.setDepth(10)
             }
 
             // affichage background réacteurs sur l'interface
             if (this.reacteursBackgroundInterface == true){
-                this.reacteursEcranBackground.setPosition(476, 170).setScale(0.5);
+                this.reacteursEcranBackground.setPosition(644, 226).setScale(0.62);
                 this.reacteursEcranBackground.setScrollFactor(0);  
                 this.reacteursEcranBackground.setDepth(10)
             }
             // réacteur 1 interface
             if (this.reacteur1Pris == true){
-                this.reacteur1Ecran.setPosition(464, 174).setScale(0.4);
+                this.reacteur1Ecran.setPosition(626, 230).setScale(0.5);
                 this.reacteur1Ecran.setInteractive()
                 this.reacteur1Ecran.setScrollFactor(0);  
                 this.reacteur1Ecran.setDepth(10)
             }
             // réacteur 2 interface
             if (this.reacteur2Pris == true){
-                this.reacteur2Ecran = this.add.image(488, 174,'réacteur2').setScale(0.4)
+                this.reacteur2Ecran = this.add.image(660, 230,'réacteur2').setScale(0.5)
                 this.reacteur2Ecran.setScrollFactor(0);  
                 this.reacteur2Ecran.setDepth(10)
             }
@@ -1088,8 +1100,8 @@
             }
 
             if (this.afficheInterfaceDash == true){
-                this.dashEcran.setPosition(280, 206);
-                this.dashTexte.setPosition(278, 204);
+                this.dashEcran.setPosition(374, 292);
+                this.dashTexte.setPosition(370, 292);
             }
 
             // timer pour prendre le drop du coffre Hp
@@ -1177,7 +1189,7 @@
 
             // drop du coffre essence interface
             if (this.dropCoffreInterface == true){
-                this.bidonEssenceInterface.setPosition(390,162)  
+                this.bidonEssenceInterface.setPosition(534,220).setScale(0.5)  
                 this.bidonEssenceInterface.setScrollFactor(0);  
                 this.bidonEssenceInterface.setDepth(10)
                 this.dropCoffreInterface = false
@@ -1186,11 +1198,11 @@
             // quete de l'arosoire interface
             if (this.quetePlanteInterface == true){
                 // plante interface
-                this.plantePriseEcran.setPosition(275, 228);
+                this.plantePriseEcran.setPosition(370, 264);
                 this.plantePriseEcran.setDepth(100)
                 this.plantePriseEcran.setScrollFactor(0);  
 
-                this.plantePriseTexte.setPosition(286, 220);
+                this.plantePriseTexte.setPosition(386, 255);
                 this.plantePriseTexte.setDepth(100)
                 this.plantePriseTexte.setScale(0.7);
                 this.plantePriseTexte.setScrollFactor(0);
@@ -1199,7 +1211,7 @@
             }
 
             if (this.quetePlanteInterfaceArosoir == true){
-                this.arosoirInterface = this.add.image(390, 162,'arosoirInterface').setScale(0.4)
+                this.arosoirInterface = this.add.image(534,220,'arosoirInterface').setScale(0.5)
                 this.arosoirInterface.setScrollFactor(0);  
                 this.arosoirInterface.setDepth(10)
             }
@@ -1267,8 +1279,6 @@
                 if (this.dash == 0 || this.nbrDash == 0){
                     this.dialogue = false
                 }
-
-                console.log(this.dialogue)
 
             this.barreDeVie()
         }
@@ -2016,18 +2026,18 @@
             ///////////////////////////////////////////////////////////////
 
             //vie interface
-            this.coeurEcran = this.add.image(290, 152,'8HP').setScale(0.8)
+            this.coeurEcran = this.add.image(400, 210,'4HP').setScale(0.8)
             this.coeurEcran.setInteractive()
             this.coeurEcran.setScrollFactor(0);  
 
             this.coeurEcran.setDepth(10)
 
             // monnaie interface
-            this.monnaieEcran = this.add.image(253, 176,'monnaieInterface').setScale(0.5);
+            this.monnaieEcran = this.add.image(370, 240,'monnaieInterface').setScale(0.6);
             this.monnaieEcran.setDepth(100)
             this.monnaieEcran.setScrollFactor(0);  
 
-            this.monnaieTexte = this.add.text(265, 166, this.solde, { fontFamily: 'CustomFont',fontSize:30,color:"#465ed1" });
+            this.monnaieTexte = this.add.text(388, 232, this.solde, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
             this.monnaieTexte.setDepth(100)
             this.monnaieTexte.setScale(0.7);
             this.monnaieTexte.setScrollFactor(0);
@@ -2216,7 +2226,7 @@
 
             //sabre interface
             if (this.sabreInterface == true){
-                this.sabreEcran = this.add.image(417, 152,'sabreInterface').setScale(0.48)
+                this.sabreEcran = this.add.image(562, 220,'sabreInterface').setScale(0.5)
                 this.sabreEcran.setInteractive()
                 this.sabreEcran.setScrollFactor(0);  
                 this.sabreEcran.setDepth(10)
@@ -2224,7 +2234,7 @@
 
             //carte magnétique interface
             if (this.carteMagnetiqueInterface == true){
-                this.carteMagnetiqueEcran = this.add.image(444, 152,'carteMagnetiqueInterface').setScale(0.48)
+                this.carteMagnetiqueEcran = this.add.image(590, 220,'carteMagnetiqueInterface').setScale(0.5)
                 this.carteMagnetiqueEcran.setInteractive()
                 this.carteMagnetiqueEcran.setScrollFactor(0);  
                 this.carteMagnetiqueEcran.setDepth(10)
@@ -2232,13 +2242,13 @@
 
             // affichage background réacteurs sur l'interface
             if (this.reacteursBackgroundInterface == true){
-                this.reacteursEcranBackground = this.add.image(494, 160,'reacteursInterfaces').setScale(0.59)
+                this.reacteursEcranBackground = this.add.image(644, 226,'reacteursInterfaces').setScale(0.62)
                 this.reacteursEcranBackground.setScrollFactor(0);  
                 this.reacteursEcranBackground.setDepth(10)
             }
             // réacteur 1 interface
             if (this.reacteur1Pris == true){
-                this.reacteur1Ecran = this.add.image(480, 166,'réacteur1').setScale(0.48)
+                this.reacteur1Ecran = this.add.image(626, 230,'réacteur1').setScale(0.5)
                 this.reacteur1Ecran.setScrollFactor(0);  
                 this.reacteur1Ecran.setDepth(10)
             }
@@ -2543,18 +2553,18 @@
 
 
             //vie interface
-            this.coeurEcran = this.add.image(306, 161,'8HP').setScale(0.7)
+            this.coeurEcran = this.add.image(400, 210,'4HP').setScale(0.8)
             this.coeurEcran.setInteractive()
             this.coeurEcran.setScrollFactor(0);  
 
             this.coeurEcran.setDepth(9)
 
             // monnaie interface
-            this.monnaieEcran = this.add.image(275, 182,'monnaieInterface').setScale(0.4);
+            this.monnaieEcran = this.add.image(370, 240,'monnaieInterface').setScale(0.6);
             this.monnaieEcran.setDepth(100)
             this.monnaieEcran.setScrollFactor(0);  
 
-            this.monnaieTexte = this.add.text(286, 174, this.solde, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
+            this.monnaieTexte = this.add.text(388, 232, this.solde, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
             this.monnaieTexte.setDepth(100)
             this.monnaieTexte.setScale(0.7);
             this.monnaieTexte.setScrollFactor(0);
@@ -2632,7 +2642,7 @@
 
              //sabre interface
             if (this.sabreInterface == true){
-                this.sabreEcran = this.add.image(412, 162,'sabreInterface').setScale(0.4)
+                this.sabreEcran = this.add.image(562, 220,'sabreInterface').setScale(0.5)
                 this.sabreEcran.setInteractive()
                 this.sabreEcran.setScrollFactor(0);  
                 this.sabreEcran.setDepth(8)
@@ -2640,7 +2650,7 @@
 
             //carte magnétique interface
             if (this.carteMagnetiqueInterface == true){
-                this.carteMagnetiqueEcran = this.add.image(434, 162,'carteMagnetiqueInterface').setScale(0.4)
+                this.carteMagnetiqueEcran = this.add.image(590, 220,'carteMagnetiqueInterface').setScale(0.5)
                 this.carteMagnetiqueEcran.setInteractive()
                 this.carteMagnetiqueEcran.setScrollFactor(0);  
                 this.carteMagnetiqueEcran.setDepth(8)
@@ -2648,21 +2658,21 @@
 
             // affichage background réacteurs sur l'interface
             if (this.reacteursBackgroundInterface == true){
-                this.reacteursEcranBackground = this.add.image(476, 170,'reacteursInterfaces').setScale(0.5)
+                this.reacteursEcranBackground = this.add.image(644, 226,'reacteursInterfaces').setScale(0.62)
                 this.reacteursEcranBackground.setScrollFactor(0);  
                 this.reacteursEcranBackground.setDepth(10)
             }
             // réacteur 1 interface
             if (this.reacteur1Pris == true){
-                this.reacteur1Ecran = this.add.image(464, 174,'réacteur1').setScale(0.4)
+                this.reacteur1Ecran = this.add.image(626, 230,'réacteur1').setScale(0.5)
                 this.reacteur1Ecran.setScrollFactor(0);  
                 this.reacteur1Ecran.setDepth(10)
             }
             // réacteur 2 interface
             if (this.reacteur2Pris == true){
-                this.reacteur1Ecran = this.add.image(488, 174,'réacteur2').setScale(0.4)
-                this.reacteur1Ecran.setScrollFactor(0);  
-                this.reacteur1Ecran.setDepth(10)
+                this.reacteur2Ecran = this.add.image(660, 230,'réacteur2').setScale(0.5)
+                this.reacteur2Ecran.setScrollFactor(0);  
+                this.reacteur2Ecran.setDepth(10)
             }
 
                 this.barreDeVie()
@@ -2951,24 +2961,24 @@
 
 
             //vie interface
-            this.coeurEcran = this.add.image(306, 161,'8HP').setScale(0.7)
+            this.coeurEcran = this.add.image(400, 210,'4HP').setScale(0.8)
             this.coeurEcran.setInteractive()
             this.coeurEcran.setScrollFactor(0);  
 
             this.coeurEcran.setDepth(1000)
 
             // monnaie interface
-            this.monnaieEcran = this.add.image(275, 182,'monnaieInterface').setScale(0.4);
+            this.monnaieEcran = this.add.image(370, 240,'monnaieInterface').setScale(0.6);
             this.monnaieEcran.setDepth(100)
             this.monnaieEcran.setScrollFactor(0);  
 
-            this.monnaieTexte = this.add.text(286, 174, this.solde, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
+            this.monnaieTexte = this.add.text(388, 232, this.solde, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
             this.monnaieTexte.setDepth(100)
             this.monnaieTexte.setScale(0.7);
             this.monnaieTexte.setScrollFactor(0);
 
             // plante interface
-            this.plantePriseTexte = this.add.text(286, 190, this.plantePrise, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
+            this.plantePriseTexte = this.add.text(386, 255, this.plantePrise, { fontFamily: 'CustomFont',fontSize:28,color:"#465ed1" });
 
             ///////////////////////////////////////////////////////////////
             /////////////////////////TOUCHES///////////////////////////////
@@ -3034,14 +3044,14 @@
 
              //sabre interface
             if (this.sabreInterface == true){
-                this.sabreEcran = this.add.image(412, 162,'sabreInterface').setScale(0.4)
+                this.sabreEcran = this.add.image(562, 220,'sabreInterface').setScale(0.5)
                 this.sabreEcran.setInteractive()
                 this.sabreEcran.setScrollFactor(0);  
             }
 
             //carte magnétique interface
             if (this.carteMagnetiqueInterface == true){
-                this.carteMagnetiqueEcran = this.add.image(434, 162,'carteMagnetiqueInterface').setScale(0.4)
+                this.carteMagnetiqueEcran = this.add.image(590, 220,'carteMagnetiqueInterface').setScale(0.5)
                 this.carteMagnetiqueEcran.setInteractive()
                 this.carteMagnetiqueEcran.setScrollFactor(0);  
                 this.carteMagnetiqueEcran.setDepth(10)
@@ -3049,28 +3059,28 @@
 
             // affichage background réacteurs sur l'interface
             if (this.reacteursBackgroundInterface == true){
-                this.reacteursEcranBackground = this.add.image(476, 170,'reacteursInterfaces').setScale(0.5)
+                this.reacteursEcranBackground = this.add.image(644, 226,'reacteursInterfaces').setScale(0.62)
                 this.reacteursEcranBackground.setScrollFactor(0);  
                 this.reacteursEcranBackground.setDepth(10)
             }
             // réacteur 1 interface
             if (this.reacteur1Pris == true){
-                this.reacteur1Ecran = this.add.image(464, 174,'réacteur1').setScale(0.4)
+                this.reacteur1Ecran = this.add.image(626, 230,'réacteur1').setScale(0.5)
                 this.reacteur1Ecran.setScrollFactor(0);  
                 this.reacteur1Ecran.setDepth(10)
             }
             // réacteur 2 interface
             if (this.reacteur2Pris == true){
-                this.reacteur1Ecran = this.add.image(488, 174,'réacteur2').setScale(0.4)
-                this.reacteur1Ecran.setScrollFactor(0);  
-                this.reacteur1Ecran.setDepth(10)
+                this.reacteur2Ecran = this.add.image(660, 230,'réacteur2').setScale(0.5)
+                this.reacteur2Ecran.setScrollFactor(0);  
+                this.reacteur2Ecran.setDepth(10)
             }
 
                 // quete de l'arosoire interface
                 if (this.quetePlanteInterface == true){
 
                 // plante interface
-                this.plantePriseEcran = this.add.image(275, 198,'planteArosoireInterface').setScale(0.4);
+                this.plantePriseEcran = this.add.image(370, 264,'planteArosoireInterface').setScale(0.6);
                 this.plantePriseEcran.setDepth(100)
                 this.plantePriseEcran.setScrollFactor(0);  
 
@@ -3082,7 +3092,7 @@
             }
 
             if (this.quetePlanteInterfaceArosoir == true){
-                this.arosoirInterface = this.add.image(390, 162,'arosoirInterface').setScale(0.4)
+                this.arosoirInterface = this.add.image(534,220,'arosoirInterface').setScale(0.5)
                 this.arosoirInterface.setScrollFactor(0);  
                 this.arosoirInterface.setDepth(10)
             }
@@ -3140,7 +3150,9 @@
                     nbrDash: this.nbrDash,
                     afficheInterfaceDash: this.afficheInterfaceDash,
                     compteurTempsAvantAtaque: this.compteurTempsAvantAtaque ,  
-                    tempsAvantAtaque: this.tempsAvantAtaque
+                    tempsAvantAtaque: this.tempsAvantAtaque,
+                    quetePlanteInterface:this.quetePlanteInterface,
+                    quetePlanteInterfaceArosoir:this.quetePlanteInterfaceArosoir,
                 })
             }
         }
@@ -3148,7 +3160,7 @@
 
         var config = {
             type: Phaser.AUTO,
-            width: 768, height: 432,
+            width: 1024, height: 576,
             physics: {
             default: 'arcade',
             arcade: {
