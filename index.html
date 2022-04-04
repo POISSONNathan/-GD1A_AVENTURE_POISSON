@@ -769,6 +769,8 @@
             this.dashTexte.setScrollFactor(0);
 
             // plante interface
+            this.plantePriseEcran = this.add.image(0, 0,'planteArosoireInterface').setScale(0.4);
+
             this.plantePriseTexte = this.add.text(286, 190, this.plantePrise, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
 
             ///////////////////////////////////////////////////////////////
@@ -1177,10 +1179,11 @@
             // quete de l'arosoire interface
             if (this.quetePlanteInterface == true){
                 // plante interface
-                this.plantePriseEcran = this.add.image(275, 198,'planteArosoireInterface').setScale(0.4);
+                this.plantePriseEcran.setPosition(275, 228);
                 this.plantePriseEcran.setDepth(100)
                 this.plantePriseEcran.setScrollFactor(0);  
 
+                this.plantePriseTexte.setPosition(286, 220);
                 this.plantePriseTexte.setDepth(100)
                 this.plantePriseTexte.setScale(0.7);
                 this.plantePriseTexte.setScrollFactor(0);
