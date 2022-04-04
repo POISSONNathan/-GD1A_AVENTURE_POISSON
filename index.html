@@ -29,7 +29,7 @@
 
         preload(){
             this.load.image("bouttonPlay", "assets/BouttonPlay.png");
-            this.load.image("bouttonQuit", "assets/BouttonQuit.png");
+            this.load.image("bouttonLeave", "assets/BouttonQuit.png");
             this.load.image("accueil", "assets/accueil.png");
 
         }
@@ -40,13 +40,13 @@
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        var startButton = this.add.image(500,380, 'bouttonPlay').setScale(0.53).setInteractive();
+        this.startButton = this.add.image(this.cameras.main.width/2,380, 'bouttonPlay').setScale(0.53).setInteractive();
 
-            startButton.on('pointerdown', function (pointer) {
+        this.startButton.on('pointerdown', function (pointer) {
 
                 this.scene.scene.start("sceneJeu", {
                 pointDeVie:4,
-                sabreInterface:true,
+                sabreInterface:false,
                 dialogue:false,
                 trancherActif:false,
                 pouvoirAttaquer:false,
@@ -56,24 +56,31 @@
                 tempsAvantRespawn:false,
                 porteOuverte:false,
                 entreeBatiment:false,
-                carteMagnetiqueInterface: true,
+                carteMagnetiqueInterface: false,
                 solde:30,
-                reacteur1Pris:true,
-                reacteur2Pris:true,
-                reacteursBackgroundInterface:true,
-                quetePlanteInterface:true,
-                quetePlanteInterfaceArosoir:true,
+                reacteur1Pris:false,
+                reacteur2Pris:false,
+                reacteursBackgroundInterface:false,
+                quetePlanteInterface:false,
+                quetePlanteInterfaceArosoir:false,
                 plantePrise: 0,
                 premierDialogueActif : false,
                 compteurTempsAvantAtaque: 100 ,  
                 tempsAvantAtaque: false,
                 speed: 300,
-                acheterSpeed: false,
+                acheterSpeed: true,
                 acheterDash: false,
                 dash: 0,
                 nbrDash: 0,
-                afficheInterfaceDash: true
+                afficheInterfaceDash: false
         })
+        });
+
+        this.quitButton = this.add.image(this.cameras.main.width/2,500, 'bouttonLeave').setScale(0.53).setInteractive();
+
+        this.quitButton.on('pointerdown', function (pointer) {
+
+                this.scene.scene.stop("accueil")
         });
         }
 
