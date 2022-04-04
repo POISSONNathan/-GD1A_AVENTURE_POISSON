@@ -27,7 +27,12 @@
             super("accueil");
         }
 
-        preload(){}
+        preload(){
+            this.load.image("bouttonPlay", "assets/BouttonPlay.png");
+            this.load.image("bouttonQuit", "assets/BouttonQuit.png");
+            this.load.image("accueil", "assets/accueil.png");
+
+        }
         create(){}
         update(){
             this.scene.start("sceneJeu", {
