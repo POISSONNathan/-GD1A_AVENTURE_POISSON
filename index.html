@@ -339,6 +339,8 @@
             this.dropCoffreActif = false
             this.dropCoffreInterface = false
             this.dropCoffreTextPnj = false
+            this.premierDialogueActif = false
+            this.dialogue = false
 
             // var dash
             this.vitesseDash = this.speed * 5
@@ -1265,6 +1267,9 @@
                 if (this.dash == 0 || this.nbrDash == 0){
                     this.dialogue = false
                 }
+
+                console.log(this.dialogue)
+
             this.barreDeVie()
         }
 
@@ -1541,7 +1546,7 @@
                 }
             }
 
-            else{
+            if (this.dropCoffreTextPnj == true){
                 if (this.premierDialogueActif == false){
                     if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
                         this.dialogue = true
@@ -1622,7 +1627,6 @@
                 this.scene.start("sceneMaisonBlanche", {
                     pointDeVie:this.pointDeVie,
                     sabreInterface:this.sabreInterface,
-                    dialogue:this.dialogue,
                     trancherActif:this.trancherActif,
                     pouvoirAttaquer:this.pouvoirAttaquer,
                     animVehicule:this.animVehicule,
@@ -2210,8 +2214,6 @@
                 }
             }
 
-            console.log(this.tempsAvantAtaque)
-
             //sabre interface
             if (this.sabreInterface == true){
                 this.sabreEcran = this.add.image(417, 152,'sabreInterface').setScale(0.48)
@@ -2388,7 +2390,6 @@
         init(data){
             this.pointDeVie = data.pointDeVie,
             this.sabreInterface = data.sabreInterface,
-            this.dialogue = data.dialogue,
             this.trancherActif = data.trancherActif,
             this.pouvoirAttaquer = data.pouvoirAttaquer,
             this.animVehicule = data.animVehicule,
@@ -2493,6 +2494,10 @@
             this.physics.world.setBounds(0, 0, 6400, 1600);
             this.cameras.main.setBounds(0, 0, 6400, 1600);
 
+            this.premierDialogueActif = false
+            this.dialogue = false
+
+
             this.anims.create({
                 key: 'left',
                 frames: this.anims.generateFrameNumbers('perso', {start:18,end:23}),
@@ -2588,7 +2593,6 @@
                 this.moveLeft = ( this.cursors.left.isDown || this.keys.q.isDown )  
                 this.moveRight = ( this.cursors.right.isDown || this.keys.d.isDown ) 
                 this.moveDown = ( this.cursors.down.isDown || this.keys.s.isDown ) 
-                console.log(this.premierDialogueActif)
 
                     if (this.moveLeft) {
                         this.player.setVelocityX(-this.speed)
@@ -2665,7 +2669,7 @@
             }
 
             parlerPNJ(player,pnj){
-            if (this.reacteur1Pris == false){
+            if (this.reacteur1Pris == false){                
                 if (this.premierDialogueActif == false){
                     if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
                         this.dialogue = true
@@ -2695,7 +2699,7 @@
                     }
                 }
             }
-            else {
+            if (this.reacteur1Pris == true) {
                 if (this.premierDialogueActif == false){
                     if (Phaser.Input.Keyboard.JustDown(this.toucheF)) {
                         this.texteApresGrotte = this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"TexteAprèstGrotte").setScale(0.35)
@@ -2741,7 +2745,6 @@
                 this.scene.start("sceneJeu", {
                     pointDeVie:this.pointDeVie,
                     sabreInterface:this.sabreInterface,
-                    dialogue:this.dialogue,
                     trancherActif:this.trancherActif,
                     pouvoirAttaquer:this.pouvoirAttaquer,
                     animVehicule:this.animVehicule,
@@ -2900,6 +2903,8 @@
             this.cameras.main.startFollow(this.player); 
             this.physics.world.setBounds(0, 0, 6400, 1600);
             this.cameras.main.setBounds(0, 0, 6400, 1600);
+
+            this.dialogue = false
 
             this.anims.create({
                 key: 'left',
