@@ -51,11 +51,11 @@
                 quetePlanteInterfaceArosoir:false,
                 plantePrise: 0,
                 premierDialogueActif : false,
-                compteurTempsAvantAtaque: 200 ,  
-                tempsAvantAtaque: true  ,
-                speed: 100,
-                acheterSpeed: true,
-                acheterDash: true,
+                compteurTempsAvantAtaque: 100 ,  
+                tempsAvantAtaque: false,
+                speed: 300,
+                acheterSpeed: false,
+                acheterDash: false,
                 dash: 0,
                 nbrDash: 0,
                 afficheInterfaceDash: false
@@ -95,9 +95,11 @@
             this.speed = data.speed
             this.acheterSpeed = data.acheterSpeed
             this.acheterDash = data.acheterDash
-            this.dash = data.dash
-            this.nbrDash = data.nbrDash
-            this.afficheInterfaceDash = data.afficheInterfaceDash
+            this.dash = data.dash,
+            this.nbrDash = data.nbrDash,
+            this.afficheInterfaceDash = data.afficheInterfaceDash,
+            this.compteurTempsAvantAtaque = data.compteurTempsAvantAtaque ,  
+            this.tempsAvantAtaque = data.tempsAvantAtaque
         }
 
         preload(){
@@ -814,10 +816,6 @@
 
             this.cursors = this.input.keyboard.createCursorKeys();
             this.keys = this.input.keyboard.addKeys({
-                q:  this.input.keyboard.addKey('Q'),
-                d:  this.input.keyboard.addKey('D'),
-                z:  this.input.keyboard.addKey('Z'),
-                s:  this.input.keyboard.addKey('S'),
             });
 
             this.toucheF = this.input.keyboard.addKey('F');
@@ -831,10 +829,10 @@
 
             if (this.dialogue ==false){
 
-                this.moveUp = ( this.cursors.up.isDown || this.keys.z.isDown )  
-                this.moveLeft = ( this.cursors.left.isDown || this.keys.q.isDown )  
-                this.moveRight = ( this.cursors.right.isDown || this.keys.d.isDown ) 
-                this.moveDown = ( this.cursors.down.isDown || this.keys.s.isDown ) 
+                this.moveUp = ( this.cursors.up.isDown)  
+                this.moveLeft = ( this.cursors.left.isDown)  
+                this.moveRight = ( this.cursors.right.isDown) 
+                this.moveDown = ( this.cursors.down.isDown) 
                 
 
 
@@ -1361,11 +1359,6 @@
             this.dropCoffreTextPnj = true
         }
 
-        collectSabre(player,sabre){
-            sabre.disableBody(true, true); 
-            this.pouvoirAttaquer = true
-        }
-
         toucherEnnemi (player, enemis) {
             if (this.trancherActif == true){
                 this.imageMort = this.add.image(enemis.x + 15, enemis.y + 12, 'ennemiMort');
@@ -1609,7 +1602,9 @@
                     reacteur1Pris: this.reacteur1Pris,
                     reacteur2Pris:this.reacteur2Pris,
                     reacteursBackgroundInterface: this.reacteursBackgroundInterface,
-                    speed: this.speed
+                    speed: this.speed,
+                    compteurTempsAvantAtaque: this.compteurTempsAvantAtaque ,  
+                    tempsAvantAtaque: this.tempsAvantAtaque
                 })
             }
         }
@@ -1641,7 +1636,9 @@
                     acheterDash: this.acheterDash,
                     dash: this.dash,
                     nbrDash: this.nbrDash,
-                    afficheInterfaceDash: this.afficheInterfaceDash
+                    afficheInterfaceDash: this.afficheInterfaceDash,
+                    compteurTempsAvantAtaque: this.compteurTempsAvantAtaque ,  
+                    tempsAvantAtaque: this.tempsAvantAtaque
                 })
             }
         }
@@ -1666,7 +1663,9 @@
                     reacteur2Pris:this.reacteur2Pris,
                     reacteursBackgroundInterface: this.reacteursBackgroundInterface,
                     premierDialogueActif: this.premierDialogueActif ,
-                    speed: this.speed
+                    speed: this.speed,
+                    compteurTempsAvantAtaque: this.compteurTempsAvantAtaque ,  
+                    tempsAvantAtaque: this.tempsAvantAtaque
                 })
             }
         }
@@ -1717,9 +1716,9 @@
             this.solde = data.solde,
             this.reacteur1Pris = data.reacteur1Pris,
             this.reacteur2Pris = data.reacteur2Pris,
-            this.reacteursBackgroundInterface = data.reacteursBackgroundInterface
-            this.compteurTempsAvantAtaque = data.tempsAvantAtaque
-            this.tempsAvantAtaque = data.tempsAvantAtaque
+            this.reacteursBackgroundInterface = data.reacteursBackgroundInterface,
+            this.compteurTempsAvantAtaque = data.compteurTempsAvantAtaque,
+            this.tempsAvantAtaque = data.tempsAvantAtaque,
             this.speed = data.speed
         }
 
@@ -2027,10 +2026,6 @@
 
             this.cursors = this.input.keyboard.createCursorKeys();
             this.keys = this.input.keyboard.addKeys({
-                q:  this.input.keyboard.addKey('Q'),
-                d:  this.input.keyboard.addKey('D'),
-                z:  this.input.keyboard.addKey('Z'),
-                s:  this.input.keyboard.addKey('S'),
             });
 
             this.toucheF = this.input.keyboard.addKey('F');
@@ -2057,10 +2052,10 @@
                 
             if (this.dialogue ==false){
 
-                this.moveUp = ( this.cursors.up.isDown || this.keys.z.isDown )  
-                this.moveLeft = ( this.cursors.left.isDown || this.keys.q.isDown )  
-                this.moveRight = ( this.cursors.right.isDown || this.keys.d.isDown ) 
-                this.moveDown = ( this.cursors.down.isDown || this.keys.s.isDown ) 
+                this.moveUp = ( this.cursors.up.isDown)  
+                this.moveLeft = ( this.cursors.left.isDown)  
+                this.moveRight = ( this.cursors.right.isDown) 
+                this.moveDown = ( this.cursors.down.isDown) 
                 
                     if (this.moveLeft) {
                         this.player.setVelocityX(-this.speed)
@@ -2181,7 +2176,7 @@
             if(this.tempsAvantAtaque == true){
                 this.compteurTempsAvantAtaque -=1 ;
                 if(this.compteurTempsAvantAtaque == 0){
-                    this.compteurTempsAvantAtaque = 200;
+                    this.compteurTempsAvantAtaque = 100;
                     this.tempsAvantAtaque = false ;
                 }
             }
@@ -2206,6 +2201,8 @@
                     this.scene.start("sceneGrotte")
                 }
             }
+
+            console.log(this.tempsAvantAtaque)
 
             //sabre interface
             if (this.sabreInterface == true){
@@ -2342,7 +2339,9 @@
                     reacteur1Pris: this.reacteur1Pris,
                     reacteur2Pris:this.reacteur2Pris,
                     reacteursBackgroundInterface: this.reacteursBackgroundInterface,
-                    speed: this.speed
+                    speed: this.speed,
+                    compteurTempsAvantAtaque: this.compteurTempsAvantAtaque ,  
+                    tempsAvantAtaque: this.tempsAvantAtaque
                 })
             }
         }
@@ -2397,6 +2396,8 @@
             this.reacteursBackgroundInterface = data.reacteursBackgroundInterface
             this.premierDialogueActif = data.premierDialogueActif 
             this.speed = data.speed
+            this.compteurTempsAvantAtaque = data.compteurTempsAvantAtaque,
+            this.tempsAvantAtaque = data.tempsAvantAtaque
         }
 
         preload(){
@@ -2748,7 +2749,9 @@
                     reacteur1Pris: this.reacteur1Pris,
                     reacteur2Pris:this.reacteur2Pris,
                     reacteursBackgroundInterface: this.reacteursBackgroundInterface,
-                    speed: this.speed
+                    speed: this.speed,
+                    compteurTempsAvantAtaque: this.compteurTempsAvantAtaque ,  
+                    tempsAvantAtaque: this.tempsAvantAtaque
                 })
             }
         }
@@ -2808,7 +2811,9 @@
             this.acheterDash = data.acheterDash
             this.dash = data.dash
             this.nbrDash = data.nbrDash
-            this.afficheInterfaceDash = data.afficheInterfaceDash
+            this.afficheInterfaceDash = data.afficheInterfaceDash,
+            this.compteurTempsAvantAtaque = data.compteurTempsAvantAtaque,
+            this.tempsAvantAtaque = data.tempsAvantAtaque
         }
 
         preload(){
@@ -3120,7 +3125,9 @@
                     acheterDash: this.acheterDash,
                     dash: this.dash,
                     nbrDash: this.nbrDash,
-                    afficheInterfaceDash: this.afficheInterfaceDash
+                    afficheInterfaceDash: this.afficheInterfaceDash,
+                    compteurTempsAvantAtaque: this.compteurTempsAvantAtaque ,  
+                    tempsAvantAtaque: this.tempsAvantAtaque
                 })
             }
         }
