@@ -32,17 +32,25 @@
             this.load.image("bouttonLeave", "assets/BouttonQuit.png");
             this.load.image("accueil", "assets/accueil.png");
 
+            this.load.tilemapTiledJSON("carte", "map.json");  
+
         }
 
         create(){
-            this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"accueil").setScale(0.53);
+            const carte = this.make.tilemap({ key: 'carte' });
 
+
+        this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"accueil").setScale(0.53);
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
         this.startButton = this.add.image(this.cameras.main.width/2,380, 'bouttonPlay').setScale(0.53).setInteractive();
 
         this.startButton.on('pointerdown', function (pointer) {
+                carte.getObjectLayer('spawnJoueur').objects.forEach((spawnJoueur) => {
+                    this.spawnXSortieScene = spawnJoueur.x, 
+                    this.spawnYSortieScene =  spawnJoueur.y
+                });
 
                 this.scene.scene.start("sceneJeu", {
                 pointDeVie:4,
@@ -55,7 +63,6 @@
                 invulnérable:false,
                 tempsAvantRespawn:false,
                 porteOuverte:false,
-                entreeBatiment:false,
                 carteMagnetiqueInterface: false,
                 solde:30,
                 reacteur1Pris:false,
@@ -68,11 +75,13 @@
                 compteurTempsAvantAtaque: 100 ,  
                 tempsAvantAtaque: false,
                 speed: 300,
-                acheterSpeed: true,
+                acheterSpeed: false,
                 acheterDash: false,
                 dash: 0,
                 nbrDash: 0,
-                afficheInterfaceDash: false
+                afficheInterfaceDash: false,
+                spawnXSortieScene: this.spawnXSortieScene,
+                spawnYSortieScene: this.spawnYSortieScene
         })
         });
 
@@ -82,7 +91,11 @@
 
                 this.scene.scene.stop("accueil")
         });
+
+        
         }
+
+       
 
         update(){}
 
@@ -104,7 +117,6 @@
             this.invulnérable = data.invulnérable,
             this.tempsAvantRespawn = data.tempsAvantRespawn,
             this.porteOuverte = data.porteOuverte,
-            this.entreeBatiment = data.entreeBatiment,
             this.spawnXSortieScene = data.spawnXSortieScene,
             this.spawnYSortieScene = data.spawnYSortieScene,
             this.carteMagnetiqueInterface = data.carteMagnetiqueInterface,
@@ -269,7 +281,6 @@
             // anim dash
             this.load.spritesheet('animDash','assets/animDash.png',
             { frameWidth: 32, frameHeight: 32 });
-
         }
 
         create(){
@@ -299,8 +310,8 @@
             const decor = carte.createLayer(
                     "decor",
                     tileset
-                    );
-
+                    ); 
+   
             this.entreeGrotte = this.physics.add.image(430, 100, 'changementScene');
             this.entreeGrotte.body.setSize(150,80,true)
 
@@ -315,15 +326,7 @@
             ///////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////
 
-            if (this.entreeBatiment == true){
-                this.player = this.physics.add.sprite(this.spawnXSortieScene, this.spawnYSortieScene, 'perso').setOrigin(0);
-            }
-
-            else{
-                carte.getObjectLayer('spawnJoueur').objects.forEach((spawnJoueur) => {
-                this.player = this.physics.add.sprite(spawnJoueur.x, spawnJoueur.y, 'perso').setOrigin(0);
-            });
-            }
+            this.player = this.physics.add.sprite(this.spawnXSortieScene, this.spawnYSortieScene, 'perso').setOrigin(0);
 
             this.playerCollision2 = this.physics.add.image(50,50,"hitbox")
             this.playerCollision2.body.setSize(26,22)
@@ -353,13 +356,13 @@
             this.compteurDropCoffreHp = 150;
             this.compteurDropCoffreMonnaie = 150;
             this.entrerActif = false
-            this.entreeBatiment = false
             this.coffreAnimStop = false
             this.dropCoffreActif = false
             this.dropCoffreInterface = false
             this.dropCoffreTextPnj = false
             this.premierDialogueActif = false
             this.dialogue = false
+            this.dernierDialogue = false
 
             // var dash
             this.vitesseDash = this.speed * 5
@@ -855,7 +858,7 @@
             this.playerCollision2.x = this.player.x
             this.playerCollision2.y = this.player.y
 
-            if (this.dialogue ==false){
+            if (this.dialogue == false){
 
                 this.moveUp = ( this.cursors.up.isDown)  
                 this.moveLeft = ( this.cursors.left.isDown)  
@@ -1516,13 +1519,17 @@
                     this.textintro.setInteractive()
                     this.deuxiemeDialogue = true
                     this.premierDialogueActif = true
+                    this.player.setVelocityX(0)
+                    this.player.setVelocityY(0)
                 }
             }
             if (this.deuxiemeDialogue == true){
                 if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
                     this.textintro.setTexture('TexteIntro2') 
                     this.dernierDialogue = true
-                    this.deuxiemeDialogue = false              
+                    this.deuxiemeDialogue = false  
+                    this.player.setVelocityX(0)
+                    this.player.setVelocityY(0)            
                 }
             }
             if (this.dernierDialogue == true){
@@ -1545,13 +1552,17 @@
                         this.TextePNJVehicule.setInteractive()
                         this.deuxiemeDialogue = true
                         this.premierDialogueActif = true
+                        this.player.setVelocityX(0)
+                    this.player.setVelocityY(0)
                     }
                 }
                 if (this.deuxiemeDialogue == true){
                     if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
                         this.TextePNJVehicule.setTexture('TextePNJVehicule2') 
                         this.dernierDialogue = true
-                        this.deuxiemeDialogue = false              
+                        this.deuxiemeDialogue = false 
+                        this.player.setVelocityX(0)
+                    this.player.setVelocityY(0)             
                     }
                 }
                 if (this.dernierDialogue == true){
@@ -1573,6 +1584,8 @@
                         this.TextePNJVehiculeApres.setInteractive()
                         this.entrerActif = true
                         this.premierDialogueActif = true
+                        this.player.setVelocityX(0)
+                        this.player.setVelocityY(0)
                     }
                 }
 
@@ -1600,6 +1613,8 @@
                         this.TextePNJVehiculeApres.setScrollFactor(0)
                         this.TextePNJVehiculeApres.setInteractive()
                         this.premierDialogueActif = true
+                        this.player.setVelocityX(0)
+                        this.player.setVelocityY(0)
                     }
                 }
 
@@ -1626,7 +1641,6 @@
                     invulnérable:this.invulnérable,
                     tempsAvantRespawn:this.tempsAvantRespawn,
                     porteOuverte:this.porteOuverte,
-                    entreeBatiment: this.entreeBatiment,
                     carteMagnetiqueInterface: this.carteMagnetiqueInterface,
                     solde: this.solde,
                     reacteur1Pris: this.reacteur1Pris,
@@ -1651,7 +1665,6 @@
                     invulnérable:this.invulnérable,
                     tempsAvantRespawn:this.tempsAvantRespawn,
                     porteOuverte:this.porteOuverte,
-                    entreeBatiment: this.entreeBatiment,
                     carteMagnetiqueInterface: this.carteMagnetiqueInterface,
                     solde: this.solde,
                     reacteur1Pris: this.reacteur1Pris,
@@ -1685,7 +1698,6 @@
                     invulnérable:this.invulnérable,
                     tempsAvantRespawn:this.tempsAvantRespawn,
                     porteOuverte:this.porteOuverte,
-                    entreeBatiment: this.entreeBatiment,
                     carteMagnetiqueInterface: this.carteMagnetiqueInterface,
                     solde: this.solde,
                     reacteur1Pris: this.reacteur1Pris,
@@ -1740,7 +1752,6 @@
             this.invulnérable = data.invulnérable,
             this.tempsAvantRespawn = data.tempsAvantRespawn,
             this.porteOuverte = data.porteOuverte,
-            this.entreeBatiment = data.entreeBatiment,
             this.carteMagnetiqueInterface = data.carteMagnetiqueInterface,
             this.solde = data.solde,
             this.reacteur1Pris = data.reacteur1Pris,
@@ -2358,7 +2369,6 @@
                     invulnérable:this.invulnérable,
                     tempsAvantRespawn:this.tempsAvantRespawn,
                     porteOuverte:this.porteOuverte,
-                    entreeBatiment: true,
                     spawnXSortieScene:410, 
                     spawnYSortieScene:80,
                     carteMagnetiqueInterface: this.carteMagnetiqueInterface,
@@ -2414,7 +2424,6 @@
             this.invulnérable = data.invulnérable,
             this.tempsAvantRespawn = data.tempsAvantRespawn
             this.porteOuverte = data.porteOuverte,
-            this.entreeBatiment = data.entreeBatiment,
             this.carteMagnetiqueInterface = data.carteMagnetiqueInterface,
             this.solde = data.solde,
             this.reacteur1Pris = data.reacteur1Pris,
@@ -2696,6 +2705,8 @@
                         this.texteAvantGrotte.setInteractive()
                         this.premierDialogueActif = true
                         this.deuxiemeDialogue = true
+                        this.player.setVelocityX(0)
+                    this.player.setVelocityY(0)
                     }
                 }
 
@@ -2703,7 +2714,9 @@
                     if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
                         this.texteAvantGrotte.setTexture('TexteAvantGrotte2') 
                         this.dernierDialogue = true
-                        this.deuxiemeDialogue = false                
+                        this.deuxiemeDialogue = false     
+                        this.player.setVelocityX(0)
+                    this.player.setVelocityY(0)           
                     }
                 }
                 if (this.dernierDialogue == true){
@@ -2725,6 +2738,8 @@
                         this.texteApresGrotte.setInteractive()
                         this.dialogue = true
                         this.premierDialogueActif = true
+                        this.player.setVelocityX(0)
+                    this.player.setVelocityY(0)
                     }
                 }
                 if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
@@ -2769,7 +2784,6 @@
                     invulnérable:this.invulnérable,
                     tempsAvantRespawn:this.tempsAvantRespawn,
                     porteOuverte:this.porteOuverte,
-                    entreeBatiment: true,
                     spawnXSortieScene:530, 
                     spawnYSortieScene:400,
                     carteMagnetiqueInterface: this.carteMagnetiqueInterface,
@@ -2825,7 +2839,6 @@
             this.invulnérable = data.invulnérable,
             this.tempsAvantRespawn = data.tempsAvantRespawn
             this.porteOuverte = data.porteOuverte,
-            this.entreeBatiment = data.entreeBatiment,
             this.carteMagnetiqueInterface = data.carteMagnetiqueInterface,
             this.solde = data.solde,
             this.reacteur1Pris = data.reacteur1Pris,
@@ -2875,6 +2888,14 @@
             this.load.image("réacteur1", "assets/objets/réacteur1.png");
             this.load.image("réacteur2", "assets/objets/réacteur2.png");
             this.load.image("reacteursInterfaces", "assets/interface/reacteursInterfaces.png");
+
+            // PNJ quete fleur
+            this.load.image("PNJquetePlante", "assets/PNJquetePlante.png");
+            // collide pnj quete fleur
+            this.load.image("PNJfleurCollide", "assets/objets/emplacementChangementDeScene/changementScene.png");
+
+            this.load.image("TextePNJFleurAvant", "assets/interface/texte/TextePNJFleurAvant.png");
+            this.load.image("TextePNJFleurApres", "assets/interface/texte/TextePNJFleurApres.png");
         }
 
         create(){
@@ -2921,6 +2942,7 @@
             this.physics.world.setBounds(0, 0, 6400, 1600);
             this.cameras.main.setBounds(0, 0, 6400, 1600);
 
+            this.premierDialogueActif = false
             this.dialogue = false
 
             this.anims.create({
@@ -2987,6 +3009,17 @@
             // plante interface
             this.plantePriseTexte = this.add.text(386, 255, this.plantePrise, { fontFamily: 'CustomFont',fontSize:28,color:"#465ed1" });
 
+            // PNJ quete fleur
+            this.PNJquetePlante = this.physics.add.image(6120, 118, 'PNJquetePlante');
+            this.PNJquetePlanteCollide = this.physics.add.image(this.PNJquetePlante.x, this.PNJquetePlante.y, 'PNJintroCollide');
+            this.PNJquetePlanteCollide.body.setSize(32,32)
+            this.PNJquetePlanteCollide.setPushable(false)
+            this.physics.add.collider(this.player,this.PNJquetePlanteCollide)
+
+            this.PNJquetePlante.body.setSize(48,70)
+            this.PNJquetePlante.setOffset(-8,0)
+            this.physics.add.overlap(this.player,this.PNJquetePlante,this.parlerPNJPlante,null,this);
+
             ///////////////////////////////////////////////////////////////
             /////////////////////////TOUCHES///////////////////////////////
             ///////////////////////////////////////////////////////////////
@@ -3008,6 +3041,8 @@
             if (this.solde == 0){
                 this.monnaieTexte.setText(this.solde)
             }
+
+            if (this.dialogue == false){
 
                 this.moveUp = ( this.cursors.up.isDown || this.keys.z.isDown )  
                 this.moveLeft = ( this.cursors.left.isDown || this.keys.q.isDown )  
@@ -3048,6 +3083,7 @@
                         this.player.setVelocityX(0)
                         this.player.setVelocityY(0)
                     }
+            }
 
              //sabre interface
             if (this.sabreInterface == true){
@@ -3122,6 +3158,55 @@
             }
         }
 
+        parlerPNJPlante(player,PNJquetePlante){
+            if (this.plantePrise < 10){
+                if (this.premierDialogueActif == false){
+                    if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
+                        this.dialogue = true
+                        this.TextePNJQuetePlanteAvant = this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"TextePNJFleurAvant").setScale(0.35)
+                        this.TextePNJQuetePlanteAvant.setDepth(11)
+                        this.TextePNJQuetePlanteAvant.setScrollFactor(0)
+                        this.TextePNJQuetePlanteAvant.setInteractive()
+                        this.dernierDialogue = true
+                        this.premierDialogueActif = true
+                        this.player.setVelocityX(0)
+                        this.player.setVelocityY(0)
+                    }
+                }
+                if (this.dernierDialogue == true){
+                    if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
+                        this.TextePNJQuetePlanteAvant.destroy()
+                        this.dialogue = false
+                        this.premierDialogueActif = false
+                        this.quetePlanteInterface = true
+                        this.quetePlanteInterfaceArosoir = true
+                    }
+                }
+            }
+
+            if (this.plantePrise >= 10){
+                if (this.premierDialogueActif == false){
+                    if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
+                        this.dialogue = true
+                        this.TextePNJVehiculeApres = this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"TextePNJFleurApres").setScale(0.35)
+                        this.TextePNJVehiculeApres.setDepth(11)
+                        this.TextePNJVehiculeApres.setScrollFactor(0)
+                        this.TextePNJVehiculeApres.setInteractive()
+                        this.entrerActif = true
+                        this.premierDialogueActif = true
+                        this.player.setVelocityX(0)
+                        this.player.setVelocityY(0)
+                    }
+                }
+
+                if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
+                    this.TextePNJVehiculeApres.destroy()
+                    this.dialogue = false
+                    this.premierDialogueActif = false
+                }
+            } 
+        }
+
         prendreMonnaie(player,monnaie){
             monnaie.destroy(); 
             this.solde += 1
@@ -3141,7 +3226,6 @@
                     invulnérable:this.invulnérable,
                     tempsAvantRespawn:this.tempsAvantRespawn,
                     porteOuverte:this.porteOuverte,
-                    entreeBatiment: true,
                     spawnXSortieScene:500, 
                     spawnYSortieScene:200,
                     carteMagnetiqueInterface: this.carteMagnetiqueInterface,

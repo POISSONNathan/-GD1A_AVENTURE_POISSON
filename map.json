@@ -76,8 +76,20 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":950.999666666667,
-                 "y":217.833
+                 "x":928,
+                 "y":256
+                }, 
+                {
+                 "height":0,
+                 "id":186,
+                 "name":"Spawn Joueur",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":629,
+                 "y":270
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -248,7 +260,7 @@
          "y":0
         }],
  "nextlayerid":32,
- "nextobjectid":185,
+ "nextobjectid":198,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",
