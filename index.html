@@ -77,7 +77,7 @@
                 premierDialogueActif : false,
                 compteurTempsAvantAtaque: 100 ,  
                 tempsAvantAtaque: false,
-                speed: 300,
+                speed: 150,
                 acheterSpeed: false,
                 acheterDash: false,
                 dash: 0,
@@ -280,6 +280,13 @@
             // anim dash
             this.load.spritesheet('animDash','assets/animDash.png',
             { frameWidth: 32, frameHeight: 32 });
+
+            // PNJ intro zone 2
+            this.load.image("PNJIntroZone2", "assets/PNJIntroZone2.png");
+            // collide pnj intro zone 2
+            this.load.image("PNJIntroZone2Collide", "assets/objets/emplacementChangementDeScene/changementScene.png");
+            // textes pnj intro zone 2
+            this.load.image("TexteIntro2eZones", "assets/interface/texte/TexteIntro2eZones.png");
         }
 
         create(){
@@ -840,6 +847,17 @@
 
             this.physics.add.overlap(this.player,this.marchandOverlap,this.parlerMarchand,null,this);
 
+            // pnj intro zone 2
+            this.pnj3 = this.physics.add.image(600, 300, 'PNJIntroZone2');
+            this.pnj3Collide = this.physics.add.image(this.pnj3.x, this.pnj3.y, 'PNJIntroZone2Collide');
+            this.pnj3Collide.body.setSize(32,32)
+            this.pnj3Collide.setPushable(false)
+            this.physics.add.collider(this.player,this.pnj3Collide)
+
+            this.pnj3.body.setSize(48,70)
+            this.pnj3.setOffset(-8,0)
+            this.physics.add.overlap(this.player,this.pnj3,this.parlerPNJ3,null,this);
+
             ///////////////////////////////////////////////////////////////
             /////////////////////////TOUCHES///////////////////////////////
             ///////////////////////////////////////////////////////////////
@@ -1008,11 +1026,17 @@
                 this.vehicule.anims.play('animVehiculeStop', true)
             }
 
-            if (this.quitterVheicule == true){
-                this.coeurEcran.setPosition(306, 161).setScale(0.7);
-                this.monnaieEcran.setPosition(275, 182).setScale(0.4);  
-                this.monnaieTexte.setPosition(286, 174).setScale(0.7)
+            if (this.animVehicule == true){
+                this.coeurEcran.alpha = 0
+                this.monnaieEcran.alpha = 0
+                this.monnaieTexte.alpha = 0
+                this.sabreEcran.alpha = 0
+                this.carteMagnetiqueEcran.alpha = 0
+                this.reacteursEcranBackground.alpha = 0
+                this.reacteur1Ecran.alpha = 0
+            }
 
+            if (this.quitterVheicule == true){
                 this.entrerActif = false
                 this.cameras.main.startFollow(this.player); 
                 this.cameras.main.zoom = 3
@@ -1021,6 +1045,16 @@
                 this.animVehicule = false
                 this.physics.add.collider(this.player, this.vehicule);
                 this.vehicule.setPushable(false)
+            }
+
+            if (this.animVehicule == false){
+                this.coeurEcran.alpha = 1
+                this.monnaieEcran.alpha = 1
+                this.monnaieTexte.alpha = 1
+                this.sabreEcran.alpha = 1
+                this.carteMagnetiqueEcran.alpha = 1
+                this.reacteursEcranBackground.alpha = 1
+                this.reacteur1Ecran.alpha = 1
             }
 
             // timer pour l'invulnérabilité
@@ -1276,7 +1310,6 @@
                     this.dialogue = false
                 }
 
-                console.log(this.dialogue)
 
             this.barreDeVie()
         }
@@ -1396,8 +1429,8 @@
                 if (this.animVehicule == true){
                     this.cameras.main.startFollow(vehicule); 
                     this.cameras.main.zoom = 2
-                    this.player.x = this.vehicule.x
-                    this.player.y = this.vehicule.y
+                    this.player.x = this.vehicule.x - 20
+                    this.player.y = this.vehicule.y - 20
                 }
                 if (vehicule.x > 1200){
                     this.player.x = this.vehicule.x + 160
@@ -1542,7 +1575,7 @@
                         this.deuxiemeDialogue = true
                         this.premierDialogueActif = true
                         this.player.setVelocityX(0)
-                    this.player.setVelocityY(0)
+                        this.player.setVelocityY(0)
                     }
                 }
                 if (this.deuxiemeDialogue == true){
@@ -1613,6 +1646,28 @@
                     this.premierDialogueActif = false
                 }
         }
+
+        parlerPNJ3(player,pnj3){
+            if (this.premierDialogueActif == false){
+                    if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
+                        this.dialogue = true
+                        this.TextePNJ3 = this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"TexteIntro2eZones").setScale(0.35)
+                        this.TextePNJ3.setDepth(11)
+                        this.TextePNJ3.setScrollFactor(0)
+                        this.TextePNJ3.setInteractive()
+                        this.premierDialogueActif = true
+                        this.player.setVelocityX(0)
+                        this.player.setVelocityY(0)
+                    }
+                }
+
+                if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
+                    this.TextePNJ3.destroy()
+                    this.dialogue = false
+                    this.premierDialogueActif = false
+                }
+        }
+
         /////////////////////////////////////////
         //////////changements de scènes//////////
         /////////////////////////////////////////
