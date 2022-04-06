@@ -77,7 +77,7 @@
                 premierDialogueActif : false,
                 compteurTempsAvantAtaque: 100 ,  
                 tempsAvantAtaque: false,
-                speed: 100,
+                speed: 300,
                 acheterSpeed: false,
                 acheterDash: false,
                 dash: 0,
@@ -2322,6 +2322,8 @@
                 this.texteReacteurObtenu.setDepth(11)
                 this.texteReacteurObtenu.setScrollFactor(0)
                 this.reacteurObtenu = true
+                this.player.setVelocityX(0)
+                this.player.setVelocityY(0)
             }
         }
 
