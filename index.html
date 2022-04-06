@@ -57,23 +57,23 @@
 
                 this.scene.scene.start("sceneJeu", {
                 pointDeVie:4,
-                sabreInterface:false,
+                sabreInterface:true,
                 dialogue:false,
                 trancherActif:false,
-                pouvoirAttaquer:false,
+                pouvoirAttaquer:true,
                 animVehicule:false,
                 quitterVheicule:false,
                 invulnérable:false,
                 tempsAvantRespawn:false,
                 porteOuverte:false,
-                carteMagnetiqueInterface: false,
+                carteMagnetiqueInterface: true,
                 solde:30,
-                reacteur1Pris:false,
-                reacteur2Pris:false,
-                reacteursBackgroundInterface:false,
-                quetePlanteInterface:false,
-                quetePlanteInterfaceArosoir:false,
-                plantePrise: 0,
+                reacteur1Pris:true,
+                reacteur2Pris:true,
+                reacteursBackgroundInterface:true,
+                quetePlanteInterface:true,
+                quetePlanteInterfaceArosoir:true,
+                plantePrise: 10,
                 premierDialogueActif : false,
                 compteurTempsAvantAtaque: 100 ,  
                 tempsAvantAtaque: false,
@@ -81,10 +81,11 @@
                 acheterSpeed: false,
                 acheterDash: false,
                 dash: 0,
-                nbrDash: 0,
+                nbrDash: 10,
                 afficheInterfaceDash: false,
                 spawnXSortieScene: this.spawnXSortieScene,
-                spawnYSortieScene: this.spawnYSortieScene
+                spawnYSortieScene: this.spawnYSortieScene,
+                cleInterface:false
         })
         });
 
@@ -135,6 +136,7 @@
             this.afficheInterfaceDash = data.afficheInterfaceDash,
             this.compteurTempsAvantAtaque = data.compteurTempsAvantAtaque ,  
             this.tempsAvantAtaque = data.tempsAvantAtaque
+            this.cleInterface = data.cleInterface
         }
 
         preload(){
@@ -149,7 +151,7 @@
             this.load.spritesheet('animAttaque','assets/animAttaque.png',
             { frameWidth: 32, frameHeight: 48 });
 
-            this.load.spritesheet('ennemi','assets/ennemi.png',
+            this.load.spritesheet('ennemi','assets/ennemi2eZone.png',
             { frameWidth: 31, frameHeight: 20 });
 
             // sprite vehicule
@@ -203,7 +205,9 @@
  
 
             this.load.image("monnaie", "assets/objets/monnaie.png");
-            this.load.image("monnaieInterface", "assets/interface/monnaieInterface.png");
+            this.load.image("monnaieInterface", "assets/interface/monnaieInterface.png")
+
+            this.load.image("ennemiMort", "assets/ennemiMort2eZone.png");
 
             // frame barre de vie
             this.load.image("4HP", "assets/interface/vie/coeurInterface4HP.png");
@@ -287,6 +291,14 @@
             this.load.image("PNJIntroZone2Collide", "assets/objets/emplacementChangementDeScene/changementScene.png");
             // textes pnj intro zone 2
             this.load.image("TexteIntro2eZones", "assets/interface/texte/TexteIntro2eZones.png");
+
+            this.load.image("cleInterface", "assets/interface/cleInterface.png");
+
+            this.load.image("grillageLaby", "assets/objets/grillageLaby.png");
+            this.load.image("grillageOverlap", "assets/objets/emplacementChangementDeScene/changementScene.png");
+
+
+
         }
 
         create(){
@@ -369,6 +381,8 @@
             this.premierDialogueActif = false
             this.dialogue = false
             this.dernierDialogue = false
+            this.dropEnnemi = false
+            this.attaqueActive = false
 
             // var dash
             this.vitesseDash = this.speed * 5
@@ -592,6 +606,20 @@
                 repeat: -1
             });
 
+            // animation ennemis
+            this.anims.create({
+                key: 'frontEnnemis',
+                frames: this.anims.generateFrameNumbers('ennemi', {start:0,end:5}),
+                frameRate: 12,
+                repeat: -1
+            });
+            this.anims.create({
+                key: 'backEnnemis',
+                frames: this.anims.generateFrameNumbers('ennemi', {start:6,end:11}),
+                frameRate: 12,
+                repeat: -1
+            });
+
             // apparition de la fonction qui permet au joueur de rentrer dans le véhicule
             this.physics.add.overlap(this.player, this.vehicule, this.entrerVehicule, null,this);
 
@@ -633,21 +661,7 @@
 
                 this.physics.add.overlap( this.player, this.porteGrotteOverlap,  this.ouvrirPorteGrotte, null,this);
 
-                // apparition des ennemis
-                this.enemis = this.physics.add.group({
-                });
-                        
-                carte.getObjectLayer('spawnEnnemi').objects.forEach((enemis) => {
-                this.enemi = this.enemis.create(enemis.x, enemis.y, 'ennemi').setOrigin(0);
-                this.enemi.setBounce(1);
-                });
-
-                this.enemis.setVelocityY(-50)
-                this.ennemiDirection = 1
-
-                this.physics.add.overlap( this.player, this.enemis,  this.toucherEnnemi, null,this);
-
-                this.physics.add.collider(this.enemis,build,);
+                
 
             // placement des plantes à aroser
             this.plante = this.physics.add.group({
@@ -658,6 +672,23 @@
             this.planteOverlap.body.setSize(60, 60);
             this.planteOverlap.setOffset(-14,-6)
             });
+
+            // placement du grillage du labyrinthe
+            this.grillage = this.physics.add.group({
+            });      
+
+            carte.getObjectLayer('grillage').objects.forEach((grillage) => {
+            this.grillage = this.physics.add.image(grillage.x + 4, grillage.y, 'grillageLaby').setOrigin(0);
+            });
+
+            this.grillageOverlap = this.physics.add.image(this.grillage.x+28,this.grillage.y+60,'grillageOverlap')
+            this.grillageOverlap.body.setSize(100,60)
+
+            this.grillage.setPushable(false)
+            this.physics.add.collider(this.player,this.grillage)
+
+            this.physics.add.overlap(this.player,this.grillageOverlap,this.ouvrirGrillage,null,this)
+
 
             ////////////////////////////////////////////////////////////
             // placement du coffre Essence
@@ -722,7 +753,7 @@
             ////////////////////////////////////////////////////////////  
 
             carte.getObjectLayer('reacteurs2').objects.forEach((reacteurs2) => {
-            this.reacteurs2 = this.physics.add.image(reacteurs2.x, reacteurs2.y, 'réacteur2').setScale(0.6).setOrigin(0);
+            this.reacteurs2 = this.physics.add.image(reacteurs2.x + 5, reacteurs2.y, 'réacteur2').setScale(0.6).setOrigin(0);
             });
 
             this.physics.add.overlap( this.playerCollision2, this.reacteurs2, this.prendreReacteur2, null,this);
@@ -761,6 +792,34 @@
             this.physics.add.collider(this.player,this.coffreMarchandDash);
 
             this.physics.add.overlap( this.player, this.coffreMarchandDashOverlap, this.ouvrircoffreDash, null,this)
+
+            // apparition des ennemis déplacement vertical
+            this.enemis = this.physics.add.group({
+            });
+                    
+            carte.getObjectLayer('spawnEnnemi').objects.forEach((enemis) => {
+            this.enemi = this.enemis.create(enemis.x, enemis.y, 'ennemi').setOrigin(0);
+            this.enemi.setBounce(1);
+            });
+
+            this.enemis.setVelocityY(-100)
+            
+            this.physics.add.collider(this.enemis,build)
+            this.physics.add.overlap( this.player, this.enemis,  this.toucherEnnemi, null,this);
+
+            // apparition des ennemis déplacement horizontal
+            this.enemisHo = this.physics.add.group({
+            });
+                    
+            carte.getObjectLayer('spawnEnnemiHorizontal').objects.forEach((enemisHo) => {
+            this.enemiHoBouce = this.enemisHo.create(enemisHo.x, enemisHo.y, 'ennemi').setOrigin(0);
+            this.enemiHoBouce.setBounce(1);
+            });
+
+            this.enemisHo.setVelocityX(-100)
+            
+            this.physics.add.collider(this.enemisHo,build)
+            this.physics.add.overlap( this.player, this.enemisHo,  this.toucherEnnemi, null,this);
 
             ///////////////////////////////////////////////////////////////
             /////////////////////////INTERFACE/////////////////////////////
@@ -875,6 +934,19 @@
             this.playerCollision2.x = this.player.x
             this.playerCollision2.y = this.player.y
 
+            this.enemisHo.playAnimation('frontEnnemis', [0])
+
+            this.enemis.children.each(function(enemi) {
+
+            if(enemi.body.velocity.y > 0){
+                enemi.anims.play("frontEnnemis");
+            }
+            else{
+                enemi.anims.play("backEnnemis");
+            }
+
+            }, this);
+
             if (this.dialogue == false){
 
                 this.moveUp = ( this.cursors.up.isDown)  
@@ -921,6 +993,8 @@
                         this.player.setVelocityY(0)
                     }
                     this.physics.add.overlap(this.player, this.enemis, this.perdPvEnnemi, null,this);
+                    this.physics.add.overlap(this.player, this.enemisHo, this.perdPvEnnemi, null,this);
+
                 }
                 if (this.trancherActif == true){
                     if (this.moveUp) {
@@ -977,10 +1051,12 @@
             }
 
             if(this.tempsAttaque == true){
+                this.attaqueActive = true
                 this.compteurAttaqueTemps -=1 ;
                 if(this.compteurAttaqueTemps == 0){
                     this.compteurAttaqueTemps = 60;
                     this.tempsAttaque = false ;
+                    this.attaqueActive = false
                 }
             }
 
@@ -1173,6 +1249,18 @@
                 }
             }
 
+            if (this.dropEnnemi == true){
+                if (this.monnaieTest.x > this.player.x)
+                {this.monnaieTest.setVelocityX(-120)}
+                if (this.monnaieTest.x < this.player.x)
+                {this.monnaieTest.setVelocityX(120)}
+                if (this.monnaieTest.y < this.player.y)
+                {this.monnaieTest.setVelocityY(120)}
+                if (this.monnaieTest.y > this.player.y)
+                {this.monnaieTest.setVelocityY(-120)}
+            }
+                
+
             // stop animation des coffres
             if(this.coffreAnimStop == true){
                 this.compteurAnimCoffre -=1 ;
@@ -1271,21 +1359,29 @@
                     if (this.dash>0){
                         this.dash = this.dash -this.vitesseDash
                         if (this.player.direction == 'down'){
+                            this.player.body.setSize(8,20,true)
+                            this.player.setOffset(13, 12)
                             this.player.setVelocityY(this.vitesseDash);
                             this.player.setVelocityX(0);
                             this.player.anims.play('animDashFront', true);
                         }
                         else if (this.player.direction == 'left'){
+                            this.player.body.setSize(20,8,true)
+                            this.player.setOffset(8, 14)
                             this.player.setVelocityX(-this.vitesseDash);
                             this.player.setVelocityY(0);
                             this.player.anims.play('animDashLeft', true);
                         }
                         else if (this.player.direction == 'up'){
+                            this.player.body.setSize(8,20,true)
+                            this.player.setOffset(8, 14)
                             this.player.setVelocityY(-this.vitesseDash);
                             this.player.setVelocityX(0);
                             this.player.anims.play('animDashBack', true);
                         }
                         else if (this.player.direction == 'right'){
+                            this.player.body.setSize(20,8,true)
+                            this.player.setOffset(8, 14)
                             this.player.setVelocityX(this.vitesseDash);
                             this.player.setVelocityY(0);
                             this.player.anims.play('animDashRight', true);
@@ -1302,22 +1398,46 @@
                     }
                 }
                 if (this.nbrDash <= 0){
-                        this.nbrDash = 0
-                        this.dashTexte.setText(this.nbrDash)
-                    }
+                    this.nbrDash = 0
+                    this.dashTexte.setText(this.nbrDash)
+                }
 
                 if (this.dash == 0 || this.nbrDash == 0){
+
+                    if (this.attaqueActive == false){
+
+                        this.player.body.setSize(24,6,true)
+                        this.player.setOffset(4, 26)
+                    }
+
+
+            // cle interface
+            if (this.cleInterface == true){
+                this.cleEcran = this.add.image(506, 220,'cleInterface').setScale(0.5)
+                this.cleEcran.setScrollFactor(0);  
+                this.cleEcran.setDepth(10)
+            }
+
+
                     this.dialogue = false
                 }
 
-
             this.barreDeVie()
+        }
+
+        // grillage à ouvrir pour le labyrinthe
+        ouvrirGrillage(player,grillage){
+            if (this.cleInterface == true){
+                if (Phaser.Input.Keyboard.JustDown(this.toucheF)) {
+                    grillage.destroy()
+                    this.grillage.destroy()
+                }
+            }
         }
 
         detruireRocher(player,rocherADetruire){
             if (this.trancherActif == true){
                 
-
             this.rocherDetruitDroit = this.physics.add.image(rocherADetruire.x + 50, rocherADetruire.y, 'rocherDetruitDroit');
             this.rocherDetruitDroit.setScale(0.8)
             this.rocherDetruitDroit.setPushable(false)
@@ -1328,13 +1448,11 @@
             this.rocherDetruitGauche.setPushable(false)
             this.physics.add.collider(this.player,this.rocherDetruitGauche)
 
-
             rocherADetruire.destroy()
             }
         }
 
         aroserPlante(player,plante){
-            
             if (Phaser.Input.Keyboard.JustDown(this.toucheF)) {
                 plante.destroy()
                 this.planteArosee = this.physics.add.sprite(plante.x + 16 ,plante.y + 14,'planteArosee')
@@ -1413,14 +1531,6 @@
             this.dropCoffreTextPnj = true
         }
 
-        toucherEnnemi (player, enemis) {
-            if (this.trancherActif == true){
-                this.imageMort = this.add.image(enemis.x + 15, enemis.y + 12, 'ennemiMort');
-                this.imageMort.setDepth(0)
-                enemis.destroy();
-            }
-        }  
-
         entrerVehicule(player,vehicule){
             if (this.entrerActif == true){
                 if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
@@ -1440,14 +1550,6 @@
             }
         }
 
-        perdPvEnnemi(player,ennemis){
-            if (this.invulnérable === false){
-                this.invulnérable = true;
-                this.pointDeVie -= 1;
-                player.setTint(0xff0000);
-            }
-        }
-
         prendreHp (player,coeur){
             coeur.destroy(); 
             this.pointDeVie += 1
@@ -1460,6 +1562,9 @@
             monnaie.destroy(); 
             this.solde += 1
             this.monnaieTexte.setText(this.solde)
+            if (this.dropEnnemi == true){
+                this.dropEnnemi = false
+            }
         }
 
         ouvrirPorteGrotte(player,porteGrotteOverlap){
@@ -1488,15 +1593,19 @@
             if (this.trancherActif == true){
                 this.imageMort = this.add.image(enemis.x + 15, enemis.y + 12, 'ennemiMort');
                 this.imageMort.setDepth(1)
+                this.monnaieTest = this.monnaie.create(enemis.x, enemis.y - 70, 'monnaie').setScale(0.6).setOrigin(0);
+                this.physics.add.overlap( this.playerCollision2, this.monnaieTest,  this.prendreMonnaie, null,this);
+                this.monnaieTest.setDepth(2)
+                this.dropEnnemi = true
                 enemis.destroy(); 
             }
         }  
 
-        perdPvEnnemi(player,ennemis){
+        perdPvEnnemi(playerCollision2,ennemis){
             if (this.invulnérable === false){
                 this.invulnérable = true;
                 this.pointDeVie -= 1;
-                player.setTint(0xff0000);
+                this.player.setTint(0xff0000);
             }
         }
 
@@ -1724,7 +1833,8 @@
                     nbrDash: this.nbrDash,
                     afficheInterfaceDash: this.afficheInterfaceDash,
                     compteurTempsAvantAtaque: this.compteurTempsAvantAtaque ,  
-                    tempsAvantAtaque: this.tempsAvantAtaque
+                    tempsAvantAtaque: this.tempsAvantAtaque,
+                    cleInterface: this.cleInterface
                 })
             }
         }
@@ -2901,6 +3011,7 @@
             this.afficheInterfaceDash = data.afficheInterfaceDash,
             this.compteurTempsAvantAtaque = data.compteurTempsAvantAtaque,
             this.tempsAvantAtaque = data.tempsAvantAtaque
+            this.cleInterface = data.cleInterface
         }
 
         preload(){
@@ -2942,6 +3053,9 @@
 
             this.load.image("TextePNJFleurAvant", "assets/interface/texte/TextePNJFleurAvant.png");
             this.load.image("TextePNJFleurApres", "assets/interface/texte/TextePNJFleurApres.png");
+
+            this.load.image("cleInterface", "assets/interface/cleInterface.png");
+
         }
 
         create(){
@@ -3165,6 +3279,13 @@
                 this.reacteur2Ecran.setDepth(10)
             }
 
+            // cle interface
+            if (this.cleInterface == true){
+                this.cleEcran = this.add.image(506, 220,'cleInterface').setScale(0.5)
+                this.cleEcran.setScrollFactor(0);  
+                this.cleEcran.setDepth(10)
+            }
+
                 // quete de l'arosoire interface
                 if (this.quetePlanteInterface == true){
 
@@ -3249,6 +3370,7 @@
                     this.TextePNJVehiculeApres.destroy()
                     this.dialogue = false
                     this.premierDialogueActif = false
+                    this.cleInterface = true
                 }
             } 
         }
@@ -3290,6 +3412,7 @@
                     tempsAvantAtaque: this.tempsAvantAtaque,
                     quetePlanteInterface:this.quetePlanteInterface,
                     quetePlanteInterfaceArosoir:this.quetePlanteInterfaceArosoir,
+                    cleInterface:this.cleInterface
                 })
             }
         }
