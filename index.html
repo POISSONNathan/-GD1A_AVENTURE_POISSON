@@ -46,6 +46,9 @@
 
         this.startButton = this.add.image(this.cameras.main.width/2,380, 'bouttonPlay').setScale(0.53).setInteractive();
 
+     
+
+
         this.startButton.on('pointerdown', function (pointer) {
                 carte.getObjectLayer('spawnJoueur').objects.forEach((spawnJoueur) => {
                     this.spawnXSortieScene = spawnJoueur.x, 
@@ -74,7 +77,7 @@
                 premierDialogueActif : false,
                 compteurTempsAvantAtaque: 100 ,  
                 tempsAvantAtaque: false,
-                speed: 300,
+                speed: 100,
                 acheterSpeed: false,
                 acheterDash: false,
                 dash: 0,
@@ -91,13 +94,9 @@
 
                 this.scene.scene.stop("accueil")
         });
-
-        
         }
-
-       
-
         update(){}
+        
 
     }
 
@@ -1226,20 +1225,7 @@
                 this.arosoirInterface.setDepth(10)
             }
 
-            // changement de l'emplacement de l'interface lorsque l'on est dans le vehicule
-            if (this.animVehicule == true){
-                this.coeurEcran.setPosition(267, 134).setScale(1.05);
-                this.monnaieEcran.setPosition(220, 165).setScale(0.7);  
-                this.monnaieTexte.setPosition(238, 151).setScale(1.25)
-
-                this.carteMagnetiqueEcran.setPosition(460, 135).setScale(0.6);
-                this.sabreEcran.setPosition(428, 135).setScale(0.6);
-
-                this.reacteur1Ecran.setPosition(504, 152).setScale(0.6);
-                this.reacteursEcranBackground.setPosition(522, 146).setScale(0.74);
-                this.bidonEssenceInterface.setPosition(0,0)  
-            }
-
+        
             // dash
             if (this.nbrDash > 0){
                 if ((this.input.keyboard.checkDown(this.cursors.space,this.distanceDash) ==true ) && (this.dash==0)){
@@ -1289,6 +1275,8 @@
                 if (this.dash == 0 || this.nbrDash == 0){
                     this.dialogue = false
                 }
+
+                console.log(this.dialogue)
 
             this.barreDeVie()
         }
@@ -1512,24 +1500,25 @@
         parlerPNJ1(player,pnj1){
             if (this.premierDialogueActif == false){
                 if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
-                    this.dialogue = true
+                    this.dialogue = true;
                     this.textintro = this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"TexteIntro1").setScale(0.35)
-                    this.textintro.setDepth(11)
-                    this.textintro.setScrollFactor(0)
-                    this.textintro.setInteractive()
-                    this.deuxiemeDialogue = true
-                    this.premierDialogueActif = true
-                    this.player.setVelocityX(0)
-                    this.player.setVelocityY(0)
+                    this.textintro.setDepth(11);
+                    this.textintro.setScrollFactor(0);
+                    this.textintro.setInteractive();
+                    this.deuxiemeDialogue = true;
+                    this.premierDialogueActif = true;
+                    this.player.setVelocityX(0);
+                    this.player.setVelocityY(0);
                 }
             }
             if (this.deuxiemeDialogue == true){
                 if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
-                    this.textintro.setTexture('TexteIntro2') 
-                    this.dernierDialogue = true
-                    this.deuxiemeDialogue = false  
-                    this.player.setVelocityX(0)
-                    this.player.setVelocityY(0)            
+                    this.textintro.setTexture('TexteIntro2') ;
+                    this.dernierDialogue = true;
+                    this.dialogue = true;
+                    this.deuxiemeDialogue = false  ;
+                    this.player.setVelocityX(0);
+                    this.player.setVelocityY(0)      ;      
                 }
             }
             if (this.dernierDialogue == true){
@@ -1773,7 +1762,7 @@
             { frameWidth: 32, frameHeight: 32 });
             this.load.spritesheet('animAttaque','assets/animAttaque.png',
             { frameWidth: 32, frameHeight: 48 });
-
+ 
             this.load.spritesheet('ennemi','assets/ennemi.png',
             { frameWidth: 31, frameHeight: 20 });
 
