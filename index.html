@@ -57,7 +57,7 @@
 
                 this.scene.scene.start("sceneJeu", {
                 pointDeVie:4,
-                sabreInterface:true,
+                sabreInterface:false,
                 dialogue:false,
                 trancherActif:false,
                 pouvoirAttaquer:true,
@@ -66,13 +66,13 @@
                 invulnérable:false,
                 tempsAvantRespawn:false,
                 porteOuverte:false,
-                carteMagnetiqueInterface: true,
+                carteMagnetiqueInterface: false,
                 solde:30,
-                reacteur1Pris:true,
-                reacteur2Pris:true,
-                reacteursBackgroundInterface:true,
-                quetePlanteInterface:true,
-                quetePlanteInterfaceArosoir:true,
+                reacteur1Pris:false,
+                reacteur2Pris:false,
+                reacteursBackgroundInterface:false,
+                quetePlanteInterface:false,
+                quetePlanteInterfaceArosoir:false,
                 plantePrise: 10,
                 premierDialogueActif : false,
                 compteurTempsAvantAtaque: 100 ,  
@@ -1249,16 +1249,17 @@
                 }
             }
 
-            if (this.dropEnnemi == true){
+            if (this.test > 0){
                 if (this.monnaieTest.x > this.player.x)
-                {this.monnaieTest.setVelocityX(-120)}
+                {this.monnaieTest.setVelocityX(-200)}
                 if (this.monnaieTest.x < this.player.x)
-                {this.monnaieTest.setVelocityX(120)}
+                {this.monnaieTest.setVelocityX(200)}
                 if (this.monnaieTest.y < this.player.y)
-                {this.monnaieTest.setVelocityY(120)}
+                {this.monnaieTest.setVelocityY(200)}
                 if (this.monnaieTest.y > this.player.y)
-                {this.monnaieTest.setVelocityY(-120)}
-            }
+                {this.monnaieTest.setVelocityY(-200)}
+                }
+                
                 
 
             // stop animation des coffres
@@ -1928,7 +1929,7 @@
             this.load.spritesheet('animAttaque','assets/animAttaque.png',
             { frameWidth: 32, frameHeight: 48 });
  
-            this.load.spritesheet('ennemi','assets/ennemi.png',
+            this.load.spritesheet('ennemi2','assets/ennemi.png',
             { frameWidth: 31, frameHeight: 20 });
 
             // sprite vehicule
@@ -1946,7 +1947,7 @@
             // hitbox perso différente de celle avec laquelle il est en collision avec les builds
             this.load.image("hitbox", "assets/objets/emplacementChangementDeScene/changementScene.png");
 
-            this.load.image("ennemiMort", "assets/ennemiMort.png");
+            this.load.image("ennemiMort2", "assets/ennemiMort.png");
             
             // emplacement Changement De Scene
             this.load.image("changementScene", "assets/objets/emplacementChangementDeScene/changementScene.png");
@@ -2118,14 +2119,14 @@
 
             // animation ennemis
             this.anims.create({
-                key: 'frontEnnemis',
-                frames: this.anims.generateFrameNumbers('ennemi', {start:0,end:5}),
+                key: 'frontEnnemis2',
+                frames: this.anims.generateFrameNumbers('ennemi2', {start:0,end:5}),
                 frameRate: 12,
                 repeat: -1
             });
             this.anims.create({
-                key: 'backEnnemis',
-                frames: this.anims.generateFrameNumbers('ennemi', {start:6,end:11}),
+                key: 'backEnnemis2',
+                frames: this.anims.generateFrameNumbers('ennemi2', {start:6,end:11}),
                 frameRate: 12,
                 repeat: -1
             });
@@ -2231,15 +2232,15 @@
             this.playerCollision2.x = this.player.x
             this.playerCollision2.y = this.player.y
 
-            this.enemisHo.playAnimation('frontEnnemis', [0])
+            this.enemisHo.playAnimation('frontEnnemis2', [0])
 
             this.enemis.children.each(function(enemi) {
 
             if(enemi.body.velocity.y > 0){
-                enemi.anims.play("frontEnnemis");
+                enemi.anims.play("frontEnnemis2");
             }
             else{
-                enemi.anims.play("backEnnemis");
+                enemi.anims.play("backEnnemis2");
             }
 
             }, this);
@@ -2343,13 +2344,13 @@
         
                 if (this.test > 0){
                 if (this.monnaieTest.x > this.player.x)
-                {this.monnaieTest.setVelocityX(-120)}
+                {this.monnaieTest.setVelocityX(-200)}
                 if (this.monnaieTest.x < this.player.x)
-                {this.monnaieTest.setVelocityX(120)}
+                {this.monnaieTest.setVelocityX(200)}
                 if (this.monnaieTest.y < this.player.y)
-                {this.monnaieTest.setVelocityY(120)}
+                {this.monnaieTest.setVelocityY(200)}
                 if (this.monnaieTest.y > this.player.y)
-                {this.monnaieTest.setVelocityY(-120)}
+                {this.monnaieTest.setVelocityY(-200)}
                 }
             
 
@@ -2444,7 +2445,7 @@
 
         toucherEnnemi (player, enemis) {
             if (this.trancherActif == true){
-                this.imageMort = this.add.image(enemis.x + 15, enemis.y + 12, 'ennemiMort');
+                this.imageMort = this.add.image(enemis.x + 15, enemis.y + 12, 'ennemiMort2');
                 this.imageMort.setDepth(1)
                 this.monnaieTest = this.monnaie.create(enemis.x, enemis.y - 70, 'monnaie').setScale(0.6).setOrigin(0);
                 this.physics.add.overlap( this.playerCollision2, this.monnaieTest,  this.prendreMonnaie, null,this);
