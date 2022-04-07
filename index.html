@@ -60,7 +60,7 @@
                 sabreInterface:false,
                 dialogue:false,
                 trancherActif:false,
-                pouvoirAttaquer:false,
+                pouvoirAttaquer:true,
                 animVehicule:false,
                 quitterVheicule:false,
                 invulnérable:false,
@@ -85,7 +85,7 @@
                 afficheInterfaceDash: false,
                 spawnXSortieScene: this.spawnXSortieScene,
                 spawnYSortieScene: this.spawnYSortieScene,
-                cleInterface:false
+                cleInterface:true
         })
         });
 
@@ -383,6 +383,8 @@
             this.dernierDialogue = false
             this.dropEnnemi = false
             this.attaqueActive = false
+            this.test = 0
+            this.test2 = 0
 
             // var dash
             this.vitesseDash = this.speed * 5
@@ -673,9 +675,6 @@
             });
 
             // placement du grillage du labyrinthe
-            this.grillage = this.physics.add.group({
-            });      
-
             carte.getObjectLayer('grillage').objects.forEach((grillage) => {
             this.grillage = this.physics.add.image(grillage.x + 4, grillage.y, 'grillageLaby').setOrigin(0);
             });
@@ -799,6 +798,8 @@
             carte.getObjectLayer('spawnEnnemi').objects.forEach((enemis) => {
             this.enemi = this.enemis.create(enemis.x, enemis.y, 'ennemi').setOrigin(0);
             this.enemi.setBounce(1);
+            this.enemi.setBounce(1);
+            this.enemi.body.setSize(28,20)
             });
 
             this.enemis.setVelocityY(-100)
@@ -813,12 +814,14 @@
             carte.getObjectLayer('spawnEnnemiHorizontal').objects.forEach((enemisHo) => {
             this.enemiHoBouce = this.enemisHo.create(enemisHo.x, enemisHo.y, 'ennemi').setOrigin(0);
             this.enemiHoBouce.setBounce(1);
+            this.enemiHoBouce.setBounce(1);
+            this.enemiHoBouce.body.setSize(28,20)
             });
 
             this.enemisHo.setVelocityX(-100)
             
             this.physics.add.collider(this.enemisHo,build)
-            this.physics.add.overlap( this.player, this.enemisHo,  this.toucherEnnemi, null,this);
+            this.physics.add.overlap( this.player, this.enemisHo,  this.toucherEnnemiHo, null,this);
 
             ///////////////////////////////////////////////////////////////
             /////////////////////////INTERFACE/////////////////////////////
@@ -1261,7 +1264,7 @@
                 }
                 if(this.compteurDropCoffreMonnaie == 0){
                     this.compteurDropCoffreMonnaie = 150;
-                    this.physics.add.overlap(this.playerCollision2,this.dropCoffreMonnaie,this.prendreMonnaie,null,this)
+                    this.physics.add.overlap(this.playerCollision2,this.dropCoffreMonnaie,this.prendreMonnaieCoffre,null,this)
                     this.dropCoffreMonnaieActif = false ;
                 }
             }
@@ -1275,6 +1278,17 @@
                 {this.monnaieTest.setVelocityY(200)}
                 if (this.monnaieTest.y > this.player.y)
                 {this.monnaieTest.setVelocityY(-200)}
+                }
+
+                if (this.test2 > 0){
+                if (this.monnaieTest2.x > this.player.x)
+                {this.monnaieTest2.setVelocityX(-200)}
+                if (this.monnaieTest2.x < this.player.x)
+                {this.monnaieTest2.setVelocityX(200)}
+                if (this.monnaieTest2.y < this.player.y)
+                {this.monnaieTest2.setVelocityY(200)}
+                if (this.monnaieTest2.y > this.player.y)
+                {this.monnaieTest2.setVelocityY(-200)}
                 }
                 
                 
@@ -1420,14 +1434,13 @@
                     this.dashTexte.setText(this.nbrDash)
                 }
 
-                if (this.dash == 0 || this.nbrDash == 0){
-
-                    if (this.attaqueActive == false){
-
-                        this.player.body.setSize(24,6,true)
-                        this.player.setOffset(4, 26)
-                    }
-
+        if (this.dash == 0 || this.nbrDash == 0){
+            if (this.attaqueActive == false){
+                this.player.body.setSize(24,6,true)
+                this.player.setOffset(4, 26)
+            }
+            this.dialogue = false
+        }
 
             // cle interface
             if (this.cleInterface == true){
@@ -1435,10 +1448,6 @@
                 this.cleEcran.setScrollFactor(0);  
                 this.cleEcran.setDepth(10)
             }
-
-
-                    this.dialogue = false
-                }
 
             this.barreDeVie()
         }
@@ -1576,15 +1585,6 @@
             }
         }
 
-        prendreMonnaie(player,monnaie){
-            monnaie.destroy(); 
-            this.solde += 1
-            this.monnaieTexte.setText(this.solde)
-            if (this.dropEnnemi == true){
-                this.dropEnnemi = false
-            }
-        }
-
         ouvrirPorteGrotte(player,porteGrotteOverlap){
             if (this.carteMagnetiqueInterface == true){
                 if (this.porteOuverte == false){
@@ -1618,6 +1618,66 @@
                 enemis.destroy(); 
             }
         }  
+
+        toucherEnnemiHo (player, enemishO) {
+            if (this.trancherActif == true){
+                this.imageMort2 = this.add.image(enemishO.x + 15, enemishO.y + 12, 'ennemiMort');
+                this.imageMort2.setDepth(1)
+                this.monnaieTest2 = this.monnaie.create(enemishO.x, enemishO.y - 70, 'monnaie').setScale(0.6).setOrigin(0);
+                this.physics.add.overlap( this.playerCollision2, this.monnaieTest2,  this.prendreMonnaie2, null,this);
+                this.test2++
+                this.monnaieTest2.setDepth(2)
+                enemishO.destroy(); 
+            }
+        }
+
+        toucherEnnemi (player, enemis) {
+            if (this.trancherActif == true){
+                this.imageMort = this.add.image(enemis.x + 15, enemis.y + 12, 'ennemiMort');
+                this.imageMort.setDepth(1)
+                this.monnaieTest = this.monnaie.create(enemis.x, enemis.y - 70, 'monnaie').setScale(0.6).setOrigin(0);
+                this.physics.add.overlap( this.playerCollision2, this.monnaieTest,  this.prendreMonnaie, null,this);
+                this.test++
+                this.monnaieTest.setDepth(2)
+                enemis.destroy(); 
+            }
+        } 
+        
+        toucherEnnemiHo (player, enemishO) {
+            if (this.trancherActif == true){
+                this.imageMort2 = this.add.image(enemishO.x + 15, enemishO.y + 12, 'ennemiMort');
+                this.imageMort2.setDepth(1)
+                this.monnaieTest2 = this.monnaie.create(enemishO.x, enemishO.y - 70, 'monnaie').setScale(0.6).setOrigin(0);
+                this.physics.add.overlap( this.playerCollision2, this.monnaieTest2,  this.prendreMonnaie2, null,this);
+                this.test2++
+                this.monnaieTest2.setDepth(2)
+                enemishO.destroy(); 
+            }
+        }
+
+        prendreMonnaieCoffre(player,monnaieCoffre){
+            monnaieCoffre.destroy(); 
+            this.solde += 1
+            this.monnaieTexte.setText(this.solde)            
+        }
+
+        prendreMonnaie(player,monnaie){
+            if  (this.test > 0){
+                monnaie.destroy(); 
+                this.solde += 1
+                this.monnaieTexte.setText(this.solde)
+                this.test --
+            }
+        }
+
+        prendreMonnaie2(player,monnaie2){
+            if  (this.test2 > 0){
+                monnaie2.destroy(); 
+                this.solde += 1
+                this.monnaieTexte.setText(this.solde)
+                this.test2 --
+            }
+        }
 
         perdPvEnnemi(playerCollision2,ennemis){
             if (this.invulnérable === false){
@@ -2039,6 +2099,7 @@
             this.compteurInvunlerable = 150
             this.compteurTempsAvantRespawn = 300
             this.test = 0
+            this.test2 = 0
             this.reacteurObtenu = false
 
             this.physics.add.collider(this.player, buildGrotte);
@@ -2150,6 +2211,8 @@
             carte2.getObjectLayer('spawnEnnemi').objects.forEach((enemis) => {
             this.enemi = this.enemis.create(enemis.x, enemis.y, 'ennemi').setOrigin(0);
             this.enemi.setBounce(1);
+            this.enemi.body.setSize(28,20)
+            this.enemi.setOffset(2,0)
             });
 
             this.enemis.setVelocityY(-100)
@@ -2164,12 +2227,15 @@
             carte2.getObjectLayer('spawnEnnemiHorizontal').objects.forEach((enemisHo) => {
             this.enemiHoBouce = this.enemisHo.create(enemisHo.x, enemisHo.y, 'ennemi').setOrigin(0);
             this.enemiHoBouce.setBounce(1);
+            this.enemiHoBouce.body.setSize(28,20)
+            this.enemiHoBouce.setOffset(2,0)
             });
+
 
             this.enemisHo.setVelocityX(-100)
             
             this.physics.add.collider(this.enemisHo,buildGrotte)
-            this.physics.add.overlap( this.player, this.enemisHo,  this.toucherEnnemi, null,this);
+            this.physics.add.overlap( this.player, this.enemisHo,  this.toucherEnnemiHo, null,this);
 
 
             // apparition du sabre à récupérer sur la map
@@ -2364,6 +2430,17 @@
                 if (this.monnaieTest.y > this.player.y)
                 {this.monnaieTest.setVelocityY(-200)}
                 }
+
+                if (this.test2 > 0){
+                if (this.monnaieTest2.x > this.player.x)
+                {this.monnaieTest2.setVelocityX(-200)}
+                if (this.monnaieTest2.x < this.player.x)
+                {this.monnaieTest2.setVelocityX(200)}
+                if (this.monnaieTest2.y < this.player.y)
+                {this.monnaieTest2.setVelocityY(200)}
+                if (this.monnaieTest2.y > this.player.y)
+                {this.monnaieTest2.setVelocityY(-200)}
+                }
             
 
             if ( this.tempsAttaque == false) {   
@@ -2465,7 +2542,19 @@
                 this.monnaieTest.setDepth(2)
                 enemis.destroy(); 
             }
-        }  
+        } 
+        
+        toucherEnnemiHo (player, enemishO) {
+            if (this.trancherActif == true){
+                this.imageMort2 = this.add.image(enemishO.x + 15, enemishO.y + 12, 'ennemiMort2');
+                this.imageMort2.setDepth(1)
+                this.monnaieTest2 = this.monnaie.create(enemishO.x, enemishO.y - 70, 'monnaie').setScale(0.6).setOrigin(0);
+                this.physics.add.overlap( this.playerCollision2, this.monnaieTest2,  this.prendreMonnaie2, null,this);
+                this.test2++
+                this.monnaieTest2.setDepth(2)
+                enemishO.destroy(); 
+            }
+        }
 
         perdPvEnnemi(playerCollision2,ennemis){
             if (this.invulnérable === false){
@@ -2489,6 +2578,15 @@
                 this.solde += 1
                 this.monnaieTexte.setText(this.solde)
                 this.test --
+            }
+        }
+
+        prendreMonnaie2(player,monnaie2){
+            if  (this.test2 > 0){
+                monnaie2.destroy(); 
+                this.solde += 1
+                this.monnaieTexte.setText(this.solde)
+                this.test2 --
             }
         }
 
