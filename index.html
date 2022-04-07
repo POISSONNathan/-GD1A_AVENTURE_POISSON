@@ -60,7 +60,7 @@
                 sabreInterface:false,
                 dialogue:false,
                 trancherActif:false,
-                pouvoirAttaquer:true,
+                pouvoirAttaquer:false,
                 animVehicule:false,
                 quitterVheicule:false,
                 invulnérable:false,
@@ -355,7 +355,7 @@
 
             this.player.setDepth(7)
 
-            this.vehicule = this.physics.add.sprite(800,10,'vehiculeRightLeft') 
+            this.vehicule = this.physics.add.sprite(1980,10,'vehiculeRightLeft') 
             this.vehicule.body.setSize(200,120,true)
 
             this.vehicule.setDepth(8)
@@ -373,7 +373,7 @@
             this.compteurDropCoffre = 150;
             this.compteurDropCoffreHp = 150;
             this.compteurDropCoffreMonnaie = 150;
-            this.entrerActif = false
+            this.entrerActif = true
             this.coffreAnimStop = false
             this.dropCoffreActif = false
             this.dropCoffreInterface = false
@@ -414,8 +414,8 @@
 
             this.cameras.main.zoom = 3
             this.cameras.main.startFollow(this.player); 
-            this.physics.world.setBounds(0, 0, 6400, 6400);
-            this.cameras.main.setBounds(0, 0, 6400, 6400);
+            this.physics.world.setBounds(0, 0, 6400, 2880);
+            this.cameras.main.setBounds(0, 0, 6400, 2880);
 
             this.anims.create({
                 key: 'left',
@@ -871,7 +871,7 @@
             ///////////////////////////////////////////////////////////////
 
             // pnj intro
-            this.pnj1 = this.physics.add.image(240, 380, 'pnj1');
+            this.pnj1 = this.physics.add.image(370, 1540, 'pnj1');
             this.PNJintroCollide = this.physics.add.image(this.pnj1.x, this.pnj1.y, 'PNJintroCollide');
             this.PNJintroCollide.body.setSize(32,32)
             this.PNJintroCollide.setPushable(false)
@@ -1078,23 +1078,23 @@
             // deplacement vehicule
             if (this.animVehicule == true){     
                 if (this.moveLeft) {
-                    this.vehicule.setSize(180,70,true)
+                    this.vehicule.setSize(150,70,true)
                     this.vehicule.setOffset(0,20)
-                    this.vehicule.setVelocityX(-200)
+                    this.vehicule.setVelocityX(-230)
                     } else if (this.moveRight) {
-                        this.vehicule.setSize(180,70,true)
+                        this.vehicule.setSize(150,70,true)
                         this.vehicule.setOffset(0, 20)
-                        this.vehicule.setVelocityX(200)
+                        this.vehicule.setVelocityX(230)
                     }
                 if (this.moveUp) {
                     this.vehicule.setSize(80,96,true)
-                    this.vehicule.setVelocityY(-200)
+                    this.vehicule.setVelocityY(-230)
                     } else if (this.moveDown) {
                         this.vehicule.setSize(80,96,true)
-                        this.vehicule.setVelocityY(200)
+                        this.vehicule.setVelocityY(230)
                 }
 
-                this.vehicule.body.velocity.normalize().scale(200)
+                this.vehicule.body.velocity.normalize().scale(230)
 
                 if (this.moveUp) {
                     this.vehicule.anims.play('animVehiculeBack', true)
@@ -1110,10 +1110,12 @@
                     this.vehicule.anims.play('animVehiculeNoMove', true);
                     this.vehicule.setVelocityX(0)
                     this.vehicule.setVelocityY(0)
+                    this.vehicule.setSize(150,70,true)
+                    this.vehicule.setOffset(0,20)
                 }
             }
 
-            if (this.vehicule.x > 1200){
+            if (this.vehicule.x > 3500){
                 this.vehicule.anims.play('animVehiculeStop', true)
             }
 
@@ -1558,7 +1560,7 @@
                     this.player.x = this.vehicule.x - 20
                     this.player.y = this.vehicule.y - 20
                 }
-                if (vehicule.x > 1200){
+                if (vehicule.x > 3500){
                     this.player.x = this.vehicule.x + 160
                     this.player.y = this.vehicule.y + 5
                     this.quitterVheicule = true
@@ -1947,11 +1949,6 @@
             this.load.spritesheet('ennemi2','assets/ennemi.png',
             { frameWidth: 31, frameHeight: 20 });
 
-            // sprite vehicule
-            this.load.spritesheet('vehiculeBackFront','assets/vehiculeBackFront.png',
-            { frameWidth: 80, frameHeight: 96 });
-            this.load.spritesheet('vehiculeRightLeft','assets/vehiculeRightLeft.png',
-            { frameWidth: 160, frameHeight: 96 });
 
             this.load.image("sabre", "assets/objets/sabre.png");
             this.load.image("sabreInterface", "assets/interface/sabreInterface.png");
