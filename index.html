@@ -333,11 +333,11 @@
             this.entreeGrotte = this.physics.add.image(430, 100, 'changementScene');
             this.entreeGrotte.body.setSize(150,80,true)
 
-            this.entreeMaisonBlanche = this.physics.add.image(530,200, 'changementScene');
+            this.entreeMaisonBlanche = this.physics.add.image(528,230, 'changementScene');
             this.entreeMaisonBlanche.body.setSize(90,40,true)
             this.entreeMaisonBlanche.setOffset(-31,100)
 
-            this.entreeMaison1 = this.physics.add.image(540,415, 'changementScene');
+            this.entreeMaison1 = this.physics.add.image(800,674, 'changementScene');
             this.entreeMaison1.body.setSize(90,40,true)
 
             ///////////////////////////////////////////////////////////////
@@ -661,8 +661,7 @@
 
                 this.physics.add.overlap( this.player, this.porteGrotteOverlap,  this.ouvrirPorteGrotte, null,this);
 
-                
-
+            
             // placement des plantes à aroser
             this.plante = this.physics.add.group({
             });      
@@ -694,7 +693,7 @@
             // placement du coffre Essence
             ////////////////////////////////////////////////////////////
 
-            this.coffre = this.physics.add.image(930, 520,'coffre')
+            this.coffre = this.physics.add.image(1461, 870,'coffre')
             //placer collision coffre Essence
             this.ouvrirCoffre1 = this.physics.add.image(this.coffre.x, this.coffre.y,'ouvrirCoffre')
             this.ouvrirCoffre1.setPushable(false)
@@ -759,7 +758,7 @@
             this.physics.add.overlap( this.playerCollision2, this.reacteurs2, this.prendreReacteur2, null,this);
 
             // rocher à détruire
-            this.rocherADetruire = this.physics.add.image(928, 400, 'rocherBloquePassage');
+            this.rocherADetruire = this.physics.add.image(1470, 690, 'rocherBloquePassage');
 
             this.rocherADetruire.setPushable(false)
             this.physics.add.collider(this.player,this.rocherADetruire,this.detruireRocher,null,this)
@@ -865,7 +864,7 @@
             // plante interface
             this.plantePriseEcran = this.add.image(0, 0,'planteArosoireInterface').setScale(0.6);
 
-            this.plantePriseTexte = this.add.text(286, 190, this.plantePrise, { fontFamily: 'CustomFont',fontSize:28,color:"#465ed1" });
+            this.plantePriseTexte = this.add.text(0, 0, this.plantePrise, { fontFamily: 'CustomFont',fontSize:28,color:"#465ed1" });
 
             ///////////////////////////////////////////////////////////////
             //////////////////////////////PNJ//////////////////////////////
@@ -883,7 +882,7 @@
             this.physics.add.overlap(this.player,this.pnj1,this.parlerPNJ1,null,this);
 
             //pnj vehicule
-            this.PNJvehicule = this.physics.add.image(770, 146, 'PNJvehicule');
+            this.PNJvehicule = this.physics.add.image(1726, 334, 'PNJvehicule');
             this.PNJvehiculeCollide = this.physics.add.image(this.PNJvehicule.x, this.PNJvehicule.y, 'PNJvehiculeCollide');
             this.PNJvehiculeCollide.body.setSize(64,32)
             this.PNJvehiculeCollide.setPushable(false)
@@ -928,9 +927,25 @@
             this.toucheF = this.input.keyboard.addKey('F');
             this.toucheG = this.input.keyboard.addKey('G');
             this.trancher = this.input.keyboard.addKey('A');
+
+            this.playerX = this.add.text(350, 280, this.player.x,{ fontFamily: 'CustomFont',fontSize:15,color:"#000000" });
+            this.playerY = this.add.text(350, 290, this.player.y,{ fontFamily: 'CustomFont',fontSize:15,color:"#000000" });
+            this.playerX.setDepth(100)
+            this.playerX.setScale(0.7);
+            this.playerX.setScrollFactor(0);
+            this.playerY.setDepth(100)
+            this.playerY.setScale(0.7);
+            this.playerY.setScrollFactor(0);
+            
+
         }
 
         update(){
+            this.playerX.setText(this.player.x)
+            this.playerY.setText(this.player.y)
+
+
+
             this.playerCollision2.x = this.player.x
             this.playerCollision2.y = this.player.y
 
@@ -2941,8 +2956,8 @@
                     invulnérable:this.invulnérable,
                     tempsAvantRespawn:this.tempsAvantRespawn,
                     porteOuverte:this.porteOuverte,
-                    spawnXSortieScene:530, 
-                    spawnYSortieScene:400,
+                    spawnXSortieScene:785, 
+                    spawnYSortieScene:666,
                     carteMagnetiqueInterface: this.carteMagnetiqueInterface,
                     solde: this.solde,
                     reacteur1Pris: this.reacteur1Pris,
