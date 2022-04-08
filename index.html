@@ -85,7 +85,7 @@
                 afficheInterfaceDash: false,
                 spawnXSortieScene: this.spawnXSortieScene,
                 spawnYSortieScene: this.spawnYSortieScene,
-                cleInterface:true
+                cleInterface:false
         })
         });
 
@@ -1081,12 +1081,12 @@
             // deplacement vehicule
             if (this.animVehicule == true){     
                 if (this.moveLeft) {
-                    this.vehicule.setSize(150,70,true)
-                    this.vehicule.setOffset(0,20)
+                    this.vehicule.setSize(120,30,true)
+                    this.vehicule.setOffset(40,60)
                     this.vehicule.setVelocityX(-230)
                     } else if (this.moveRight) {
-                        this.vehicule.setSize(150,70,true)
-                        this.vehicule.setOffset(0, 20)
+                        this.vehicule.setSize(120,30,true)
+                    this.vehicule.setOffset(0,60)
                         this.vehicule.setVelocityX(230)
                     }
                 if (this.moveUp) {
@@ -1113,8 +1113,8 @@
                     this.vehicule.anims.play('animVehiculeNoMove', true);
                     this.vehicule.setVelocityX(0)
                     this.vehicule.setVelocityY(0)
-                    this.vehicule.setSize(150,70,true)
-                    this.vehicule.setOffset(0,20)
+                    this.vehicule.setSize(120,30,true)
+                    this.vehicule.setOffset(0,60)
                 }
             }
 
@@ -3530,7 +3530,7 @@
     }
 
         var config = {
-            type: Phaser.AUTO,
+            type: Phaser.CANVAS,
             width: 1024, height: 576,
             physics: {
             default: 'arcade',
