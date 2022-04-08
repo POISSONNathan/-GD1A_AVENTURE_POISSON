@@ -11,7 +11,7 @@
     <style type="text/css"> body 
         { margin: 0; 
         }
-
+ 
         @font-face {
             font-family: CustomFont;
             src: url('assets/space age.ttf');
@@ -33,7 +33,6 @@
             this.load.image("accueil", "assets/accueil.png");
 
             this.load.tilemapTiledJSON("carte", "map.json");  
-
         }
 
         create(){
@@ -78,8 +77,8 @@
                 compteurTempsAvantAtaque: 100 ,  
                 tempsAvantAtaque: false,
                 speed: 150,
-                acheterSpeed: false,
-                acheterDash: false,
+                acheterSpeed: true,
+                acheterDash: true,
                 dash: 0,
                 nbrDash: 10,
                 afficheInterfaceDash: false,
@@ -850,7 +849,7 @@
             this.monnaieEcran.setDepth(100)
             this.monnaieEcran.setScrollFactor(0);  
 
-            this.monnaieTexte = this.add.text(388, 232, this.solde, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
+            this.monnaieTexte = this.add.text(388, 232, this.solde, { fontFamily: 'CustomFont',fontSize:25,color:"#000000" });
             this.monnaieTexte.setDepth(100)
             this.monnaieTexte.setScale(0.7);
             this.monnaieTexte.setScrollFactor(0);
@@ -859,7 +858,7 @@
             this.dashEcran.setDepth(100)
             this.dashEcran.setScrollFactor(0);  
 
-            this.dashTexte = this.add.text(0, 0, this.nbrDash, { fontFamily: 'CustomFont',fontSize:28,color:"#465ed1" });
+            this.dashTexte = this.add.text(0, 0, this.nbrDash, { fontFamily: 'CustomFont',fontSize:28,color:"#000000" });
             this.dashTexte.setDepth(100)
             this.dashTexte.setScale(0.7);
             this.dashTexte.setScrollFactor(0);
@@ -867,7 +866,7 @@
             // plante interface
             this.plantePriseEcran = this.add.image(0, 0,'planteArosoireInterface').setScale(0.6);
 
-            this.plantePriseTexte = this.add.text(0, 0, this.plantePrise, { fontFamily: 'CustomFont',fontSize:28,color:"#465ed1" });
+            this.plantePriseTexte = this.add.text(0, 0, this.plantePrise, { fontFamily: 'CustomFont',fontSize:28,color:"#000000" });
 
             ///////////////////////////////////////////////////////////////
             //////////////////////////////PNJ//////////////////////////////
@@ -909,7 +908,7 @@
             this.physics.add.overlap(this.player,this.marchandOverlap,this.parlerMarchand,null,this);
 
             // pnj intro zone 2
-            this.pnj3 = this.physics.add.image(600, 300, 'PNJIntroZone2');
+            this.pnj3 = this.physics.add.image(4180, 1740, 'PNJIntroZone2');
             this.pnj3Collide = this.physics.add.image(this.pnj3.x, this.pnj3.y, 'PNJIntroZone2Collide');
             this.pnj3Collide.body.setSize(32,32)
             this.pnj3Collide.setPushable(false)
@@ -2257,7 +2256,7 @@
             this.monnaieEcran.setDepth(100)
             this.monnaieEcran.setScrollFactor(0);  
 
-            this.monnaieTexte = this.add.text(388, 232, this.solde, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
+            this.monnaieTexte = this.add.text(388, 232, this.solde, { fontFamily: 'CustomFont',fontSize:25,color:"#000000" });
             this.monnaieTexte.setDepth(100)
             this.monnaieTexte.setScale(0.7);
             this.monnaieTexte.setScrollFactor(0);
@@ -2790,7 +2789,7 @@
             this.monnaieEcran.setDepth(100)
             this.monnaieEcran.setScrollFactor(0);  
 
-            this.monnaieTexte = this.add.text(388, 232, this.solde, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
+            this.monnaieTexte = this.add.text(388, 232, this.solde, { fontFamily: 'CustomFont',fontSize:25,color:"#000000" });
             this.monnaieTexte.setDepth(100)
             this.monnaieTexte.setScale(0.7);
             this.monnaieTexte.setScrollFactor(0);
@@ -3215,13 +3214,13 @@
             this.monnaieEcran.setDepth(100)
             this.monnaieEcran.setScrollFactor(0);  
 
-            this.monnaieTexte = this.add.text(388, 232, this.solde, { fontFamily: 'CustomFont',fontSize:25,color:"#465ed1" });
+            this.monnaieTexte = this.add.text(388, 232, this.solde, { fontFamily: 'CustomFont',fontSize:25,color:"#000000" });
             this.monnaieTexte.setDepth(100)
             this.monnaieTexte.setScale(0.7);
             this.monnaieTexte.setScrollFactor(0);
 
             // plante interface
-            this.plantePriseTexte = this.add.text(386, 255, this.plantePrise, { fontFamily: 'CustomFont',fontSize:28,color:"#465ed1" });
+            this.plantePriseTexte = this.add.text(386, 255, this.plantePrise, { fontFamily: 'CustomFont',fontSize:28,color:"#000000" });
 
             // PNJ quete fleur
             this.PNJquetePlante = this.physics.add.image(6120, 118, 'PNJquetePlante');
