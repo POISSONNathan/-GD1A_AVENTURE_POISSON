@@ -59,7 +59,7 @@
                 sabreInterface:false,
                 dialogue:false,
                 trancherActif:false,
-                pouvoirAttaquer:true,
+                pouvoirAttaquer:false,
                 animVehicule:false,
                 quitterVheicule:false,
                 invulnérable:false,
@@ -72,7 +72,7 @@
                 reacteursBackgroundInterface:false,
                 quetePlanteInterface:false,
                 quetePlanteInterfaceArosoir:false,
-                plantePrise: 10,
+                plantePrise: 0,
                 premierDialogueActif : false,
                 compteurTempsAvantAtaque: 100 ,  
                 tempsAvantAtaque: false,
@@ -84,7 +84,7 @@
                 afficheInterfaceDash: false,
                 spawnXSortieScene: this.spawnXSortieScene,
                 spawnYSortieScene: this.spawnYSortieScene,
-                cleInterface:true
+                cleInterface:false
         })
         });
 
@@ -332,7 +332,7 @@
             this.entreeGrotte = this.physics.add.image(430, 100, 'changementScene');
             this.entreeGrotte.body.setSize(150,80,true)
 
-            this.entreeMaisonBlanche = this.physics.add.image(528,230, 'changementScene');
+            this.entreeMaisonBlanche = this.physics.add.image(6150,1700, 'changementScene');
             this.entreeMaisonBlanche.body.setSize(90,40,true)
             this.entreeMaisonBlanche.setOffset(-31,100)
 
@@ -372,7 +372,7 @@
             this.compteurDropCoffre = 150;
             this.compteurDropCoffreHp = 150;
             this.compteurDropCoffreMonnaie = 150;
-            this.entrerActif = true
+            this.entrerActif = false
             this.coffreAnimStop = false
             this.dropCoffreActif = false
             this.dropCoffreInterface = false
@@ -946,6 +946,8 @@
             this.playerX.setText(this.player.x)
             this.playerY.setText(this.player.y)
 
+            
+
 
 
             this.playerCollision2.x = this.player.x
@@ -966,10 +968,25 @@
 
             if (this.dialogue == false){
 
-                this.moveUp = ( this.cursors.up.isDown)  
-                this.moveLeft = ( this.cursors.left.isDown)  
-                this.moveRight = ( this.cursors.right.isDown) 
+            this.input.gamepad.once('connected', function (pad) {
+                this.paddle = pad;
+                this.padConnected = true;
+            });   
+
+                 // quand la manette est connectée, les touches manettes sont activées
+            if (this.padConnected) {
+                this.moveUp = (this.cursors.up.isDown||  this.paddle.up)  
+                this.moveLeft = (this.cursors.left.isDown|| this.paddle.left)  
+                this.moveRight = (this.cursors.right.isDown || this.paddle.right)
+                this.moveDown = ( this.cursors.down.isDown || this.paddle.down) 
+            }
+            // quand la manette n'est pas connectée, les touches manettes ne sont pas activées
+            else{
+                this.moveUp = (this.cursors.up.isDown )  
+                this.moveLeft = (this.cursors.left.isDown )  
+                this.moveRight = (this.cursors.right.isDown ) 
                 this.moveDown = ( this.cursors.down.isDown) 
+            }
                 
 
 
@@ -3447,8 +3464,8 @@
                     invulnérable:this.invulnérable,
                     tempsAvantRespawn:this.tempsAvantRespawn,
                     porteOuverte:this.porteOuverte,
-                    spawnXSortieScene:500, 
-                    spawnYSortieScene:200,
+                    spawnXSortieScene:6130, 
+                    spawnYSortieScene:1790,
                     carteMagnetiqueInterface: this.carteMagnetiqueInterface,
                     solde: this.solde,
                     reacteur1Pris: this.reacteur1Pris,
