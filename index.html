@@ -175,6 +175,8 @@
 
             this.load.image("coeur", "assets/objets/coeur.png");
 
+            this.load.image("texteRecupReacteur2", "assets/interface/texte/TexteRecupReacteur2.png");
+
             // coffre essence
             this.load.image('coffre', 'assets/objets/coffre.png');
             this.load.spritesheet('coffreAnim1','assets/objets/coffreAnim.png',
@@ -384,6 +386,7 @@
             this.dernierDialogue = false
             this.dropEnnemi = false
             this.attaqueActive = false
+            this.reacteur2Obtenu = false
             this.test = 0
             this.test2 = 0
 
@@ -1446,7 +1449,17 @@
 
             this.monnaie.children.iterate(function (monnaies) {
                 this.physics.moveToObject(monnaies, monnaies.scene.player, 100)
-            },this);//,this pour utiliser les this.physics dans une fonction
+            },this);
+
+
+            // reacteur obtenu
+            if (this.reacteur2Obtenu == true){
+                if (Phaser.Input.Keyboard.JustDown(this.toucheG)) {
+                    this.texteReacteur2Obtenu.destroy()
+                    this.dialogue = false
+                    this.reacteur2Pris = true
+                }
+            }  
 
             this.barreDeVie()
         }
@@ -1670,7 +1683,15 @@
 
         prendreReacteur2(player,reacteur2){
             reacteur2.destroy()
-            this.reacteur2Pris = true
+            if (this.reacteur2Obtenu == false){
+                this.dialogue = true
+                this.texteReacteur2Obtenu = this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"texteRecupReacteur2").setScale(0.35)
+                this.texteReacteur2Obtenu.setDepth(11)
+                this.texteReacteur2Obtenu.setScrollFactor(0)
+                this.reacteur2Obtenu = true
+                this.player.setVelocityX(0)
+                this.player.setVelocityY(0)
+            }
         }
 
         barreDeVie (){
