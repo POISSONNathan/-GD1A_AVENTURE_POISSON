@@ -56,7 +56,7 @@
 
                 this.scene.scene.start("sceneJeu", {
                 pointDeVie:4,
-                sabreInterface:true,
+                sabreInterface:false,
                 dialogue:false,
                 trancherActif:false,
                 pouvoirAttaquer:false,
@@ -65,11 +65,11 @@
                 invulnérable:false,
                 tempsAvantRespawn:false,
                 porteOuverte:false,
-                carteMagnetiqueInterface: true,
-                solde:30,
-                reacteur1Pris:true,
+                carteMagnetiqueInterface: false,
+                solde:0,
+                reacteur1Pris:false,
                 reacteur2Pris:false,
-                reacteursBackgroundInterface:true,
+                reacteursBackgroundInterface:false,
                 quetePlanteInterface:false,
                 quetePlanteInterfaceArosoir:false,
                 plantePrise: 0,
@@ -80,7 +80,7 @@
                 acheterSpeed: true,
                 acheterDash: true,
                 dash: 0,
-                nbrDash: 10,
+                nbrDash: 0,
                 afficheInterfaceDash: false,
                 spawnXSortieScene: this.spawnXSortieScene,
                 spawnYSortieScene: this.spawnYSortieScene,
@@ -296,6 +296,8 @@
             this.load.image("grillageLaby", "assets/objets/grillageLaby.png");
             this.load.image("grillageOverlap", "assets/objets/emplacementChangementDeScene/changementScene.png");
 
+            this.load.image("vaisseauFin", "assets/objets/vaisseauFin.png");
+            this.load.image("vaisseauOverlap", "assets/objets/emplacementChangementDeScene/changementScene.png");
 
 
         }
@@ -372,7 +374,7 @@
             this.compteurDropCoffre = 150;
             this.compteurDropCoffreHp = 150;
             this.compteurDropCoffreMonnaie = 150;
-            this.entrerActif = true
+            this.entrerActif = false
             this.coffreAnimStop = false
             this.dropCoffreActif = false
             this.dropCoffreInterface = false
@@ -814,6 +816,24 @@
             this.physics.add.collider(this.enemisHo,build)
             this.physics.add.overlap( this.player, this.enemisHo,  this.toucherEnnemiHo, null,this);
 
+            // vaisseau de fin de niveau
+
+            carte.getObjectLayer('vaisseau').objects.forEach((vaisseau) => {
+            this.vaisseau = this.physics.add.image(vaisseau.x + 10, vaisseau.y-40, 'vaisseauFin').setOrigin(0).setScale(2);
+            });
+
+            this.vaisseauOverrlap = this.physics.add.image(this.vaisseau.x, this.vaisseau.y, 'vaisseauOverlap').setOrigin(0).setScale(2);
+            this.vaisseauOverrlap.body.setSize(70,60)
+            this.vaisseauOverrlap.body.setOffset(-3,0)
+
+            this.vaisseau.body.setSize(40,46)
+            this.vaisseau.body.setOffset(12,2)
+
+            this.vaisseau.setPushable(false)
+            this.physics.add.collider(this.player,this.vaisseau)
+            this.physics.add.overlap(this.player,this.vaisseauOverrlap,this.entrerVaisseau,null,this)
+
+
             ///////////////////////////////////////////////////////////////
             /////////////////////////INTERFACE/////////////////////////////
             ///////////////////////////////////////////////////////////////
@@ -1110,8 +1130,6 @@
                     this.vehicule.setOffset(0,60)
                 }
             }
-
-            console.log(this.animVehicule)
 
             if (this.entrerActif == true){
                 if (this.vehicule.x > 3960){
@@ -1673,6 +1691,15 @@
                 this.dialogue = true
                 this.player.anims.play('persoMort', false); 
                 this.tempsAvantRespawn = true
+            }
+        }
+
+        // entrée dans le vaisseau de fin de niveau
+        entrerVaisseau(player,vaisseau){
+            if (this.reacteur1Pris == true && this.reacteur2Pris == true){
+                if (Phaser.Input.Keyboard.JustDown(this.toucheF)) { 
+                    this.scene.start("sceneFin")
+                }
             }
         }
 
@@ -3469,6 +3496,45 @@
         }
     }
 
+    class sceneFin extends Phaser.Scene{
+            constructor(){
+            super("sceneFin");
+        }
+
+        preload(){
+            this.load.image("bouttonRestart", "assets/bouttonRestart.png");
+            this.load.image("bouttonLeave", "assets/BouttonQuit.png");
+            this.load.image("ecranFin", "assets/ecranFin.png");
+        }
+
+        create(){
+            const carte = this.make.tilemap({ key: 'carte' });
+
+
+        this.add.image(this.cameras.main.width/2,this.cameras.main.height/2,"ecranFin").setScale(0.53);
+
+        this.cursors = this.input.keyboard.createCursorKeys();
+
+        this.restartButton = this.add.image(this.cameras.main.width/2,380, 'bouttonRestart').setScale(0.53).setInteractive();
+
+     
+
+
+        this.restartButton.on('pointerdown', function (pointer) {
+                this.scene.scene.start("sceneJeu")
+        });
+
+        this.leaveButton = this.add.image(this.cameras.main.width/2,500, 'bouttonLeave').setScale(0.53).setInteractive();
+
+        this.leaveButton.on('pointerdown', function (pointer) {
+
+                this.scene.scene.stop("sceneFin")
+        });
+        }
+        update(){}
+
+    }
+
         var config = {
             type: Phaser.CANVAS,
             width: 1024, height: 576,
@@ -3479,7 +3545,7 @@
             debug: true
             }},
             pixelArt:true,
-            scene: [accueil,sceneJeu,sceneGrotte,sceneMaison1,sceneMaisonBlanche],
+            scene: [accueil,sceneJeu,sceneGrotte,sceneMaison1,sceneMaisonBlanche,sceneFin],
             input : {gamepad:true},
             };
 
