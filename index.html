@@ -59,7 +59,7 @@
                 sabreInterface:false,
                 dialogue:false,
                 trancherActif:false,
-                pouvoirAttaquer:false,
+                pouvoirAttaquer:true,
                 animVehicule:false,
                 quitterVheicule:false,
                 invulnérable:false,
@@ -74,9 +74,9 @@
                 quetePlanteInterfaceArosoir:false,
                 plantePrise: 0,
                 premierDialogueActif : false,
-                compteurTempsAvantAtaque: 100 ,  
+                compteurTempsAvantAtaque: 125 ,  
                 tempsAvantAtaque: false,
-                speed: 500,
+                speed: 150,
                 acheterSpeed: true,
                 acheterDash: true,
                 dash: 0,
@@ -330,6 +330,11 @@
    
             const decor = carte.createLayer(
                     "decor",
+                    tileset
+                    ); 
+
+            const ombre = carte.createLayer(
+                    "ombre",
                     tileset
                     ); 
    
@@ -941,9 +946,10 @@
             this.keys = this.input.keyboard.addKeys({
             });
 
-            this.toucheF = this.input.keyboard.addKey('F');
-            this.toucheG = this.input.keyboard.addKey('G');
-            this.trancher = this.input.keyboard.addKey('A');
+            // touches spéciales clavier + manettes
+            this.toucheF = this.input.keyboard.addKey('F') ||this.paddle.A;
+            this.toucheG = this.input.keyboard.addKey('G')||this.paddle.Y;
+            this.trancher = this.input.keyboard.addKey('A')||this.paddle.X;
 
         }
 
@@ -951,18 +957,19 @@
             this.playerCollision2.x = this.player.x
             this.playerCollision2.y = this.player.y
 
-            this.enemisHo.playAnimation('frontEnnemis', [0])
+            this.enemisHo.playAnimation('backEnnemis', [0])
 
-            this.enemis.children.each(function(enemi) {
-
-            if(enemi.body.velocity.y > 0){
-                enemi.anims.play("frontEnnemis");
+            // jouer une animation pour le groupe d'ennemi qui ne fonctionne pas (joue que la 1e frame)
+            /*this.enemis.children.iterate(function (enemi) {
+                if(enemi.body.velocity.y > 0){
+                enemi.anims.play("frontEnnemis2");
             }
             else{
-                enemi.anims.play("backEnnemis");
+                enemi.anims.play("backEnnemis2");
             }
+            },this);*/
 
-            }, this);
+            this.enemis.playAnimation('frontEnnemis', [0])
 
             if (this.dialogue == false){
 
@@ -1051,30 +1058,33 @@
             }
 
             if(this.pouvoirAttaquer == true){
-                if (Phaser.Input.Keyboard.JustDown(this.trancher)) {   
-                    this.trancherActif = true
-                    this.tempsAttaque = true
-                    if (this.player.direction == 'down'){
-                        this.player.setSize(32,32,true)
-                        this.player.setOffset(0, 15)
-                    }
-                    if (this.player.direction == 'up'){
-                        this.player.setSize(32,30,true)
-                        this.player.setOffset(0, 2)
-                    }
-                    if (this.player.direction == 'left'){
-                        this.player.setSize(16,28,true)
-                        this.player.setOffset(0, 12)
-                    }
-                    if (this.player.direction == 'right'){
-                        this.player.setSize(16,28,true)
-                        this.player.setOffset(18, 12)
-                    }
-                    if (this.player.direction == 'none'){
-                        this.player.setSize(32,30,true)
-                        this.player.setOffset(0, 17)
+                if(this.tempsAvantAtaque == false) {
+                    if (Phaser.Input.Keyboard.JustDown(this.trancher)) {   
+                        this.trancherActif = true
+                        this.tempsAttaque = true
+                        this.tempsAvantAtaque = true
+                        if (this.player.direction == 'down'){
+                            this.player.setSize(32,32,true)
+                            this.player.setOffset(0, 15)
+                        }
+                        if (this.player.direction == 'up'){
+                            this.player.setSize(32,30,true)
+                            this.player.setOffset(0, 2)
+                        }
+                        if (this.player.direction == 'left'){
+                            this.player.setSize(16,28,true)
+                            this.player.setOffset(0, 12)
+                        }
+                        if (this.player.direction == 'right'){
+                            this.player.setSize(16,28,true)
+                            this.player.setOffset(18, 12)
+                        }
+                        if (this.player.direction == 'none'){
+                            this.player.setSize(32,30,true)
+                            this.player.setOffset(0, 17)
                     }
                 }
+            }
             }
 
             if ( this.tempsAttaque == false) {   
@@ -1090,6 +1100,14 @@
                     this.compteurAttaqueTemps = 60;
                     this.tempsAttaque = false ;
                     this.attaqueActive = false
+                }
+            }
+
+            if(this.tempsAvantAtaque == true){
+                this.compteurTempsAvantAtaque -=1 ;
+                if(this.compteurTempsAvantAtaque == 0){
+                    this.compteurTempsAvantAtaque = 125;
+                    this.tempsAvantAtaque = false ;
                 }
             }
 
@@ -1494,7 +1512,7 @@
         aroserPlante(player,plante){
             if (Phaser.Input.Keyboard.JustDown(this.toucheF)) {
                 plante.destroy()
-                this.planteArosee = this.physics.add.sprite(plante.x + 16 ,plante.y + 14,'planteArosee')
+                this.planteArosee = this.physics.add.sprite(plante.x + 16 ,plante.y + 32,'planteArosee')
                 this.plantePrise+= 1
                 this.plantePriseTexte.setText(this.plantePrise)
             }
@@ -2311,34 +2329,52 @@
             this.keys = this.input.keyboard.addKeys({
             });
 
-            this.toucheF = this.input.keyboard.addKey('F');
-            this.toucheG = this.input.keyboard.addKey('G');
-            this.trancher = this.input.keyboard.addKey('A');
+            // touches spéciales clavier + manettes
+            this.toucheF = this.input.keyboard.addKey('F') ||this.paddle.A;
+            this.toucheG = this.input.keyboard.addKey('G')||this.paddle.Y;
+            this.trancher = this.input.keyboard.addKey('A')||this.paddle.X;
         }
 
         update(){
             this.playerCollision2.x = this.player.x
             this.playerCollision2.y = this.player.y
 
-            this.enemisHo.playAnimation('frontEnnemis2', [0])
+            this.enemisHo.playAnimation('backEnnemis2', [0])
 
-            this.enemis.children.each(function(enemi) {
-
-            if(enemi.body.velocity.y > 0){
+            // jouer une animation pour le groupe d'ennemi qui ne fonctionne pas (joue que la 1e frame)
+            /*this.enemis.children.iterate(function (enemi) {
+                if(enemi.body.velocity.y > 0){
                 enemi.anims.play("frontEnnemis2");
             }
             else{
                 enemi.anims.play("backEnnemis2");
             }
+            },this);*/
 
-            }, this);
+            this.enemis.playAnimation('frontEnnemis2', [0])
+
                 
             if (this.dialogue ==false){
 
-                this.moveUp = ( this.cursors.up.isDown)  
-                this.moveLeft = ( this.cursors.left.isDown)  
-                this.moveRight = ( this.cursors.right.isDown) 
+                this.input.gamepad.once('connected', function (pad) {
+                this.paddle = pad;
+                this.padConnected = true;
+            });   
+
+                 // quand la manette est connectée, les touches manettes sont activées
+            if (this.padConnected) {
+                this.moveUp = (this.cursors.up.isDown||  this.paddle.up)  
+                this.moveLeft = (this.cursors.left.isDown|| this.paddle.left)  
+                this.moveRight = (this.cursors.right.isDown || this.paddle.right)
+                this.moveDown = ( this.cursors.down.isDown || this.paddle.down) 
+            }
+            // quand la manette n'est pas connectée, les touches manettes ne sont pas activées
+            else{
+                this.moveUp = (this.cursors.up.isDown )  
+                this.moveLeft = (this.cursors.left.isDown )  
+                this.moveRight = (this.cursors.right.isDown ) 
                 this.moveDown = ( this.cursors.down.isDown) 
+            }
                 
                     if (this.moveLeft) {
                         this.player.setVelocityX(-this.speed)
@@ -2447,7 +2483,7 @@
             if(this.tempsAvantAtaque == true){
                 this.compteurTempsAvantAtaque -=1 ;
                 if(this.compteurTempsAvantAtaque == 0){
-                    this.compteurTempsAvantAtaque = 100;
+                    this.compteurTempsAvantAtaque = 125;
                     this.tempsAvantAtaque = false ;
                 }
             }
@@ -2512,7 +2548,7 @@
 
             this.monnaie.children.iterate(function (monnaies) {
                 this.physics.moveToObject(monnaies, monnaies.scene.player, 100)
-            },this);//,this pour utiliser les this.physics dans une fonction
+            },this);
 
 
             this.barreDeVie()
@@ -2862,17 +2898,34 @@
                 s:  this.input.keyboard.addKey('S'),
             });
 
-            this.toucheF = this.input.keyboard.addKey('F');
-            this.toucheG = this.input.keyboard.addKey('G');
-            this.trancher = this.input.keyboard.addKey('A');
+            // touches spéciales clavier + manettes
+            this.toucheF = this.input.keyboard.addKey('F') ||this.paddle.A;
+            this.toucheG = this.input.keyboard.addKey('G')||this.paddle.Y;
+            this.trancher = this.input.keyboard.addKey('A')||this.paddle.X;
         }
 
         update(){
             if (this.dialogue == false){
-                this.moveUp = ( this.cursors.up.isDown || this.keys.z.isDown )  
-                this.moveLeft = ( this.cursors.left.isDown || this.keys.q.isDown )  
-                this.moveRight = ( this.cursors.right.isDown || this.keys.d.isDown ) 
-                this.moveDown = ( this.cursors.down.isDown || this.keys.s.isDown ) 
+
+                this.input.gamepad.once('connected', function (pad) {
+                this.paddle = pad;
+                this.padConnected = true;
+            });   
+
+                 // quand la manette est connectée, les touches manettes sont activées
+            if (this.padConnected) {
+                this.moveUp = (this.cursors.up.isDown||  this.paddle.up)  
+                this.moveLeft = (this.cursors.left.isDown|| this.paddle.left)  
+                this.moveRight = (this.cursors.right.isDown || this.paddle.right)
+                this.moveDown = ( this.cursors.down.isDown || this.paddle.down) 
+            }
+            // quand la manette n'est pas connectée, les touches manettes ne sont pas activées
+            else{
+                this.moveUp = (this.cursors.up.isDown )  
+                this.moveLeft = (this.cursors.left.isDown )  
+                this.moveRight = (this.cursors.right.isDown ) 
+                this.moveDown = ( this.cursors.down.isDown) 
+            }
 
                     if (this.moveLeft) {
                         this.player.setVelocityX(-this.speed)
@@ -3291,9 +3344,10 @@
                 s:  this.input.keyboard.addKey('S'),
             });
 
-            this.toucheF = this.input.keyboard.addKey('F');
-            this.toucheG = this.input.keyboard.addKey('G');
-            this.trancher = this.input.keyboard.addKey('A');
+            // touches spéciales clavier + manettes
+            this.toucheF = this.input.keyboard.addKey('F') ||this.paddle.A;
+            this.toucheG = this.input.keyboard.addKey('G')||this.paddle.Y;
+            this.trancher = this.input.keyboard.addKey('A')||this.paddle.X;
         }
 
         update(){
@@ -3303,10 +3357,25 @@
 
             if (this.dialogue == false){
 
-                this.moveUp = ( this.cursors.up.isDown || this.keys.z.isDown )  
-                this.moveLeft = ( this.cursors.left.isDown || this.keys.q.isDown )  
-                this.moveRight = ( this.cursors.right.isDown || this.keys.d.isDown ) 
-                this.moveDown = ( this.cursors.down.isDown || this.keys.s.isDown ) 
+                this.input.gamepad.once('connected', function (pad) {
+                this.paddle = pad;
+                this.padConnected = true;
+            });   
+
+                 // quand la manette est connectée, les touches manettes sont activées
+            if (this.padConnected) {
+                this.moveUp = (this.cursors.up.isDown||  this.paddle.up)  
+                this.moveLeft = (this.cursors.left.isDown|| this.paddle.left)  
+                this.moveRight = (this.cursors.right.isDown || this.paddle.right)
+                this.moveDown = ( this.cursors.down.isDown || this.paddle.down) 
+            }
+            // quand la manette n'est pas connectée, les touches manettes ne sont pas activées
+            else{
+                this.moveUp = (this.cursors.up.isDown )  
+                this.moveLeft = (this.cursors.left.isDown )  
+                this.moveRight = (this.cursors.right.isDown ) 
+                this.moveDown = ( this.cursors.down.isDown) 
+            }
                 
                     if (this.moveLeft) {
                         this.player.setVelocityX(-this.speed)
