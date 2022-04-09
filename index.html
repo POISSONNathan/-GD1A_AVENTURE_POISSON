@@ -76,7 +76,7 @@
                 premierDialogueActif : false,
                 compteurTempsAvantAtaque: 100 ,  
                 tempsAvantAtaque: false,
-                speed: 150,
+                speed: 500,
                 acheterSpeed: true,
                 acheterDash: true,
                 dash: 0,
@@ -1189,7 +1189,7 @@
                 this.compteurTempsAvantRespawn -=1 ;
                 if(this.compteurTempsAvantRespawn == 0){
                     this.tempsAvantRespawn = false ;
-                    this.scene.restart()
+                    this.scene.start("accueil")
                 }
             }
             
@@ -1645,9 +1645,10 @@
 
         perdPvEnnemi(playerCollision2,ennemis){
             if (this.invulnérable === false){
+                this.cameras.main.shake(150, 0.004);
+                this.player.setTint(0xff0000);
                 this.invulnérable = true;
                 this.pointDeVie -= 1;
-                this.player.setTint(0xff0000);
             }
         }
 
@@ -1671,14 +1672,6 @@
                 this.solde += 1
                 this.monnaieTexte.setText(this.solde)
     
-        }
-
-        perdPvEnnemi(playerCollision2,ennemis){
-            if (this.invulnérable === false){
-                this.invulnérable = true;
-                this.pointDeVie -= 1;
-                this.player.setTint(0xff0000);
-            }
         }
 
         prendreReacteur2(player,reacteur2){
@@ -1890,7 +1883,8 @@
                     reacteursBackgroundInterface: this.reacteursBackgroundInterface,
                     speed: this.speed,
                     compteurTempsAvantAtaque: this.compteurTempsAvantAtaque ,  
-                    tempsAvantAtaque: this.tempsAvantAtaque
+                    tempsAvantAtaque: this.tempsAvantAtaque,
+                    plantePrise: this.plantePrise,
                 })
             }
         }
@@ -1949,7 +1943,8 @@
                     premierDialogueActif: this.premierDialogueActif ,
                     speed: this.speed,
                     compteurTempsAvantAtaque: this.compteurTempsAvantAtaque ,  
-                    tempsAvantAtaque: this.tempsAvantAtaque
+                    tempsAvantAtaque: this.tempsAvantAtaque,
+                    plantePrise: this.plantePrise,
                 })
             }
         }
@@ -2002,7 +1997,8 @@
             this.reacteursBackgroundInterface = data.reacteursBackgroundInterface,
             this.compteurTempsAvantAtaque = data.compteurTempsAvantAtaque,
             this.tempsAvantAtaque = data.tempsAvantAtaque,
-            this.speed = data.speed
+            this.speed = data.speed,
+            this.plantePrise = data.plantePrise
         }
 
         preload(){
@@ -2550,9 +2546,10 @@
 
         perdPvEnnemi(playerCollision2,ennemis){
             if (this.invulnérable === false){
+                this.cameras.main.shake(150, 0.004);
+                this.player.setTint(0xff0000);
                 this.invulnérable = true;
                 this.pointDeVie -= 1;
-                this.player.setTint(0xff0000);
             }
         }
 
@@ -2633,7 +2630,8 @@
                     reacteursBackgroundInterface: this.reacteursBackgroundInterface,
                     speed: this.speed,
                     compteurTempsAvantAtaque: this.compteurTempsAvantAtaque ,  
-                    tempsAvantAtaque: this.tempsAvantAtaque
+                    tempsAvantAtaque: this.tempsAvantAtaque,
+                    plantePrise: this.plantePrise,
                 })
             }
         }
@@ -2687,7 +2685,8 @@
             this.premierDialogueActif = data.premierDialogueActif 
             this.speed = data.speed
             this.compteurTempsAvantAtaque = data.compteurTempsAvantAtaque,
-            this.tempsAvantAtaque = data.tempsAvantAtaque
+            this.tempsAvantAtaque = data.tempsAvantAtaque,
+            this.plantePrise = data.plantePrise
         }
 
         preload(){
@@ -3048,7 +3047,8 @@
                     reacteursBackgroundInterface: this.reacteursBackgroundInterface,
                     speed: this.speed,
                     compteurTempsAvantAtaque: this.compteurTempsAvantAtaque ,  
-                    tempsAvantAtaque: this.tempsAvantAtaque
+                    tempsAvantAtaque: this.tempsAvantAtaque,
+                    plantePrise: this.plantePrise
                 })
             }
         }
@@ -3405,7 +3405,6 @@
                 this.arosoirInterface.setScrollFactor(0);  
                 this.arosoirInterface.setDepth(10)
             }
-
                 this.barreDeVie()
             }
             
@@ -3563,7 +3562,7 @@
             default: 'arcade',
             arcade: {
             gravity: { y: 0 },
-            debug: true
+            debug: false
             }},
             pixelArt:true,
             scene: [accueil,sceneJeu,sceneGrotte,sceneMaison1,sceneMaisonBlanche,sceneFin],
