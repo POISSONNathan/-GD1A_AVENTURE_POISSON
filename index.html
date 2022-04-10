@@ -1255,6 +1255,7 @@
                 }
             }
 
+
             if(this.dropCoffreSpeedActif == true){
                 this.compteurDropCoffre -=1 ;
                 if(this.compteurDropCoffre == 0){
@@ -1901,6 +1902,7 @@
                     tempsAvantAtaque: this.tempsAvantAtaque,
                     plantePrise: this.plantePrise,
                     nbrDash: this.nbrDash,
+                    acheterSpeed: this.acheterSpeed
                 })
             }
         }
@@ -1960,6 +1962,7 @@
                     tempsAvantAtaque: this.tempsAvantAtaque,
                     plantePrise: this.plantePrise,
                     nbrDash: this.nbrDash,
+                    acheterSpeed: this.acheterSpeed
                 })
             }
         }
@@ -2015,6 +2018,7 @@
             this.speed = data.speed,
             this.plantePrise = data.plantePrise
             this.nbrDash = data.nbrDash
+            this.acheterSpeed = data.acheterSpeed
         }
 
         preload(){
@@ -2667,6 +2671,7 @@
                     tempsAvantAtaque: this.tempsAvantAtaque,
                     plantePrise: this.plantePrise,
                     nbrDash: this.nbrDash,
+                    acheterSpeed: this.acheterSpeed
                 })
             }
         }
@@ -2722,7 +2727,8 @@
             this.compteurTempsAvantAtaque = data.compteurTempsAvantAtaque,
             this.tempsAvantAtaque = data.tempsAvantAtaque,
             this.plantePrise = data.plantePrise,
-            this.nbrDash = data.nbrDash
+            this.nbrDash = data.nbrDash,
+            this.acheterSpeed = data.acheterSpeed
         }
 
         preload(){
@@ -3103,6 +3109,7 @@
                     tempsAvantAtaque: this.tempsAvantAtaque,
                     plantePrise: this.plantePrise,
                     nbrDash: this.nbrDash,
+                    acheterSpeed: this.acheterSpeed
                 })
             }
         }
