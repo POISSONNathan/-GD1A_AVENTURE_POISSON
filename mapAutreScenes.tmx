@@ -6697,7 +6697,7 @@
 </data>
  </layer>
  <objectgroup id="9" name="sabre">
-  <object id="45" gid="590" x="128" y="288" width="32" height="32"/>
+  <object id="45" gid="590" x="64" y="288" width="32" height="32"/>
  </objectgroup>
  <objectgroup id="10" name="coeur">
   <object id="14" gid="621" x="608" y="224" width="32" height="32"/>
@@ -6728,6 +6728,6 @@
   <object id="61" gid="683" x="192" y="288" width="32" height="32"/>
  </objectgroup>
  <objectgroup id="15" name="reacteurs">
-  <object id="48" gid="714" x="64" y="288" width="32" height="32"/>
+  <object id="48" gid="714" x="128" y="288" width="32" height="32"/>
  </objectgroup>
 </map>

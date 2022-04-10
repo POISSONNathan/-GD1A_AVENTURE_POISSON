@@ -148,7 +148,7 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":128,
+                 "x":64,
                  "y":288
                 }],
          "opacity":1,
@@ -455,7 +455,7 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":64,
+                 "x":128,
                  "y":288
                 }],
          "opacity":1,

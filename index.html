@@ -2285,7 +2285,7 @@
 
             // réacteurs à récupérer        
             carte2.getObjectLayer('reacteurs').objects.forEach((reacteurs) => {
-            this.reacteur1 = this.physics.add.image(reacteurs.x, reacteurs.y, 'réacteur1').setScale(0.6).setOrigin(0);
+            this.reacteur1 = this.physics.add.image(reacteurs.x + 4, reacteurs.y - 6, 'réacteur1').setScale(0.6).setOrigin(0);
             });
 
             this.physics.add.overlap( this.playerCollision2, this.reacteur1,  this.prendreReacteur1, null,this);
