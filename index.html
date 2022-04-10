@@ -59,7 +59,7 @@
                 sabreInterface:false,
                 dialogue:false,
                 trancherActif:false,
-                pouvoirAttaquer:true,
+                pouvoirAttaquer:false,
                 animVehicule:false,
                 quitterVheicule:false,
                 invulnérable:false,
@@ -3610,7 +3610,7 @@
 
 
         this.restartButton.on('pointerdown', function (pointer) {
-                this.scene.scene.start("sceneJeu")
+                this.scene.scene.start("accueil")
         });
 
         this.leaveButton = this.add.image(this.cameras.main.width/2,500, 'bouttonLeave').setScale(0.53).setInteractive();
