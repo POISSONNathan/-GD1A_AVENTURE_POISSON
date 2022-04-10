@@ -1202,8 +1202,9 @@
             if(this.tempsAvantRespawn == true){
                 this.compteurTempsAvantRespawn -=1 ;
                 if(this.compteurTempsAvantRespawn == 0){
+                    this.player.x = 6324
+                    this.player.y = 918
                     this.tempsAvantRespawn = false ;
-                    this.scene.start("accueil")
                 }
             }
             
