@@ -76,9 +76,8 @@
                 premierDialogueActif : false,
                 compteurTempsAvantAtaque: 125 ,  
                 tempsAvantAtaque: false,
-                speed: 150,
+                speed: 400,
                 acheterSpeed: true,
-                dash: 0,
                 nbrDash: 0,
                 afficheInterfaceDash: false,
                 spawnXSortieScene: this.spawnXSortieScene,
@@ -128,7 +127,6 @@
             this.premierDialogueActif = data.premierDialogueActif 
             this.speed = data.speed
             this.acheterSpeed = data.acheterSpeed
-            this.dash = data.dash,
             this.nbrDash = data.nbrDash,
             this.afficheInterfaceDash = data.afficheInterfaceDash,
             this.compteurTempsAvantAtaque = data.compteurTempsAvantAtaque ,  
@@ -392,12 +390,14 @@
             this.reacteur2Obtenu = false
             this.test = 0
             this.test2 = 0
+            this.dropCoffreDashActif = false
 
             // var dash
             this.vitesseDash = this.speed * 5
             this.distanceDash = 20000 
             this.compteurDetruireCoffre = 150
             this.compteurDropCoffreDash = 50
+            this.dash = 0
             
             this.physics.add.collider(this.player, build);
             this.physics.add.collider(this.vehicule, build);
@@ -990,8 +990,6 @@
                 this.moveRight = (this.cursors.right.isDown ) 
                 this.moveDown = ( this.cursors.down.isDown) 
             }
-                
-
 
                     if (this.moveLeft) {
                         this.player.setVelocityX(-this.speed)
@@ -1901,6 +1899,7 @@
                     compteurTempsAvantAtaque: this.compteurTempsAvantAtaque ,  
                     tempsAvantAtaque: this.tempsAvantAtaque,
                     plantePrise: this.plantePrise,
+                    nbrDash: this.nbrDash,
                 })
             }
         }
@@ -1927,7 +1926,6 @@
                     plantePrise: this.plantePrise,
                     speed: this.speed,
                     acheterSpeed: this.acheterSpeed,
-                    dash: this.dash,
                     nbrDash: this.nbrDash,
                     afficheInterfaceDash: this.afficheInterfaceDash,
                     compteurTempsAvantAtaque: this.compteurTempsAvantAtaque ,  
@@ -1960,6 +1958,7 @@
                     compteurTempsAvantAtaque: this.compteurTempsAvantAtaque ,  
                     tempsAvantAtaque: this.tempsAvantAtaque,
                     plantePrise: this.plantePrise,
+                    nbrDash: this.nbrDash,
                 })
             }
         }
@@ -2014,6 +2013,7 @@
             this.tempsAvantAtaque = data.tempsAvantAtaque,
             this.speed = data.speed,
             this.plantePrise = data.plantePrise
+            this.nbrDash = data.nbrDash
         }
 
         preload(){
@@ -2665,6 +2665,7 @@
                     compteurTempsAvantAtaque: this.compteurTempsAvantAtaque ,  
                     tempsAvantAtaque: this.tempsAvantAtaque,
                     plantePrise: this.plantePrise,
+                    nbrDash: this.nbrDash,
                 })
             }
         }
@@ -2719,7 +2720,8 @@
             this.speed = data.speed
             this.compteurTempsAvantAtaque = data.compteurTempsAvantAtaque,
             this.tempsAvantAtaque = data.tempsAvantAtaque,
-            this.plantePrise = data.plantePrise
+            this.plantePrise = data.plantePrise,
+            this.nbrDash = data.nbrDash
         }
 
         preload(){
@@ -3098,7 +3100,8 @@
                     speed: this.speed,
                     compteurTempsAvantAtaque: this.compteurTempsAvantAtaque ,  
                     tempsAvantAtaque: this.tempsAvantAtaque,
-                    plantePrise: this.plantePrise
+                    plantePrise: this.plantePrise,
+                    nbrDash: this.nbrDash,
                 })
             }
         }
@@ -3159,7 +3162,8 @@
             this.afficheInterfaceDash = data.afficheInterfaceDash,
             this.compteurTempsAvantAtaque = data.compteurTempsAvantAtaque,
             this.tempsAvantAtaque = data.tempsAvantAtaque
-            this.cleInterface = data.cleInterface
+            this.cleInterface = data.cleInterface,
+            this.nbrDash = data.nbrDash
         }
 
         preload(){
@@ -3574,7 +3578,8 @@
                     tempsAvantAtaque: this.tempsAvantAtaque,
                     quetePlanteInterface:this.quetePlanteInterface,
                     quetePlanteInterfaceArosoir:this.quetePlanteInterfaceArosoir,
-                    cleInterface:this.cleInterface
+                    cleInterface:this.cleInterface,
+                    nbrDash: this.nbrDash,
                 })
             }
         }
